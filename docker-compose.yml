@@ -2,12 +2,12 @@ services:
   database:
     image: postgres
     ports:
-      - 5001:5432
+      - ${POSTGRES_PORT}:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=osrs_prices
+      - POSTGRES_DB=${POSTGRES_DB}
 volumes:
   pgdata:
