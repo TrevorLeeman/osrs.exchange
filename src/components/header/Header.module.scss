@@ -1,0 +1,34 @@
+.header {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas: 'left center right';
+  padding: 1rem;
+
+  & .left {
+    grid-area: left;
+    display: flex;
+    flex-grow: 1;
+  }
+
+  & .center {
+    grid-area: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  & .right {
+    grid-area: right;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  @media only screen and (max-width: 768px) {
+    grid-template-columns: 1fr min-content;
+    grid-template-areas: 'center right';
+
+    & .center {
+      justify-content: flex-start;
+    }
+  }
+}

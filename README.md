@@ -8,7 +8,7 @@ Built using NextJS, PostgreSQL, NextUI, and SCSS modules. Hosted on Vercel and A
 
 1. Clone this repo.
 2. Download [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-3. Ensure you have at least node 18.0 and npm 8.0 installed. You can check using `node -v` and `npm -v`, respectively.
+3. Ensure you have at least [Node.js](https://nodejs.org/en/download/) 18.0 and npm 8.0 installed. You can check using `node -v` and `npm -v`, respectively.
 4. Install `pnpm` with `npm install -g pnpm`
 5. Navigate to the root of the project. Install all other dependencies with `pnpm install --frozen-lockfile`
 6. Create a new file `.env.local` in the root of the project. Copy the contents of `.env.sample` into it.
