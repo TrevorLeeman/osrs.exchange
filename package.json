@@ -3,22 +3,45 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -k -p name -n \"next,scss,postgres\" -c  \"blue,magenta,red\" \"pnpm next dev\" \"pnpm typed-scss-modules src -w\" \"pnpm dev:db\"",
+    "dev:db": "docker-compose --env-file ./.env.local up",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:new": "cross-var knex migrate:make $npm_config_name -x ts --migrations-directory ./src/db/migrations",
+    "migrate:latest": "knex migrate:latest",
+    "migrate:revert": "knex migrate:rollback --all",
+    "seed": "knex seed:run"
   },
   "dependencies": {
+    "@nextui-org/react": "1.0.0-beta.9",
+    "dotenv": "^16.0.1",
+    "downshift": "^6.1.9",
+    "knex": "^2.2.0",
     "next": "12.2.3",
+    "pg": "^8.7.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-query": "^3.39.2"
   },
   "devDependencies": {
     "@types/node": "18.6.3",
+    "@types/pg": "^8.6.5",
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
+    "concurrently": "^7.3.0",
+    "cross-var": "^1.1.0",
     "eslint": "8.20.0",
     "eslint-config-next": "12.2.3",
+    "eslint-config-prettier": "^8.5.0",
+    "prettier": "^2.7.1",
+    "sass": "^1.54.4",
+    "ts-node": "^10.9.1",
+    "typed-scss-modules": "^6.5.0",
     "typescript": "4.7.4"
+  },
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=18.0.0"
   }
 }

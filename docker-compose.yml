@@ -1,0 +1,13 @@
+services:
+  database:
+    image: postgres
+    ports:
+      - 5001:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=osrs_prices
+volumes:
+  pgdata:

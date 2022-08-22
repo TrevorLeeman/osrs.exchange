@@ -1,34 +1,30 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## osrs-prices.trevorleeman.com
 
-## Getting Started
+Item flipping utility for the game Old School Runescape. Leverages the OSRS wiki x RuneLite Real-time Prices API.
 
-First, run the development server:
+Build using NextJS, PostgreSQL, NextUI, and SCSS modules.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+Hosted on Vercel and AWS RDS.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Initialize Project
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+1. Clone this repo
+2. Ensure you have at least node 18.0 and npm 8.0 installed. You can check using `node -v` and `npm -v`, respectively
+3. Install `pnpm` with `npm install -g pnpm`
+4. Install all other dependencies with `pnpm install --frozen-lockfile`
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Database Initialization
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+A PostgreSQL server is required to initialize the database.
 
-## Learn More
+1. Run the `/src/db/init.sql` script on your PostgreSQL server to create the `items` database.
+2. Run all database migrations with `pnpm migrate:latest`
+3. Todo, seed data...
 
-To learn more about Next.js, take a look at the following resources:
+## Creating a new migration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To create a new migration, run `pnpm --name=your_name_here new-migration`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Environment Variables
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Create a new file `.env.local` in the root of the project. Copy the contents of `env.sample` into it, and update the values to match your database settings.
