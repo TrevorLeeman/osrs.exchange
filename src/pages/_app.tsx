@@ -1,20 +1,18 @@
-import { useRef } from 'react';
 import type { AppProps } from 'next/app';
+import { useRef } from 'react';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { createTheme, NextUIProvider } from '@nextui-org/react';
-import { SSRProvider } from 'react-aria';
-import Header from '../components/header/Header';
+import { SSRProvider as AriaSSRProvider } from 'react-aria';
+import Header from '../components/Header/Header';
 import '../styles/global.css';
 
 const lightTheme = createTheme({
   type: 'light',
-  theme: {},
 });
 
 const darkTheme = createTheme({
   type: 'dark',
-  theme: {},
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -29,10 +27,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           value={{ light: lightTheme.className, dark: darkTheme.className }}
         >
           <NextUIProvider>
-            <SSRProvider>
+            <AriaSSRProvider>
               <Header />
               <Component {...pageProps} />
-            </SSRProvider>
+            </AriaSSRProvider>
           </NextUIProvider>
         </NextThemesProvider>
       </Hydrate>
