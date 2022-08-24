@@ -8,6 +8,7 @@ specifiers:
   '@types/react-dom': 18.0.6
   axios: ^0.27.2
   chart.js: ^3.9.1
+  chartjs-adapter-date-fns: ^2.0.0
   concurrently: ^7.3.0
   cross-var: ^1.1.0
   date-fns: ^2.29.2
@@ -35,6 +36,7 @@ dependencies:
   '@nextui-org/react': 1.0.0-beta.9_biqbaboplfbrettd7655fr4n2y
   axios: 0.27.2
   chart.js: 3.9.1
+  chartjs-adapter-date-fns: 2.0.0_chart.js@3.9.1
   date-fns: 2.29.2
   dotenv: 16.0.1
   downshift: 6.1.9_react@18.2.0
@@ -2930,6 +2932,14 @@ packages:
 
   /chart.js/3.9.1:
     resolution: {integrity: sha512-Ro2JbLmvg83gXF5F4sniaQ+lTbSv18E+TIf2cOeiH1Iqd2PGFOtem+DUufMZsCJwFE7ywPOpfXFBwRTGq7dh6w==}
+    dev: false
+
+  /chartjs-adapter-date-fns/2.0.0_chart.js@3.9.1:
+    resolution: {integrity: sha512-rmZINGLe+9IiiEB0kb57vH3UugAtYw33anRiw5kS2Tu87agpetDDoouquycWc9pRsKtQo5j+vLsYHyr8etAvFw==}
+    peerDependencies:
+      chart.js: ^3.0.0
+    dependencies:
+      chart.js: 3.9.1
     dev: false
 
   /chokidar/3.5.3:

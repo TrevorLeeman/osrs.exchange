@@ -1,10 +1,8 @@
-import { useTheme as useNextTheme } from 'next-themes';
-import { Input, Switch, useTheme } from '@nextui-org/react';
+import { Input } from '@nextui-org/react';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import styles from './Header.module.scss';
 
 const Header = () => {
-  const { setTheme } = useNextTheme();
-  const { isDark, type } = useTheme();
   return (
     <header className={styles.header}>
       <div className={styles.left} />
@@ -19,7 +17,7 @@ const Header = () => {
         />
       </div>
       <div className={styles.right}>
-        <Switch checked={isDark} onChange={e => setTheme(e.target.checked ? 'dark' : 'light')} />
+        <ThemeToggle />
       </div>
     </header>
   );

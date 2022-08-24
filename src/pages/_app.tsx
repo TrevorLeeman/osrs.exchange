@@ -2,16 +2,16 @@ import type { AppProps } from 'next/app';
 import { useRef } from 'react';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { createTheme, NextUIProvider } from '@nextui-org/react';
+import { createTheme as createNextUiTheme, NextUIProvider } from '@nextui-org/react';
 import { SSRProvider as AriaSSRProvider } from 'react-aria';
 import Header from '../components/Header/Header';
 import '../styles/global.css';
 
-const lightTheme = createTheme({
+const lightTheme = createNextUiTheme({
   type: 'light',
 });
 
-const darkTheme = createTheme({
+const darkTheme = createNextUiTheme({
   type: 'dark',
 });
 
