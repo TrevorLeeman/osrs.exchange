@@ -1,16 +1,18 @@
 import type { GetServerSideProps, NextPage } from 'next';
-import type { BasicItem } from '../../db/items';
+import type { BasicItem } from '../../src/db/items';
 import React from 'react';
-import { dehydrate, QueryClient, QueryFunction, useQuery } from 'react-query';
+import { dehydrate, QueryClient, QueryFunction, useQuery } from '@tanstack/react-query';
 import { ParsedUrlQuery } from 'querystring';
 import { Collapse, Container, Loading, Spacer, Text } from '@nextui-org/react';
 import axios from 'axios';
-import knex from '../../db/db';
-import ItemIcon from '../../components/ItemIcon/ItemIcon';
-import ItemInfo from '../../components/ItemInfo/ItemInfo';
-import PriceChart from '../../components/PriceChart/PriceChart';
-import TimeIntervalButtonGroup, { Timestep } from '../../components/TimeIntervalButtonGroup/TimeIntervalButtonGroup';
-import PriceChartProvider from '../../components/PriceChart/PriceChartProvider';
+import knex from '../../src/db/db';
+import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
+import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
+import PriceChart from '../../src/components/PriceChart/PriceChart';
+import TimeIntervalButtonGroup, {
+  Timestep,
+} from '../../src/components/TimeIntervalButtonGroup/TimeIntervalButtonGroup';
+import PriceChartProvider from '../../src/components/PriceChart/PriceChartProvider';
 
 interface Params extends ParsedUrlQuery {
   slug: [string];
@@ -38,12 +40,12 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
     data: searchListData,
     isLoading: searchListIsLoading,
     isFetching: searchListIsFetching,
-  } = useQuery<Pick<BasicItem, 'id' | 'name' | 'icon'>[]>(ITEM_PAGE_QUERIES.autocomplete);
+  } = useQuery<Pick<BasicItem, 'id' | 'name' | 'icon'>[]>([ITEM_PAGE_QUERIES.autocomplete]);
   const {
     data: itemData,
     isLoading: itemIsLoading,
     isFetching: itemIsFetching,
-  } = useQuery<BasicItem[]>(ITEM_PAGE_QUERIES.itemById);
+  } = useQuery<BasicItem[]>([ITEM_PAGE_QUERIES.itemById]);
   const item = itemData ? itemData[0] : null;
 
   // console.log(searchListData);
@@ -93,12 +95,12 @@ export const getServerSideProps: GetServerSideProps = async context => {
   const itemId = parseInt(slug[slug.length - 1], 10);
   const queryClient = new QueryClient();
 
-  queryClient.prefetchQuery(ITEM_PAGE_QUERIES.autocomplete, async () =>
+  queryClient.prefetchQuery([ITEM_PAGE_QUERIES.autocomplete], async () =>
     knex.select('id', 'name', 'icon').from<BasicItem>('item').where('tradeable_on_ge', true).limit(5).orderBy('name'),
   );
 
   if (itemId !== NaN) {
-    const item = queryClient.prefetchQuery(ITEM_PAGE_QUERIES.itemById, async () =>
+    const item = queryClient.prefetchQuery([ITEM_PAGE_QUERIES.itemById], async () =>
       knex.select().from<BasicItem>('item').where(knex.raw('id = ?', itemId)),
     );
 

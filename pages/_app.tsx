@@ -1,11 +1,12 @@
-import type { AppProps } from 'next/app';
 import { useRef } from 'react';
-import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
+import type { AppProps } from 'next/app';
+import { Hydrate, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { createTheme as createNextUiTheme, NextUIProvider } from '@nextui-org/react';
 import { SSRProvider as AriaSSRProvider } from 'react-aria';
-import Header from '../components/Header/Header';
-import '../styles/global.css';
+import Header from '../src/components/Header/Header';
+import '../src/styles/global.css';
 
 const lightTheme = createNextUiTheme({
   type: 'light',
@@ -30,6 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <AriaSSRProvider>
               <Header />
               <Component {...pageProps} />
+              <ReactQueryDevtools initialIsOpen={false} />
             </AriaSSRProvider>
           </NextUIProvider>
         </NextThemesProvider>
