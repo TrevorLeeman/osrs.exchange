@@ -1,8 +1,7 @@
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { useContext } from 'react';
 import { Button } from '@nextui-org/react';
-import { useTheme } from 'next-themes';
-import { useQueryClient } from 'react-query';
-import { ITEM_PAGE_QUERIES } from '../../pages/item/[...slug]';
+import { useQueryClient } from '@tanstack/react-query';
+import { ITEM_PAGE_QUERIES } from '../../../pages/item/[...slug]';
 import { PriceChartContext } from '../PriceChart/PriceChartProvider';
 
 export type Timestep = '5m' | '1h' | '6h';
@@ -15,9 +14,9 @@ type TimeIntervalButtonProps = {
 const TimeIntervalButtonGroup = () => {
   return (
     <Button.Group color="primary" bordered>
-      <TimeIntervalButton title="Day" timestep="5m" />
-      <TimeIntervalButton title="Week" timestep="1h" />
       <TimeIntervalButton title="Month" timestep="6h" />
+      <TimeIntervalButton title="Week" timestep="1h" />
+      <TimeIntervalButton title="Day" timestep="5m" />
     </Button.Group>
   );
 };
@@ -35,7 +34,7 @@ const TimeIntervalButton = ({ title, timestep }: TimeIntervalButtonProps) => {
       css={css}
       onPress={e => {
         setTimestep(() => timestep);
-        queryClient.invalidateQueries(ITEM_PAGE_QUERIES.realTimePrices);
+        queryClient.invalidateQueries([ITEM_PAGE_QUERIES.realTimePrices]);
       }}
       aria-pressed={active}
     >

@@ -1,8 +1,8 @@
-import { ITEM_PAGE_QUERIES, RealTimePrices } from '../../pages/item/[...slug]';
+import { ITEM_PAGE_QUERIES, RealTimePrices } from '../../../pages/item/[...slug]';
 import { useContext, useMemo } from 'react';
 import { formatDistanceToNow, fromUnixTime, subHours } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,7 +16,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
-import { fetchPricing } from '../../pages/item/[...slug]';
+import { fetchPricing } from '../../../pages/item/[...slug]';
 import { PriceChartContext } from './PriceChartProvider';
 import { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
 
