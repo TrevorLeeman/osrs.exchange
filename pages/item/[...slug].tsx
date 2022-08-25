@@ -32,15 +32,10 @@ export interface Pricing {
 
 export const ITEM_PAGE_QUERIES = {
   realTimePrices: 'real_time_prices',
-  autocomplete: 'autocomplete',
   itemById: 'item_by_id',
 };
+
 const ItemPage: NextPage = ({ dehydratedState }: any) => {
-  const {
-    data: searchListData,
-    isLoading: searchListIsLoading,
-    isFetching: searchListIsFetching,
-  } = useQuery<Pick<BasicItem, 'id' | 'name' | 'icon'>[]>([ITEM_PAGE_QUERIES.autocomplete]);
   const {
     data: itemData,
     isLoading: itemIsLoading,
@@ -65,6 +60,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
           subtitle={`Pricing information for ${item.name}`}
           disabled={item.tradeable_on_ge === false}
           expanded={item.tradeable_on_ge !== false}
+          css={{ userSelect: 'none' }}
         >
           <PriceChartProvider>
             <Container display="flex" alignItems="center" justify="flex-end">
@@ -73,7 +69,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
             <PriceChart id={item.id} />
           </PriceChartProvider>
         </Collapse>
-        <Collapse title="Item Info">
+        <Collapse title="Item Info" css={{ userSelect: 'none' }}>
           <ItemInfo item={item} />
         </Collapse>
       </Collapse.Group>
@@ -85,7 +81,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
 
 export const fetchPricing: QueryFunction<RealTimePrices> = async ({ queryKey }) => {
   const [_key, { id, timestep }] = queryKey as [string, { id: number; timestep: Timestep }];
-  return await axios
+  return axios
     .get<RealTimePrices>(`https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=${timestep}&id=${id}`)
     .then(res => res.data);
 };
@@ -94,10 +90,6 @@ export const getServerSideProps: GetServerSideProps = async context => {
   const { slug } = context.params as Params;
   const itemId = parseInt(slug[slug.length - 1], 10);
   const queryClient = new QueryClient();
-
-  queryClient.prefetchQuery([ITEM_PAGE_QUERIES.autocomplete], async () =>
-    knex.select('id', 'name', 'icon').from<BasicItem>('item').where('tradeable_on_ge', true).limit(5).orderBy('name'),
-  );
 
   if (itemId !== NaN) {
     const item = queryClient.prefetchQuery([ITEM_PAGE_QUERIES.itemById], async () =>
