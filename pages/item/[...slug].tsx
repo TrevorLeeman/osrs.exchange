@@ -56,7 +56,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       <Collapse.Group accordion={false} shadow>
         <Collapse
           title="Grand Exchange"
-          contentLeft={<ItemIcon item={item} width={50} height={45} />}
+          contentLeft={<ItemIcon icon={item.icon} name={item.name} width={50} height={45} />}
           subtitle={`Pricing information for ${item.name}`}
           disabled={item.tradeable_on_ge === false}
           expanded={item.tradeable_on_ge !== false}
@@ -92,16 +92,10 @@ export const getServerSideProps: GetServerSideProps = async context => {
   const queryClient = new QueryClient();
 
   if (itemId !== NaN) {
-    const item = queryClient.prefetchQuery([ITEM_PAGE_QUERIES.itemById], async () =>
-      knex.select().from<BasicItem>('item').where(knex.raw('id = ?', itemId)),
+    await queryClient.prefetchQuery(
+      [ITEM_PAGE_QUERIES.itemById],
+      async () => await knex.select().from<BasicItem>('item').where(knex.raw('id = ?', itemId)),
     );
-
-    const priceData = queryClient.prefetchQuery(
-      [ITEM_PAGE_QUERIES.realTimePrices, { id: itemId, timestep: '5m' }],
-      fetchPricing,
-    );
-
-    await Promise.all([item, priceData]);
   }
 
   return {

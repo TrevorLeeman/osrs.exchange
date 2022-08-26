@@ -1,0 +1,19 @@
+.searchContainer {
+  position: relative;
+  width: 100%;
+}
+
+.itemListContainer {
+  position: absolute;
+  overflow-y: auto;
+  max-height: 200px;
+  width: 100%;
+  margin: 0;
+
+  & .item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.75rem;
+  }
+}

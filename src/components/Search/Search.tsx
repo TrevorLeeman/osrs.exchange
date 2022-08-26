@@ -1,87 +1,84 @@
-import { useComboBox } from 'downshift';
+import type { BasicItem } from '../../db/items';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { QueryFunction, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCombobox } from 'downshift';
+import { Card, Grid, Input } from '@nextui-org/react';
+import axios from 'axios';
+import styles from './Search.module.scss';
+import ItemIcon from '../ItemIcon/ItemIcon';
 
-const books = [
-  { author: 'Harper Lee', title: 'To Kill a Mockingbird' },
-  { author: 'Lev Tolstoy', title: 'War and Peace' },
-  { author: 'Fyodor Dostoyevsy', title: 'The Idiot' },
-  { author: 'Oscar Wilde', title: 'A Picture of Dorian Gray' },
-  { author: 'George Orwell', title: '1984' },
-  { author: 'Jane Austen', title: 'Pride and Prejudice' },
-  { author: 'Marcus Aurelius', title: 'Meditations' },
-  { author: 'Fyodor Dostoevsky', title: 'The Brothers Karamazov' },
-  { author: 'Lev Tolstoy', title: 'Anna Karenina' },
-  { author: 'Fyodor Dostoevsky', title: 'Crime and Punishment' },
-];
-function getBooksFilter(inputValue) {
-  return function booksFilter(book) {
-    return (
-      !inputValue || book.title.toLowerCase().includes(inputValue) || book.author.toLowerCase().includes(inputValue)
-    );
-  };
-}
+const fetchAutocompleteList: QueryFunction<Pick<BasicItem, 'id' | 'name' | 'icon'>[]> = async ({ queryKey }) => {
+  const [_key, { inputValue }] = queryKey as [string, { inputValue: string }];
+
+  return axios
+    .get<{ items: Pick<BasicItem, 'id' | 'name' | 'icon'>[] }>(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/item_search/${inputValue}`,
+    )
+    .then(res => res.data.items);
+};
 
 const Search = () => {
-  const [items, setItems] = useState(books);
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const [items, setItems] = useState<Pick<BasicItem, 'id' | 'name' | 'icon'>[]>([]);
+
+  const { inputValue, isOpen, highlightedIndex, getMenuProps, getItemProps, getInputProps, getComboboxProps } =
+    useCombobox({
+      items,
+      onInputValueChange({ inputValue }) {
+        queryClient.invalidateQueries(['autocomplete']);
+      },
+      onSelectedItemChange(changes) {
+        router.push(`/item/${changes.selectedItem?.id}`);
+      },
+      itemToString(item) {
+        return item ? item.name : '';
+      },
+    });
+
   const {
-    inputValue,
-    selectedItem,
-    isOpen,
-    getToggleButtonProps,
-    getLabelProps,
-    getMenuProps,
-    highlightedIndex,
-    getItemProps,
-    getInputProps,
-    getComboboxProps,
-  } = useComboBox({
-    items,
-    onInputValueChange({ inputValue }) {
-      setItems(books.filter(getBooksFilter(inputValue)));
-    },
-    itemToString(item) {
-      return item ? item.title : '';
+    data: autocompleteList,
+    isLoading: autocompleteListIsLoading,
+    isFetching: autocompleteListIsFetching,
+  } = useQuery<Pick<BasicItem, 'id' | 'name' | 'icon'>[]>(['autocomplete', { inputValue }], fetchAutocompleteList, {
+    onSuccess(data) {
+      setItems(() => data);
     },
   });
 
+  console.log(autocompleteList);
+
   return (
-    <Box>
-      <Box className="w-72 flex flex-col gap-1">
-        <FormLabel classeName="w-fit" {...getLabelProps()}>
-          Choose your favorite book:
-        </FormLabel>
-        <Box className="flex shadow-sm bg-white gap-0.5" {...getComboboxProps()}>
-          <Input placeholder="Best book ever" className="w-full p-1.5" {...getInputProps({ refKey: 'inputRef' })} />
-          <IconButton className="px-2" color="secondary" {...getToggleButtonProps()}>
-            {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </IconButton>
-        </Box>
-      </Box>
-      <List
-        className={cx(!isOpen && 'hidden', '!absolute bg-white w-72 shadow-md max-h-80 overflow-scroll')}
-        {...getMenuProps()}
-      >
+    <div className={styles.searchContainer}>
+      <div {...getComboboxProps()}>
+        <Input
+          placeholder="Search for an item"
+          aria-label="Item search"
+          type="search"
+          autoComplete="false"
+          css={{ width: '100%', maxWidth: '450px' }}
+          onClearClick={() => setItems(() => [])}
+          clearable
+          {...getInputProps()}
+        />
+      </div>
+      <Card as="ul" className={styles.itemListContainer} {...getMenuProps()}>
         {isOpen &&
-          items.map((item, index) => {
-            return (
-              <ListItem
-                className={cx(
-                  highlightedIndex === index && 'bg-blue-300',
-                  selectedItem === item && 'font-bold',
-                  'py-2 px-3 shadow-sm',
-                )}
-                key={`${item.title}-${index}`}
-                {...getItemProps({
-                  item,
-                  index,
-                })}
-              >
-                <ListItemText primary={item.title} secondary={item.author} />
-              </ListItem>
-            );
-          })}
-      </List>
-    </Box>
+          items.map((item, index) => (
+            <Grid
+              as="li"
+              css={{ backgroundColor: highlightedIndex === index ? '$accents2' : '' }}
+              className={`${styles.item}`}
+              key={`${item.id}`}
+              {...getItemProps({ item, index })}
+            >
+              <ItemIcon id={item.id} name={item.name} icon={item.icon} />
+              <span>{item.name}</span>
+            </Grid>
+          ))}
+      </Card>
+    </div>
   );
 };
 

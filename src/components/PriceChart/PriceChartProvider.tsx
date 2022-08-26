@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useState } from 'react';
+import { createContext, ReactNode, useState } from 'react';
 import type { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
 
 interface PriceChartContextType {
@@ -10,7 +10,7 @@ const initialValues: PriceChartContextType = { timestep: '5m', setTimestep: () =
 
 export const PriceChartContext = createContext<PriceChartContextType>(initialValues);
 
-const PriceChartProvider = ({ children }: { children: React.ReactNode }) => {
+const PriceChartProvider = ({ children }: { children: ReactNode }) => {
   const [timestep, setTimestep] = useState<Timestep>(initialValues.timestep);
 
   return (

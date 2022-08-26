@@ -1,18 +1,11 @@
 import Image from 'next/image';
 import { BasicItem, Item } from '../../db/items';
 
-type ItemIconProps = { item: Item | BasicItem | null; width: number; height: number };
+type ItemIconProps = { name: string; icon: string; id?: number; width?: number; height?: number };
 
-const ItemIcon = ({ item, width, height }: ItemIconProps) =>
-  item ? (
-    <Image
-      src={`data:image/jpeg;base64,${item.icon}`}
-      width={width}
-      height={height}
-      alt={item.name}
-      title={item.name}
-      key={item.id}
-    />
+const ItemIcon = ({ name, icon, id, width = 30, height = 27 }: ItemIconProps) =>
+  icon ? (
+    <Image src={`data:image/jpeg;base64,${icon}`} width={width} height={height} alt={name} title={name} key={id} />
   ) : null;
 
 export default ItemIcon;
