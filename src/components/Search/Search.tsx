@@ -1,5 +1,5 @@
 import type { BasicItem } from '../../db/items';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { QueryFunction, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCombobox } from 'downshift';
@@ -7,47 +7,64 @@ import { Card, Grid, Input } from '@nextui-org/react';
 import axios from 'axios';
 import styles from './Search.module.scss';
 import ItemIcon from '../ItemIcon/ItemIcon';
+import useDebounce from '../../hooks/useDebounce';
 
-const fetchAutocompleteList: QueryFunction<Pick<BasicItem, 'id' | 'name' | 'icon'>[]> = async ({ queryKey }) => {
+type SearchItem = Pick<BasicItem, 'id' | 'name' | 'icon'>;
+
+const fetchAutocompleteList: QueryFunction<SearchItem[]> = async ({ queryKey }) => {
   const [_key, { inputValue }] = queryKey as [string, { inputValue: string }];
 
   return axios
-    .get<{ items: Pick<BasicItem, 'id' | 'name' | 'icon'>[] }>(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/item_search/${inputValue}`,
-    )
+    .get<{ items: SearchItem[] }>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/item_search/${inputValue}`)
     .then(res => res.data.items);
 };
 
-const Search = () => {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  const [items, setItems] = useState<Pick<BasicItem, 'id' | 'name' | 'icon'>[]>([]);
+const useAutocompleteList = ({
+  inputValue,
+  setItems,
+}: {
+  inputValue: string;
+  setItems: Dispatch<SetStateAction<SearchItem[]>>;
+}) => {
+  return useQuery<SearchItem[]>(['autocomplete', { inputValue }], fetchAutocompleteList, {
+    onSuccess(data) {
+      setItems(() => data);
+    },
+  });
+};
 
-  const { inputValue, isOpen, highlightedIndex, getMenuProps, getItemProps, getInputProps, getComboboxProps } =
-    useCombobox({
-      items,
-      onInputValueChange({ inputValue }) {
-        queryClient.invalidateQueries(['autocomplete']);
-      },
-      onSelectedItemChange(changes) {
-        router.push(`/item/${changes.selectedItem?.id}`);
-      },
-      itemToString(item) {
-        return item ? item.name : '';
-      },
-    });
+const Search = () => {
+  const router = useRouter();
+  const [items, setItems] = useState<SearchItem[]>([]);
+
+  const {
+    inputValue,
+    setInputValue,
+    isOpen,
+    highlightedIndex,
+    getMenuProps,
+    getItemProps,
+    getInputProps,
+    getComboboxProps,
+  } = useCombobox({
+    items,
+    onSelectedItemChange(changes) {
+      router.push(`/item/${changes.selectedItem?.id}`);
+      setInputValue('');
+    },
+    itemToString(item) {
+      return item ? item.name : '';
+    },
+    defaultHighlightedIndex: 0,
+  });
+
+  const debouncedSearch = useDebounce(inputValue, 100);
 
   const {
     data: autocompleteList,
     isLoading: autocompleteListIsLoading,
     isFetching: autocompleteListIsFetching,
-  } = useQuery<Pick<BasicItem, 'id' | 'name' | 'icon'>[]>(['autocomplete', { inputValue }], fetchAutocompleteList, {
-    onSuccess(data) {
-      setItems(() => data);
-    },
-  });
-
-  console.log(autocompleteList);
+  } = useAutocompleteList({ inputValue: debouncedSearch, setItems });
 
   return (
     <div className={styles.searchContainer}>
@@ -57,7 +74,7 @@ const Search = () => {
           aria-label="Item search"
           type="search"
           autoComplete="false"
-          css={{ width: '100%', maxWidth: '450px' }}
+          css={{ width: '100%' }}
           onClearClick={() => setItems(() => [])}
           clearable
           {...getInputProps()}
@@ -68,7 +85,7 @@ const Search = () => {
           items.map((item, index) => (
             <Grid
               as="li"
-              css={{ backgroundColor: highlightedIndex === index ? '$accents2' : '' }}
+              css={{ backgroundColor: highlightedIndex === index ? '$green100' : '' }}
               className={`${styles.item}`}
               key={`${item.id}`}
               {...getItemProps({ item, index })}
