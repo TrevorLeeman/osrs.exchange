@@ -26,6 +26,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         .select('id', 'name', 'icon')
         .from<BasicItem>('item')
         .where('tradeable_on_ge', true)
+        .orderByRaw('CASE WHEN name LIKE ? THEN 0 ELSE 1 END', `%${slug}%`)
         .orderByRaw('SIMILARITY(name, ?) DESC', slug)
         .limit(parseInt(limit, 10));
 
