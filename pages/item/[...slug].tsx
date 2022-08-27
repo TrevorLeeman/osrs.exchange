@@ -1,18 +1,20 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import type { BasicItem } from '../../src/db/items';
+import type { Timestep } from '../../src/components/TimeIntervalButtonGroup/TimeIntervalButtonGroup';
 import React from 'react';
 import { dehydrate, QueryClient, QueryFunction, useQuery } from '@tanstack/react-query';
 import { ParsedUrlQuery } from 'querystring';
 import { Collapse, Container, Loading, Spacer, Text } from '@nextui-org/react';
 import axios from 'axios';
 import knex from '../../src/db/db';
-import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
 import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
-import PriceChart from '../../src/components/PriceChart/PriceChart';
-import TimeIntervalButtonGroup, {
-  Timestep,
-} from '../../src/components/TimeIntervalButtonGroup/TimeIntervalButtonGroup';
-import PriceChartProvider from '../../src/components/PriceChart/PriceChartProvider';
+
+import dynamic from 'next/dynamic';
+
+const DynamicGrandExchangeCollapse = dynamic(
+  () => import('../../src/components/GrandExchangeCollapse/GrandExchangeCollapse'),
+  { ssr: false },
+);
 
 interface Params extends ParsedUrlQuery {
   slug: [string];
@@ -54,21 +56,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       <Text h1>{item.name}</Text>
       <Spacer y={1} />
       <Collapse.Group accordion={false} shadow>
-        <Collapse
-          title="Grand Exchange"
-          contentLeft={<ItemIcon icon={item.icon} name={item.name} width={50} height={45} />}
-          subtitle={`Pricing information for ${item.name}`}
-          disabled={item.tradeable_on_ge === false}
-          expanded={item.tradeable_on_ge !== false}
-          css={{ userSelect: 'none' }}
-        >
-          <PriceChartProvider>
-            <Container display="flex" alignItems="center" justify="flex-end">
-              <TimeIntervalButtonGroup />
-            </Container>
-            <PriceChart id={item.id} />
-          </PriceChartProvider>
-        </Collapse>
+        <DynamicGrandExchangeCollapse item={item} />
         <Collapse title="Item Info" css={{ userSelect: 'none' }}>
           <ItemInfo item={item} />
         </Collapse>

@@ -20,6 +20,8 @@
     "axios": "^0.27.2",
     "chart.js": "^3.9.1",
     "chartjs-adapter-date-fns": "^2.0.0",
+    "chartjs-plugin-crosshair": "^1.2.0",
+    "chartjs-plugin-zoom": "^1.2.1",
     "date-fns": "^2.29.2",
     "dotenv": "^16.0.1",
     "downshift": "^6.1.9",

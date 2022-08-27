@@ -1,5 +1,6 @@
 import { ITEM_PAGE_QUERIES, RealTimePrices } from '../../../pages/item/[...slug]';
 import { useContext, useMemo } from 'react';
+import { useTheme as useNextUiTheme } from '@nextui-org/react';
 import { formatDistanceToNow, fromUnixTime, subHours } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
 import { useQuery } from '@tanstack/react-query';
@@ -16,9 +17,25 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
+import Zoom from 'chartjs-plugin-zoom';
+//@ts-ignore
+import { CrosshairPlugin } from 'chartjs-plugin-crosshair';
 import { fetchPricing } from '../../../pages/item/[...slug]';
 import { PriceChartContext } from './PriceChartProvider';
 import { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Zoom,
+  CrosshairPlugin,
+);
 
 const TIMESTEP_TO_HOURS = new Map<Timestep, number>([
   ['5m', 24],
@@ -26,9 +43,8 @@ const TIMESTEP_TO_HOURS = new Map<Timestep, number>([
   ['6h', 30 * 24],
 ]);
 
-ChartJS.register(CategoryScale, LinearScale, TimeScale, PointElement, LineElement, Title, Tooltip, Legend);
-
 const PriceChart = ({ id }: { id: number }) => {
+  const { isDark } = useNextUiTheme();
   const { timestep } = useContext(PriceChartContext);
   const {
     data: pricingData,
@@ -92,6 +108,52 @@ const PriceChart = ({ id }: { id: number }) => {
               },
             },
           },
+        },
+        plugins: {
+          zoom: {
+            pan: {
+              enabled: true,
+            },
+            limits: {
+              x: { min: 'original', max: 'original' },
+              y: { min: 'original', max: 'original' },
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true,
+              },
+              mode: 'xy',
+            },
+          },
+          tooltip: {
+            mode: 'x',
+            intersect: false,
+          },
+          //@ts-ignore
+          crosshair: {
+            line: {
+              color: isDark ? '#9750DD' : '#6622AA',
+              width: 2,
+            },
+            sync: {
+              enabled: true, // enable trace line syncing with other charts
+              group: 1, // chart group
+              suppressTooltips: false, // suppress tooltips when showing a synced tracer
+            },
+            snap: {
+              enabled: true,
+            },
+          },
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
+        },
+        hover: {
+          intersect: false,
         },
       }}
     />
