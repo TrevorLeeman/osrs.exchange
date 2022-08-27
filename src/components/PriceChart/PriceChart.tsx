@@ -46,6 +46,7 @@ const TIMESTEP_TO_HOURS = new Map<Timestep, number>([
 const PriceChart = ({ id }: { id: number }) => {
   const { isDark } = useNextUiTheme();
   const { timestep } = useContext(PriceChartContext);
+  const gridColor = isDark ? '#3A3F42' : '#D7DBDF';
   const {
     data: pricingData,
     isLoading: pricingIsLoading,
@@ -107,6 +108,15 @@ const PriceChart = ({ id }: { id: number }) => {
                 locale: enUS,
               },
             },
+            grid: {
+              color: gridColor,
+            },
+          },
+
+          y: {
+            grid: {
+              color: gridColor,
+            },
           },
         },
         plugins: {
@@ -137,6 +147,9 @@ const PriceChart = ({ id }: { id: number }) => {
             line: {
               color: '#F4256D',
               width: 2,
+            },
+            zoom: {
+              enabled: false,
             },
             sync: {
               enabled: true, // enable trace line syncing with other charts
