@@ -13,7 +13,7 @@ const firstParameter = (param: string | string[] | undefined) => {
 };
 
 // Returns tradeable items who's name matches slug passed in
-// Results are ordered by names that begin with slug first, then by name for full text search
+// Results are ordered by names that contain slug first, then on similarity score
 const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   try {
     if (req.method === 'GET') {
@@ -23,11 +23,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       slug = firstParameter(slug);
 
       const topItems = await knex
-        .select('id', 'name', 'icon')
-        .from<BasicItem>('item')
-        .where('tradeable_on_ge', true)
-        .orderByRaw('CASE WHEN name LIKE ? THEN 0 ELSE 1 END', `%${slug}%`)
-        .orderByRaw('SIMILARITY(name, ?) DESC', slug)
+        .select('im.id', 'im.name', knex.raw('CASE WHEN i.icon IS NOT NULL THEN i.icon ELSE im.icon END'))
+        .from<BasicItem>({ im: 'item_mapping' })
+        .leftJoin({ i: 'item' }, 'i.id', 'im.id')
+        .orderByRaw('CASE WHEN im.name ILIKE ? THEN 0 ELSE 1 END', `%${slug}%`)
+        .orderByRaw('SIMILARITY(im.name, ?) DESC', slug)
         .limit(parseInt(limit, 10));
 
       res.status(200).json({ items: topItems });

@@ -75,7 +75,7 @@ export async function seed(knex: Knex): Promise<void> {
   await Promise.all([insertItem, insertWeapon, insertEquipment, insertRequirements]);
   await knex.batchInsert('weapon_stance', weaponStanceList, 200);
 
-  console.log('✔ Data inserted successfully!');
+  console.log('✔ init seed completed successfully!');
 }
 
 async function truncateAllTables(knex: Knex) {

@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['oldschool.runescape.wiki', 'everythingrs.com'],
+    domains: ['oldschool.runescape.wiki'],
   },
 };
 
