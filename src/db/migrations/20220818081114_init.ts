@@ -65,7 +65,7 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('prayer');
     table.string('slot');
   });
-  return await knex.schema.createTable('requirements', table => {
+  await knex.schema.createTable('requirements', table => {
     table.integer('id').primary();
     table.integer('attack');
     table.integer('strength');
@@ -91,6 +91,8 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('construction');
     table.integer('hunter');
   });
+
+  return await knex.raw('CREATE EXTENSION pg_trgm');
 }
 
 export async function down(knex: Knex): Promise<void> {
