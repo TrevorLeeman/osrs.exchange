@@ -83,15 +83,15 @@ const PriceChart = ({ id }: { id: number }) => {
         datasets: [
           {
             label: 'Instabuy Price',
-            backgroundColor: 'rgb(84, 214, 95)',
-            borderColor: 'rgb(84, 214, 95)',
+            backgroundColor: isDark ? '#90ed99' : '#30a339',
+            borderColor: '#38c744',
             data: averageHighPrices,
             cubicInterpolationMode: 'monotone',
           },
           {
             label: 'Instasell Price',
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: isDark ? '#F881AB' : '#a21144',
+            borderColor: '#F4256D',
             data: averageLowPrices,
             cubicInterpolationMode: 'monotone',
           },
@@ -135,7 +135,7 @@ const PriceChart = ({ id }: { id: number }) => {
           //@ts-ignore
           crosshair: {
             line: {
-              color: isDark ? '#9750DD' : '#6622AA',
+              color: '#F4256D',
               width: 2,
             },
             sync: {
