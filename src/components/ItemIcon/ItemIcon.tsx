@@ -8,7 +8,7 @@ const ItemIcon = ({ name, icon, id, width = 30, height = 27 }: ItemIconProps) =>
     ? `data:image/jpeg;base64,${icon}`
     : `https://oldschool.runescape.wiki/images/${encodeURIComponent(icon.replaceAll(' ', '_'))}`;
 
-  return icon ? <Image src={src} width={width} height={height} alt={name} title={name} key={id} /> : null;
+  return <Image src={src} width={width} height={height} alt={name} title={name} key={id} />;
 };
 
 export default ItemIcon;

@@ -1,9 +1,11 @@
-import { ITEM_PAGE_QUERIES, RealTimePrices } from '../../../pages/item/[...slug]';
+import type { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
+import type { RealTimePrices } from '../../../pages/item/[...slug]';
+import { ITEM_PAGE_QUERIES } from '../../../pages/item/[...slug]';
 import { useContext, useMemo } from 'react';
 import { useTheme as useNextUiTheme } from '@nextui-org/react';
-import { formatDistanceToNow, fromUnixTime, subHours } from 'date-fns';
+import { fromUnixTime, subHours } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
-import { useQuery } from '@tanstack/react-query';
+import { QueryFunction, useQuery } from '@tanstack/react-query';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -20,9 +22,19 @@ import 'chartjs-adapter-date-fns';
 import Zoom from 'chartjs-plugin-zoom';
 //@ts-ignore
 import { CrosshairPlugin } from 'chartjs-plugin-crosshair';
-import { fetchPricing } from '../../../pages/item/[...slug]';
+import axios from 'axios';
 import { PriceChartContext } from './PriceChartProvider';
-import { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
+
+type LongTermPriceData = {
+  [key: number]: LongTermPrice[];
+};
+
+type LongTermPrice = {
+  id: string;
+  price: number;
+  volume: number | null;
+  timestamp: number;
+};
 
 ChartJS.register(
   CategoryScale,
@@ -41,60 +53,117 @@ const TIMESTEP_TO_HOURS = new Map<Timestep, number>([
   ['5m', 24],
   ['1h', 7 * 24],
   ['6h', 30 * 24],
+  ['1y', 365 * 24],
+  ['all', 99999999],
 ]);
+
+const fetchRealTimePrices: QueryFunction<RealTimePrices> = async ({ queryKey }) => {
+  const [_key, { id, timestep }] = queryKey as [string, { id: number; timestep: Timestep }];
+  return axios
+    .get<RealTimePrices>(`https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=${timestep}&id=${id}`)
+    .then(res => res.data);
+};
+
+const fetchLongTermPrices: QueryFunction<LongTermPriceData> = async ({ queryKey }) => {
+  const [_key, { id }] = queryKey as [string, { id: number }];
+  return axios
+    .get<LongTermPriceData>(`https://api.weirdgloop.org/exchange/history/osrs/all?id=${id}&compress=false`)
+    .then(res => res.data);
+};
 
 const PriceChart = ({ id }: { id: number }) => {
   const { isDark } = useNextUiTheme();
-  const { timestep } = useContext(PriceChartContext);
+  const { timestep, longTermPricesEnabled } = useContext(PriceChartContext);
   const gridColor = isDark ? '#3A3F42' : '#D7DBDF';
+
   const {
-    data: pricingData,
-    isLoading: pricingIsLoading,
-    isFetching: pricingIsFetching,
-  } = useQuery<RealTimePrices>([ITEM_PAGE_QUERIES.realTimePrices, { id, timestep }], fetchPricing, {
-    refetchIntervalInBackground: true,
+    data: realTimePriceData,
+    isLoading: realTimePricesLoading,
+    isFetching: realTimePricesFetching,
+  } = useQuery<RealTimePrices>([ITEM_PAGE_QUERIES.realTimePrices, { id, timestep }], fetchRealTimePrices, {
     refetchInterval: 60 * 1000,
+    enabled: !longTermPricesEnabled,
+  });
+  const {
+    data: longTermPriceData,
+    isLoading: longTermPricesLoading,
+    isFetching: longTermPricesFetching,
+  } = useQuery<LongTermPriceData>([ITEM_PAGE_QUERIES.longTermPrices, { id }], fetchLongTermPrices, {
+    enabled: longTermPricesEnabled,
   });
 
-  const pricing = pricingData ? pricingData.data : null;
-  const stringifiedLatestPrice = pricing?.length ? JSON.stringify(pricing[pricing.length - 1]) : null;
+  const realTimePrices = useMemo(() => (realTimePriceData ? realTimePriceData?.data : null), [realTimePriceData]);
+  const longTermPrices = useMemo(() => (longTermPriceData ? longTermPriceData[id] : null), [longTermPriceData]);
 
-  const pricingFiltered = useMemo(
+  const stringifiedLatestPrice = useMemo(
+    () => (realTimePrices?.length ? JSON.stringify(realTimePrices[realTimePrices.length - 1]) : null),
+    [realTimePrices],
+  );
+
+  const realTimePricesDateFiltered = useMemo(
     () =>
-      pricing?.filter(price => fromUnixTime(price.timestamp) > subHours(new Date(), TIMESTEP_TO_HOURS.get(timestep)!)),
+      realTimePrices?.filter(
+        price => fromUnixTime(price.timestamp) > subHours(new Date(), TIMESTEP_TO_HOURS.get(timestep)!),
+      ),
     [stringifiedLatestPrice],
   );
-  const labels = useMemo(
-    () => pricingFiltered?.map(priceEntry => fromUnixTime(priceEntry.timestamp)),
+  const realTimeLabels = useMemo(
+    () => realTimePricesDateFiltered?.reverse().map(priceEntry => fromUnixTime(priceEntry.timestamp)),
     [stringifiedLatestPrice],
   );
-  const averageHighPrices = useMemo(
-    () => pricingFiltered?.map(priceEntry => priceEntry.avgHighPrice),
+  const realTimeInstaBuyPrices = useMemo(
+    () => realTimePricesDateFiltered?.map(priceEntry => priceEntry.avgHighPrice),
     [stringifiedLatestPrice],
   );
-  const averageLowPrices = useMemo(
-    () => pricingFiltered?.map(priceEntry => priceEntry.avgLowPrice),
+  const realTimeInstaSellPrices = useMemo(
+    () => realTimePricesDateFiltered?.map(priceEntry => priceEntry.avgLowPrice),
     [stringifiedLatestPrice],
+  );
+  const longTermPricesDateFiltered = useMemo(
+    () =>
+      longTermPrices?.filter(
+        price => fromUnixTime(price.timestamp / 1000) > subHours(new Date(), TIMESTEP_TO_HOURS.get(timestep)!),
+      ),
+    [longTermPriceData, timestep],
+  );
+  const longTermLabels = useMemo(
+    () => longTermPricesDateFiltered?.map(priceEntry => fromUnixTime(priceEntry.timestamp / 1000)),
+    [longTermPricesDateFiltered],
+  );
+  const averageLongTermPrices = useMemo(
+    () => longTermPricesDateFiltered?.map(priceEntry => priceEntry.price),
+    [longTermPricesDateFiltered],
   );
 
   return (
     <Line
       data={{
-        labels: labels,
+        labels: longTermPricesEnabled ? longTermLabels : realTimeLabels,
         datasets: [
           {
-            label: 'Instabuy Price',
+            label: 'Insta-buy',
             backgroundColor: isDark ? '#90ed99' : '#30a339',
             borderColor: '#38c744',
-            data: averageHighPrices,
+            data: realTimeInstaBuyPrices,
             cubicInterpolationMode: 'monotone',
+            hidden: longTermPricesEnabled,
           },
           {
-            label: 'Instasell Price',
+            label: 'Insta-sell',
             backgroundColor: isDark ? '#F881AB' : '#a21144',
             borderColor: '#F4256D',
-            data: averageLowPrices,
+            data: realTimeInstaSellPrices,
             cubicInterpolationMode: 'monotone',
+            hidden: longTermPricesEnabled,
+          },
+          {
+            label: 'Average price',
+            pointRadius: 0,
+            borderColor: '#1e779c',
+            borderWidth: 2,
+            data: averageLongTermPrices,
+            cubicInterpolationMode: 'monotone',
+            hidden: !longTermPricesEnabled,
           },
         ],
       }}
@@ -146,7 +215,7 @@ const PriceChart = ({ id }: { id: number }) => {
           crosshair: {
             line: {
               color: '#F4256D',
-              width: 2,
+              width: 1,
             },
             zoom: {
               enabled: false,
@@ -158,6 +227,11 @@ const PriceChart = ({ id }: { id: number }) => {
             },
             snap: {
               enabled: true,
+            },
+          },
+          legend: {
+            labels: {
+              filter: label => !label.hidden,
             },
           },
         },

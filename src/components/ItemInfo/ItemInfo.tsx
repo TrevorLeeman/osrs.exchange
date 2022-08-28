@@ -28,7 +28,7 @@ const ItemInfo = ({ item }: { item: BasicItem | null }) =>
         </Table.Row>
         <Table.Row key="5">
           <Table.Cell>Weight</Table.Cell>
-          <Table.Cell>{item.weight}</Table.Cell>
+          <Table.Cell>{item.weight ?? '-'}</Table.Cell>
         </Table.Row>
         <Table.Row key="6">
           <Table.Cell>Examine</Table.Cell>
@@ -36,9 +36,7 @@ const ItemInfo = ({ item }: { item: BasicItem | null }) =>
         </Table.Row>
         <Table.Row key="7">
           <Table.Cell>Release Date</Table.Cell>
-          <Table.Cell>
-            {item.release_date ? format(new Date(item.release_date), 'MMMM do, u') : 'Unavailable'}
-          </Table.Cell>
+          <Table.Cell>{item.release_date ? format(new Date(item.release_date), 'MMMM do, u') : '-'}</Table.Cell>
         </Table.Row>
         <Table.Row key="8">
           <Table.Cell>Wiki Link</Table.Cell>
@@ -48,7 +46,7 @@ const ItemInfo = ({ item }: { item: BasicItem | null }) =>
                 {item.wiki_url}
               </a>
             ) : (
-              'Unavailable'
+              '-'
             )}
           </Table.Cell>
         </Table.Row>

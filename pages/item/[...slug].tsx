@@ -1,30 +1,28 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import type { BasicItem } from '../../src/db/items';
-import type { Timestep } from '../../src/components/TimeIntervalButtonGroup/TimeIntervalButtonGroup';
 import React from 'react';
-import { dehydrate, QueryClient, QueryFunction, useQuery } from '@tanstack/react-query';
+import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
 import { ParsedUrlQuery } from 'querystring';
 import { Collapse, Container, Loading, Spacer, Text } from '@nextui-org/react';
-import axios from 'axios';
 import knex from '../../src/db/db';
 import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
 
 import dynamic from 'next/dynamic';
+import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
 
-const DynamicGrandExchangeCollapse = dynamic(
-  () => import('../../src/components/GrandExchangeCollapse/GrandExchangeCollapse'),
-  { ssr: false },
-);
+const DynamicGrandExchangeCollapse = dynamic(() => import('../../src/components/GrandExchangeCard/GrandExchangeCard'), {
+  ssr: false,
+});
 
 interface Params extends ParsedUrlQuery {
   slug: [string];
 }
 
 export interface RealTimePrices {
-  data: [Pricing];
+  data: [Price];
 }
 
-export interface Pricing {
+export interface Price {
   avgHighPrice: number;
   avgLowPrice: number;
   highPriceVolume: number;
@@ -34,6 +32,7 @@ export interface Pricing {
 
 export const ITEM_PAGE_QUERIES = {
   realTimePrices: 'real_time_prices',
+  longTermPrices: 'long_term_prices',
   itemById: 'item_by_id',
 };
 
@@ -45,18 +44,15 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
   } = useQuery<BasicItem[]>([ITEM_PAGE_QUERIES.itemById]);
   const item = itemData ? itemData[0] : null;
 
-  // console.log(searchListData);
-  // console.log(itemData);
-  // console.log(pricingData);
-
   if (itemIsLoading) return <Loading />;
 
   return item ? (
     <Container fluid>
       <Text h1>{item.name}</Text>
       <Spacer y={1} />
+      <DynamicGrandExchangeCollapse item={item} />
+      <Spacer y={2} />
       <Collapse.Group accordion={false} shadow>
-        <DynamicGrandExchangeCollapse item={item} />
         <Collapse title="Item Info" css={{ userSelect: 'none' }}>
           <ItemInfo item={item} />
         </Collapse>
@@ -67,13 +63,6 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
   // <NotFound />
 };
 
-export const fetchPricing: QueryFunction<RealTimePrices> = async ({ queryKey }) => {
-  const [_key, { id, timestep }] = queryKey as [string, { id: number; timestep: Timestep }];
-  return axios
-    .get<RealTimePrices>(`https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=${timestep}&id=${id}`)
-    .then(res => res.data);
-};
-
 export const getServerSideProps: GetServerSideProps = async context => {
   const { slug } = context.params as Params;
   const itemId = parseInt(slug[slug.length - 1], 10);
@@ -82,7 +71,24 @@ export const getServerSideProps: GetServerSideProps = async context => {
   if (itemId !== NaN) {
     await queryClient.prefetchQuery(
       [ITEM_PAGE_QUERIES.itemById],
-      async () => await knex.select().from<BasicItem>('item').where(knex.raw('id = ?', itemId)),
+      async () =>
+        await knex
+          .select(
+            'im.id',
+            'im.name',
+            'im.limit',
+            knex.raw('CASE WHEN i.icon IS NOT NULL THEN i.icon ELSE im.icon END'),
+            'im.value',
+            'im.lowalch',
+            'im.highalch',
+            'im.examine',
+            'i.weight',
+            'i.release_date',
+            'i.wiki_url',
+          )
+          .from<WikiApiMappingItem>({ im: 'item_mapping' })
+          .leftJoin({ i: 'item' }, 'i.id', 'im.id')
+          .where(knex.raw('im.id = ?', itemId)),
     );
   }
 
