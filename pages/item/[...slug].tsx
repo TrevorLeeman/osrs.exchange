@@ -9,8 +9,9 @@ import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
 
 import dynamic from 'next/dynamic';
 import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
+import NotFound from '../../src/components/404/NotFound';
 
-const DynamicGrandExchangeCollapse = dynamic(() => import('../../src/components/GrandExchangeCard/GrandExchangeCard'), {
+const DynamicGrandExchangeCard = dynamic(() => import('../../src/components/GrandExchangeCard/GrandExchangeCard'), {
   ssr: false,
 });
 
@@ -50,7 +51,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
     <Container fluid>
       <Text h1>{item.name}</Text>
       <Spacer y={1} />
-      <DynamicGrandExchangeCollapse item={item} />
+      <DynamicGrandExchangeCard item={item} />
       <Spacer y={2} />
       <Collapse.Group accordion={false} shadow>
         <Collapse title="Item Info" css={{ userSelect: 'none' }}>
@@ -59,8 +60,9 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       </Collapse.Group>
       <Spacer y={1} />
     </Container>
-  ) : null;
-  // <NotFound />
+  ) : (
+    <NotFound />
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async context => {
