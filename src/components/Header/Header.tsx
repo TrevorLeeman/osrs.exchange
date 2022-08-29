@@ -9,14 +9,6 @@ const Header = () => {
       <div className={styles.left} />
       <div className={styles.center}>
         <Search />
-        {/* <Input
-          placeholder="Search for an item"
-          aria-label="Item search"
-          type="search"
-          autoComplete="false"
-          css={{ flexGrow: 1, maxWidth: '450px' }}
-          clearable
-        /> */}
       </div>
       <div className={styles.right}>
         <ThemeToggle />
