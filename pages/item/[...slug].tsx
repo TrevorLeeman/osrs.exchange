@@ -70,29 +70,26 @@ export const getServerSideProps: GetServerSideProps = async context => {
   const itemId = parseInt(slug[slug.length - 1], 10);
   const queryClient = new QueryClient();
 
-  if (itemId !== NaN) {
-    await queryClient.prefetchQuery(
-      [ITEM_PAGE_QUERIES.itemById],
-      async () =>
-        await knex
-          .select(
-            'im.id',
-            'im.name',
-            'im.limit',
-            knex.raw('CASE WHEN i.icon IS NOT NULL THEN i.icon ELSE im.icon END'),
-            'im.value',
-            'im.lowalch',
-            'im.highalch',
-            'im.examine',
-            'i.weight',
-            'i.release_date',
-            'i.wiki_url',
-          )
-          .from<WikiApiMappingItem>({ im: 'item_mapping' })
-          .leftJoin({ i: 'item' }, 'i.id', 'im.id')
-          .where(knex.raw('im.id = ?', itemId)),
-    );
-  }
+  await queryClient.prefetchQuery([ITEM_PAGE_QUERIES.itemById], async () => {
+    if (isNaN(itemId)) return [];
+    return await knex
+      .select(
+        'im.id',
+        'im.name',
+        'im.limit',
+        knex.raw('CASE WHEN i.icon IS NOT NULL THEN i.icon ELSE im.icon END'),
+        'im.value',
+        'im.lowalch',
+        'im.highalch',
+        'im.examine',
+        'i.weight',
+        'i.release_date',
+        'i.wiki_url',
+      )
+      .from<WikiApiMappingItem>({ im: 'item_mapping' })
+      .leftJoin({ i: 'item' }, 'i.id', 'im.id')
+      .where(knex.raw('im.id = ?', itemId));
+  });
 
   return {
     props: {
