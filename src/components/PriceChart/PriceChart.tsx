@@ -20,10 +20,11 @@ import {
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 import Zoom from 'chartjs-plugin-zoom';
+import axios from 'axios';
 //@ts-ignore
 import { CrosshairPlugin } from 'chartjs-plugin-crosshair';
-import axios from 'axios';
 import { PriceChartContext } from './PriceChartProvider';
+import styles from './PriceChart.module.scss';
 
 type LongTermPriceData = {
   [key: number]: LongTermPrice[];
@@ -137,24 +138,27 @@ const PriceChart = ({ id }: { id: number }) => {
 
   return (
     <Line
+      className={styles.priceChart}
       data={{
         labels: longTermPricesEnabled ? longTermLabels : realTimeLabels,
         datasets: [
           {
             label: 'Insta-buy',
             backgroundColor: isDark ? '#90ed99' : '#30a339',
+            pointRadius: 3,
             borderColor: '#38c744',
             data: realTimeInstaBuyPrices,
             cubicInterpolationMode: 'monotone',
-            hidden: longTermPricesEnabled,
+            showLine: !longTermPricesEnabled,
           },
           {
             label: 'Insta-sell',
             backgroundColor: isDark ? '#F881AB' : '#a21144',
+            pointRadius: 3,
             borderColor: '#F4256D',
             data: realTimeInstaSellPrices,
             cubicInterpolationMode: 'monotone',
-            hidden: longTermPricesEnabled,
+            showLine: !longTermPricesEnabled,
           },
           {
             label: 'Average price',
@@ -163,7 +167,7 @@ const PriceChart = ({ id }: { id: number }) => {
             borderWidth: 2,
             data: averageLongTermPrices,
             cubicInterpolationMode: 'monotone',
-            hidden: !longTermPricesEnabled,
+            showLine: longTermPricesEnabled,
           },
         ],
       }}
@@ -183,6 +187,7 @@ const PriceChart = ({ id }: { id: number }) => {
           },
 
           y: {
+            type: 'linear',
             grid: {
               color: gridColor,
             },
@@ -231,7 +236,13 @@ const PriceChart = ({ id }: { id: number }) => {
           },
           legend: {
             labels: {
-              filter: label => !label.hidden,
+              filter: legendItem => {
+                if (longTermPricesEnabled && legendItem.text === 'Average price') return true;
+                if (!longTermPricesEnabled && (legendItem.text === 'Insta-buy' || legendItem.text === 'Insta-sell'))
+                  return true;
+
+                return false;
+              },
             },
           },
         },
