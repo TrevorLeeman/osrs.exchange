@@ -7,6 +7,7 @@ import { createTheme as createNextUiTheme, NextUIProvider } from '@nextui-org/re
 import { SSRProvider as AriaSSRProvider } from 'react-aria';
 import Header from '../src/components/Header/Header';
 import '../src/styles/global.css';
+import Head from 'next/head';
 
 const lightTheme = createNextUiTheme({
   type: 'light',
@@ -20,23 +21,28 @@ function MyApp({ Component, pageProps }: AppProps) {
   const queryClient = useRef(new QueryClient());
 
   return (
-    <QueryClientProvider client={queryClient.current}>
-      <Hydrate state={pageProps.dehydratedState}>
-        <NextThemesProvider
-          defaultTheme="system"
-          attribute="class"
-          value={{ light: lightTheme.className, dark: darkTheme.className }}
-        >
-          <NextUIProvider>
-            <AriaSSRProvider>
-              <Header />
-              <Component {...pageProps} />
-              <ReactQueryDevtools initialIsOpen={false} />
-            </AriaSSRProvider>
-          </NextUIProvider>
-        </NextThemesProvider>
-      </Hydrate>
-    </QueryClientProvider>
+    <>
+      <Head>
+        <title>OSRS Prices</title>
+      </Head>
+      <QueryClientProvider client={queryClient.current}>
+        <Hydrate state={pageProps.dehydratedState}>
+          <NextThemesProvider
+            defaultTheme="system"
+            attribute="class"
+            value={{ light: lightTheme.className, dark: darkTheme.className }}
+          >
+            <NextUIProvider>
+              <AriaSSRProvider>
+                <Header />
+                <Component {...pageProps} />
+                <ReactQueryDevtools initialIsOpen={false} />
+              </AriaSSRProvider>
+            </NextUIProvider>
+          </NextThemesProvider>
+        </Hydrate>
+      </QueryClientProvider>
+    </>
   );
 }
 

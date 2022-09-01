@@ -1,6 +1,6 @@
 import type { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
-import type { RealTimePrices } from '../../../pages/item/[...slug]';
-import { ITEM_PAGE_QUERIES } from '../../../pages/item/[...slug]';
+import type { RealTimePrices } from '../../../pages/item/[slug]';
+import { ITEM_PAGE_QUERIES } from '../../../pages/item/[slug]';
 import { useContext, useMemo } from 'react';
 import { useTheme as useNextUiTheme } from '@nextui-org/react';
 import { fromUnixTime, subHours } from 'date-fns';
