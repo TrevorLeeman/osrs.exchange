@@ -1,4 +1,5 @@
-import { Input } from '@nextui-org/react';
+import { Input, Text } from '@nextui-org/react';
+import Link from 'next/link';
 import Search from '../Search/Search';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import styles from './Header.module.scss';
@@ -6,7 +7,20 @@ import styles from './Header.module.scss';
 const Header = () => {
   return (
     <header className={styles.header}>
-      <div className={styles.left} />
+      <div className={styles.left}>
+        <Link href="/">
+          <Text
+            css={{
+              textGradient: '45deg, $blue600 -20%, $pink600 50%',
+              fontWeight: 'bold',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+            }}
+          >
+            OSRS Prices
+          </Text>
+        </Link>
+      </div>
       <div className={styles.center}>
         <Search />
       </div>
