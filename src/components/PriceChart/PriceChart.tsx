@@ -58,6 +58,12 @@ const TIMESTEP_TO_HOURS = new Map<Timestep, number>([
   ['all', 99999999],
 ]);
 
+const LABELS = {
+  instabuy: 'Insta-buy',
+  instasell: 'Insta-sell',
+  average: 'Average price',
+};
+
 const fetchRealTimePrices: QueryFunction<RealTimePrices> = async ({ queryKey }) => {
   const [_key, { id, timestep }] = queryKey as [string, { id: number; timestep: Timestep }];
   return axios
@@ -143,7 +149,7 @@ const PriceChart = ({ id }: { id: number }) => {
         labels: longTermPricesEnabled ? longTermLabels : realTimeLabels,
         datasets: [
           {
-            label: 'Insta-buy',
+            label: LABELS.instabuy,
             backgroundColor: isDark ? '#90ed99' : '#30a339',
             pointRadius: 3,
             borderColor: '#38c744',
@@ -152,7 +158,7 @@ const PriceChart = ({ id }: { id: number }) => {
             showLine: !longTermPricesEnabled,
           },
           {
-            label: 'Insta-sell',
+            label: LABELS.instasell,
             backgroundColor: isDark ? '#F881AB' : '#a21144',
             pointRadius: 3,
             borderColor: '#F4256D',
@@ -161,7 +167,7 @@ const PriceChart = ({ id }: { id: number }) => {
             showLine: !longTermPricesEnabled,
           },
           {
-            label: 'Average price',
+            label: LABELS.average,
             pointRadius: 0,
             borderColor: '#1e779c',
             borderWidth: 2,
@@ -215,6 +221,12 @@ const PriceChart = ({ id }: { id: number }) => {
           tooltip: {
             mode: 'x',
             intersect: false,
+            filter: (item, index, array) => {
+              const firstInstaBuyIndex = array.findIndex(el => el.dataset.label === LABELS.instabuy);
+              const firstInstaSellIndex = array.findIndex(el => el.dataset.label === LABELS.instasell);
+
+              return index === firstInstaBuyIndex || index === firstInstaSellIndex;
+            },
           },
           //@ts-ignore
           crosshair: {
@@ -237,8 +249,11 @@ const PriceChart = ({ id }: { id: number }) => {
           legend: {
             labels: {
               filter: legendItem => {
-                if (longTermPricesEnabled && legendItem.text === 'Average price') return true;
-                if (!longTermPricesEnabled && (legendItem.text === 'Insta-buy' || legendItem.text === 'Insta-sell'))
+                if (longTermPricesEnabled && legendItem.text === LABELS.average) return true;
+                if (
+                  !longTermPricesEnabled &&
+                  (legendItem.text === LABELS.instabuy || legendItem.text === LABELS.instasell)
+                )
                   return true;
 
                 return false;
