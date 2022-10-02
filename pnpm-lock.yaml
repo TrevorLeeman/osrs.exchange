@@ -4,6 +4,7 @@ specifiers:
   '@nextui-org/react': 1.0.0-beta.9
   '@tanstack/react-query': ^4.2.1
   '@tanstack/react-query-devtools': ^4.2.1
+  '@tanstack/react-table': ^8.5.13
   '@types/node': 18.6.3
   '@types/pg': ^8.6.5
   '@types/react': 18.0.15
@@ -39,6 +40,7 @@ dependencies:
   '@nextui-org/react': 1.0.0-beta.9_biqbaboplfbrettd7655fr4n2y
   '@tanstack/react-query': 4.2.1_biqbaboplfbrettd7655fr4n2y
   '@tanstack/react-query-devtools': 4.2.1_32b63s5o6uo6n4n6pi5xgs6jfq
+  '@tanstack/react-table': 8.5.13_biqbaboplfbrettd7655fr4n2y
   axios: 0.27.2
   chart.js: 3.9.1
   chartjs-adapter-date-fns: 2.0.0_chart.js@3.9.1
@@ -1934,6 +1936,23 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
+  /@tanstack/react-table/8.5.13_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-k52HsnonKwDZMCIy59HfehTnkJYlqkqyvC+BAV0DyWdN9WmSbVq+Kf+luJVENQnXcnEX47dBHiHAjqZu592ZLQ==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      '@tanstack/table-core': 8.5.13
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@tanstack/table-core/8.5.13:
+    resolution: {integrity: sha512-kvDRjC7LrLNNNgUMfsBz3nHOwbBLFdosWQ16dfbD9D/OJrvFHRXoUIPzF0MNqqSPghaj7/18fnwXHGypvzoh9Q==}
+    engines: {node: '>=12'}
     dev: false
 
   /@tsconfig/node10/1.0.9:

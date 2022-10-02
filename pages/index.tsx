@@ -1,15 +1,15 @@
 import type { NextPage } from 'next';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
+import ItemTable from '../src/components/ItemTable/ItemTable';
 
-import React from 'react';
-
-const Home: NextPage = ({ data }: any) => {
-  return <main>{data}</main>;
-};
+const Home: NextPage = () => <ItemTable />;
 
 export const getServerSideProps = async () => {
+  const queryClient = new QueryClient();
+
   return {
     props: {
-      data: 'Hello world',
+      dehydratedState: dehydrate(queryClient),
     },
   };
 };

@@ -1,6 +1,5 @@
 import type { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
-import type { RealTimePrices } from '../../../pages/item/[slug]';
-import { ITEM_PAGE_QUERIES } from '../../../pages/item/[slug]';
+import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
 import { useContext, useMemo } from 'react';
 import { useTheme as useNextUiTheme } from '@nextui-org/react';
 import { fromUnixTime, subHours } from 'date-fns';
@@ -25,6 +24,10 @@ import axios from 'axios';
 import { CrosshairPlugin } from 'chartjs-plugin-crosshair';
 import { PriceChartContext } from './PriceChartProvider';
 import styles from './PriceChart.module.scss';
+
+type RealTimePrices = {
+  data: [Price];
+};
 
 type LongTermPriceData = {
   [key: number]: LongTermPrice[];
@@ -59,8 +62,8 @@ const TIMESTEP_TO_HOURS = new Map<Timestep, number>([
 ]);
 
 const LABELS = {
-  instabuy: 'Insta-buy',
-  instasell: 'Insta-sell',
+  instabuy: 'Instabuy',
+  instasell: 'Instasell',
   average: 'Average price',
 };
 
@@ -151,7 +154,7 @@ const PriceChart = ({ id }: { id: number }) => {
           {
             label: LABELS.instabuy,
             backgroundColor: isDark ? '#90ed99' : '#30a339',
-            pointRadius: 3,
+            pointRadius: 2,
             borderColor: '#38c744',
             data: realTimeInstaBuyPrices,
             cubicInterpolationMode: 'monotone',
@@ -160,7 +163,7 @@ const PriceChart = ({ id }: { id: number }) => {
           {
             label: LABELS.instasell,
             backgroundColor: isDark ? '#F881AB' : '#a21144',
-            pointRadius: 3,
+            pointRadius: 2,
             borderColor: '#F4256D',
             data: realTimeInstaSellPrices,
             cubicInterpolationMode: 'monotone',
@@ -169,6 +172,7 @@ const PriceChart = ({ id }: { id: number }) => {
           {
             label: LABELS.average,
             pointRadius: 0,
+            pointHoverRadius: longTermPricesEnabled ? 4 : 0,
             borderColor: '#1e779c',
             borderWidth: 2,
             data: averageLongTermPrices,
@@ -222,9 +226,10 @@ const PriceChart = ({ id }: { id: number }) => {
             mode: 'x',
             intersect: false,
             filter: (item, index, array) => {
+              if (longTermPricesEnabled) return index === 0 ? true : false;
+
               const firstInstaBuyIndex = array.findIndex(el => el.dataset.label === LABELS.instabuy);
               const firstInstaSellIndex = array.findIndex(el => el.dataset.label === LABELS.instasell);
-
               return index === firstInstaBuyIndex || index === firstInstaSellIndex;
             },
           },

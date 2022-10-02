@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic';
 import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
 import NotFound from '../../src/components/404/NotFound';
 import Head from 'next/head';
+import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
 
 const DynamicGrandExchangeCard = dynamic(() => import('../../src/components/GrandExchangeCard/GrandExchangeCard'), {
   ssr: false,
@@ -18,10 +19,6 @@ const DynamicGrandExchangeCard = dynamic(() => import('../../src/components/Gran
 
 interface Params extends ParsedUrlQuery {
   slug: [string];
-}
-
-export interface RealTimePrices {
-  data: [Price];
 }
 
 export interface Price {
@@ -55,7 +52,13 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
         <title>{title}</title>
       </Head>
       <Container fluid>
-        <Text h1>{item.name}</Text>
+        <Container display="flex" alignItems="center">
+          <Text h1 css={{ margin: 'unset' }}>
+            {item.name}
+          </Text>
+          <Spacer x={1} />
+          <ItemIcon icon={item.icon} name={item.name} width={44} height={40} />
+        </Container>
         <Spacer y={1} />
         <DynamicGrandExchangeCard item={item} />
         <Spacer y={2} />
