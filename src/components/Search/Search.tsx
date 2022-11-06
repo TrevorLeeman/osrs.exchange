@@ -1,13 +1,16 @@
-import type { BasicItem } from '../../db/items';
 import { Dispatch, SetStateAction, useState } from 'react';
+
 import { useRouter } from 'next/router';
+
+import { Card, Grid, Input, Spacer } from '@nextui-org/react';
 import { QueryFunction, useQuery } from '@tanstack/react-query';
-import { useCombobox, UseComboboxGetItemPropsOptions } from 'downshift';
-import { Card, Grid, Input } from '@nextui-org/react';
 import axios from 'axios';
-import styles from './Search.module.scss';
-import ItemIcon from '../ItemIcon/ItemIcon';
+import { UseComboboxGetItemPropsOptions, useCombobox } from 'downshift';
+
+import type { BasicItem } from '../../db/items';
 import useDebounce from '../../hooks/useDebounce';
+import ItemIcon from '../ItemIcon/ItemIcon';
+import styles from './Search.module.scss';
 
 type SearchItem = Pick<BasicItem, 'id' | 'name' | 'icon'>;
 
@@ -35,6 +38,7 @@ const useAutocompleteList = ({
   setItems: Dispatch<SetStateAction<SearchItem[]>>;
 }) => {
   return useQuery<SearchItem[]>(['autocomplete', { inputValue }], fetchAutocompleteList, {
+    initialData: [],
     onSuccess(data) {
       setItems(() => data);
     },
@@ -113,6 +117,7 @@ const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: Autoc
     {...getItemProps({ item, index })}
   >
     <ItemIcon id={item.id} name={item.name} icon={item.icon} />
+    <Spacer x={1} />
     <span>{item.name}</span>
   </Grid>
 );

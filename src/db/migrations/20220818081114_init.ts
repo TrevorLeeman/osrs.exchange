@@ -92,7 +92,7 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('hunter');
   });
 
-  return await knex.raw('CREATE EXTENSION pg_trgm');
+  return await knex.raw('CREATE EXTENSION IF NOT EXISTS pg_trgm');
 }
 
 export async function down(knex: Knex): Promise<void> {

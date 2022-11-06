@@ -1,12 +1,12 @@
 import { Dropdown } from '@nextui-org/react';
 import type { Table } from '@tanstack/react-table';
 
-const ItemsPerPageDropdown = ({ table }: { table: Table<any> }) => (
+const ItemsPerPageDropdown = ({ sizes = [10, 15, 20, 25], table }: { sizes?: number[]; table: Table<any> }) => (
   <Dropdown>
     <Dropdown.Button>Show {table.getState().pagination.pageSize} Items</Dropdown.Button>
     <Dropdown.Menu onAction={pageSize => table.setPageSize(Number(pageSize))}>
-      {[10, 20, 30, 40, 50].map(pageSize => (
-        <Dropdown.Item key={pageSize}>{pageSize}</Dropdown.Item>
+      {sizes.map(pageSize => (
+        <Dropdown.Item key={pageSize}>{pageSize.toString()}</Dropdown.Item>
       ))}
     </Dropdown.Menu>
   </Dropdown>

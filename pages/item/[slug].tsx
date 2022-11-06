@@ -1,17 +1,19 @@
-import type { GetServerSideProps, GetStaticPaths, GetStaticProps, NextPage } from 'next';
-import type { BasicItem } from '../../src/db/items';
 import React, { useMemo } from 'react';
-import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query';
-import { ParsedUrlQuery } from 'querystring';
-import { Collapse, Container, Loading, Spacer, Text } from '@nextui-org/react';
-import knex from '../../src/db/db';
-import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
 
+import type { GetServerSideProps, GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
-import NotFound from '../../src/components/404/NotFound';
 import Head from 'next/head';
+
+import { Collapse, Container, Loading, Spacer, Text } from '@nextui-org/react';
+import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
+import { ParsedUrlQuery } from 'querystring';
+
+import NotFound from '../../src/components/404/NotFound';
 import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
+import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
+import knex from '../../src/db/db';
+import type { BasicItem } from '../../src/db/items';
+import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
 
 const DynamicGrandExchangeCard = dynamic(() => import('../../src/components/GrandExchangeCard/GrandExchangeCard'), {
   ssr: false,
@@ -57,7 +59,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
             {item.name}
           </Text>
           <Spacer x={1} />
-          <ItemIcon icon={item.icon} name={item.name} width={44} height={40} />
+          <ItemIcon icon={item.icon} name={item.name} width={44} />
         </Container>
         <Spacer y={1} />
         <DynamicGrandExchangeCard item={item} />
@@ -87,7 +89,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
         'im.id',
         'im.name',
         'im.limit',
-        knex.raw('CASE WHEN i.icon IS NOT NULL THEN i.icon ELSE im.icon END'),
+        'im.icon',
         'im.value',
         'im.lowalch',
         'im.highalch',

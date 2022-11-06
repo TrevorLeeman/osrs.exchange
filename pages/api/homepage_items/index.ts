@@ -11,8 +11,6 @@ export type HomepageMappingItem = Pick<
   'id' | 'name' | 'limit' | 'icon' | 'value' | 'lowalch' | 'highalch' | 'members'
 >;
 
-// Returns tradeable items who's name matches slug passed in
-// Results are ordered by names that contain slug first, then on similarity score
 const handler = async (req: NextApiRequest, res: NextApiResponse<HomepageMappingItems>) => {
   try {
     if (req.method === 'GET') {
@@ -21,7 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HomepageMapping
           'im.id',
           'im.name',
           'im.limit',
-          knex.raw('CASE WHEN i.icon IS NOT NULL THEN i.icon ELSE im.icon END'),
+          'im.icon',
           'im.value',
           'im.lowalch',
           'im.highalch',
@@ -30,7 +28,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HomepageMapping
         .from<WikiApiMappingItem>({
           im: 'item_mapping',
         })
-        .leftJoin({ i: 'item' }, 'i.id', 'im.id')
         .whereNot('im.value', 0);
 
       res.status(200).json({ items: JSON.stringify(homepageMappingItems) });
