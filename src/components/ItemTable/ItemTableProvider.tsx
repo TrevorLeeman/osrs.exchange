@@ -1,20 +1,21 @@
+import { Provider, createContext, useContext, useEffect, useMemo, useState } from 'react';
+
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import {
+  Table,
   createColumnHelper,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  PaginationState,
-  SortingState,
-  Table,
   useReactTable,
 } from '@tanstack/react-table';
 import axios from 'axios';
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict';
 import fromUnixTime from 'date-fns/fromUnixTime';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { createContext, Provider, useContext, useEffect, useMemo, useState } from 'react';
+
 import { HomepageMappingItem, HomepageMappingItems } from '../../../pages/api/homepage_items';
 import ItemIcon from '../ItemIcon/ItemIcon';
 import { TaxCell } from './Cells/Tax';
@@ -212,6 +213,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
         pageSize: 10,
       },
     },
+    autoResetPageIndex: false,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -226,7 +228,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
         shallow: true,
       });
     }
-  }, [pageIndex]);
+  }, [pageIndex, updateUrlOnPagination]);
 
   return (
     <ItemTableContext.Provider value={{ items: completeItems ?? [], ...{ table } }}>
