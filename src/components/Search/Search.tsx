@@ -6,9 +6,9 @@ import { Card, Grid, Input, Spacer } from '@nextui-org/react';
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { UseComboboxGetItemPropsOptions, useCombobox } from 'downshift';
+import { useDebounce } from 'usehooks-ts';
 
 import type { BasicItem } from '../../db/items';
-import useDebounce from '../../hooks/useDebounce';
 import ItemIcon from '../ItemIcon/ItemIcon';
 import styles from './Search.module.scss';
 

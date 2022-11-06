@@ -54,6 +54,7 @@ const ItemTable = () => {
       <Container display="flex" justify="center">
         <ItemTablePagination data={items} table={table} />
       </Container>
+      <Spacer y={1} />
     </Container>
   );
 };

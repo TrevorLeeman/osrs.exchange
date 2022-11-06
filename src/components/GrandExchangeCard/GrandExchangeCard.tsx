@@ -3,7 +3,7 @@ import { Card, Container, Grid, Text } from '@nextui-org/react';
 import { BasicItem } from '../../db/items';
 import PriceChart from '../PriceChart/PriceChart';
 import PriceChartProvider from '../PriceChart/PriceChartProvider';
-import TimeIntervalButtonGroup from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
+import TimeIntervalButtonGroup from '../PriceChart/TimeIntervalButtonGroup';
 
 const GrandExchangeCard = ({ item }: { item: BasicItem }) => (
   <Card css={{ padding: '3rem', paddingTop: '1rem' }}>

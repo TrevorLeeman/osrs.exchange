@@ -23,7 +23,7 @@ import enUS from 'date-fns/locale/en-US';
 import { Line } from 'react-chartjs-2';
 
 import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
-import type { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
+import type { Timestep } from './TimeIntervalButtonGroup';
 import styles from './PriceChart.module.scss';
 import { PriceChartContext } from './PriceChartProvider';
 

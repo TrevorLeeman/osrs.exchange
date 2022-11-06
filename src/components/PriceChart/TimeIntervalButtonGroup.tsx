@@ -4,7 +4,7 @@ import { Button } from '@nextui-org/react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { ITEM_PAGE_QUERIES } from '../../../pages/item/[slug]';
-import { PriceChartContext } from '../PriceChart/PriceChartProvider';
+import { PriceChartContext } from './PriceChartProvider';
 
 export type Timestep = '5m' | '1h' | '6h' | '1y' | 'all';
 
@@ -29,13 +29,10 @@ const TimeIntervalButton = ({ title, timestep }: TimeIntervalButtonProps) => {
   const queryClient = useQueryClient();
   const { timestep: selectedTimestep, setTimestep, setLongTermPricesEnabled } = useContext(PriceChartContext);
   const active = selectedTimestep === timestep;
-  const css = active
-    ? { backgroundColor: '$blue600', color: '$white' }
-    : { '&:hover': { backgroundColor: '$blue100' } };
 
   return (
     <Button
-      css={css}
+      className={`${active ? 'bg-blue-600 text-white' : 'hover:bg-blue-100'}`}
       onPress={e => {
         setTimestep(() => timestep);
         switch (timestep) {

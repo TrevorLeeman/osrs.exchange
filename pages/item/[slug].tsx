@@ -3,12 +3,14 @@ import React, { useMemo } from 'react';
 import type { GetServerSideProps, GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 import { Collapse, Container, Loading, Spacer, Text } from '@nextui-org/react';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { ParsedUrlQuery } from 'querystring';
 
 import NotFound from '../../src/components/404/NotFound';
+import BackArrowIcon from '../../src/components/Icons/BackArrow';
 import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
 import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
 import knex from '../../src/db/db';
@@ -43,6 +45,8 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
     isLoading: itemIsLoading,
     isFetching: itemIsFetching,
   } = useQuery<BasicItem[]>([ITEM_PAGE_QUERIES.itemById]);
+
+  const router = useRouter();
   const item = itemData ? itemData[0] : null;
   const title = useMemo(() => `${item?.name} | OSRS Prices`, [item?.name]);
 
@@ -55,7 +59,15 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       </Head>
       <Container fluid>
         <Container display="flex" alignItems="center">
-          <Text h1 css={{ margin: 'unset' }}>
+          <button
+            onClick={() => router.back()}
+            title="Go back"
+            className="flex cursor-pointer items-center rounded border-0 bg-transparent"
+          >
+            <BackArrowIcon width={48} height={48} />
+          </button>
+          <Spacer x={1} />
+          <Text h1 className="m-0">
             {item.name}
           </Text>
           <Spacer x={1} />
@@ -65,7 +77,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
         <DynamicGrandExchangeCard item={item} />
         <Spacer y={2} />
         <Collapse.Group accordion={false} shadow>
-          <Collapse title="Item Info" css={{ userSelect: 'none' }}>
+          <Collapse title="Item Info" className="select-none">
             <ItemInfo item={item} />
           </Collapse>
         </Collapse.Group>

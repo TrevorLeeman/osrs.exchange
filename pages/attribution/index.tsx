@@ -8,7 +8,9 @@ const Attribution: NextPage = () => (
     <Text h1>This Site is Powered by Creative Commons Resources</Text>
     <ul>
       <li>
-        <Link href="https://www.svgrepo.com/svg/67522/back">Back-Arrow Icon</Link>
+        <Link href="https://www.flaticon.com/free-icons/camera-back">
+          Back-Arrow Icon created by Freepik - Flaticon
+        </Link>
       </li>
     </ul>
   </Container>
