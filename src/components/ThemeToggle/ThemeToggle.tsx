@@ -1,6 +1,5 @@
-import { useTheme as useNextTheme } from 'next-themes';
-
 import { Switch, useTheme as useNextUiTheme } from '@nextui-org/react';
+import { useTheme as useNextTheme } from 'next-themes';
 
 import useMounted from '../../hooks/useMounted';
 
