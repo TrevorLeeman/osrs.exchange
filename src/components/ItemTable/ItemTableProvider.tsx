@@ -1,4 +1,4 @@
-import { Provider, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';

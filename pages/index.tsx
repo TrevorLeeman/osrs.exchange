@@ -1,5 +1,7 @@
 import type { NextPage } from 'next';
-import { dehydrate, QueryClient } from '@tanstack/react-query';
+
+import { QueryClient, dehydrate } from '@tanstack/react-query';
+
 import ItemTable from '../src/components/ItemTable/ItemTable';
 import { ItemTableProvider } from '../src/components/ItemTable/ItemTableProvider';
 

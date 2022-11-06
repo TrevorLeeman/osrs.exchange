@@ -1,4 +1,5 @@
 import { Card, Container, Grid, Text } from '@nextui-org/react';
+
 import { BasicItem } from '../../db/items';
 import PriceChart from '../PriceChart/PriceChart';
 import PriceChartProvider from '../PriceChart/PriceChartProvider';

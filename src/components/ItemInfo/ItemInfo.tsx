@@ -1,5 +1,6 @@
 import { Table } from '@nextui-org/react';
 import { format } from 'date-fns';
+
 import { BasicItem } from '../../db/items';
 
 const ItemInfo = ({ item }: { item: BasicItem | null }) =>

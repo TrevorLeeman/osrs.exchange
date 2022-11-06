@@ -1,5 +1,7 @@
-import { Input, Text } from '@nextui-org/react';
 import Link from 'next/link';
+
+import { Input, Text } from '@nextui-org/react';
+
 import Search from '../Search/Search';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import styles from './Header.module.scss';

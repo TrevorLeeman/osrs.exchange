@@ -1,13 +1,16 @@
 import { useRef } from 'react';
+
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
+
+import { NextUIProvider, createTheme as createNextUiTheme } from '@nextui-org/react';
 import { Hydrate, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { createTheme as createNextUiTheme, NextUIProvider } from '@nextui-org/react';
 import { SSRProvider as AriaSSRProvider } from 'react-aria';
+
 import Header from '../src/components/Header/Header';
 import '../src/styles/global.css';
-import Head from 'next/head';
 
 const lightTheme = createNextUiTheme({
   type: 'light',

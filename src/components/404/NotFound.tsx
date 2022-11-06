@@ -1,7 +1,8 @@
-import { Container, Text } from '@nextui-org/react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { Container, Text } from '@nextui-org/react';
 
 const NotFound = () => (
   <>

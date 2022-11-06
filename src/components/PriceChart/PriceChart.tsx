@@ -1,29 +1,31 @@
-import type { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
-import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
 import { useContext, useMemo } from 'react';
+
 import { useTheme as useNextUiTheme } from '@nextui-org/react';
-import { fromUnixTime, subHours } from 'date-fns';
-import enUS from 'date-fns/locale/en-US';
 import { QueryFunction, useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import {
-  Chart as ChartJS,
   CategoryScale,
-  LinearScale,
-  TimeScale,
-  PointElement,
+  Chart as ChartJS,
+  Legend,
   LineElement,
+  LinearScale,
+  PointElement,
+  TimeScale,
   Title,
   Tooltip,
-  Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
-import Zoom from 'chartjs-plugin-zoom';
-import axios from 'axios';
 //@ts-ignore
 import { CrosshairPlugin } from 'chartjs-plugin-crosshair';
-import { PriceChartContext } from './PriceChartProvider';
+import Zoom from 'chartjs-plugin-zoom';
+import { fromUnixTime, subHours } from 'date-fns';
+import enUS from 'date-fns/locale/en-US';
+import { Line } from 'react-chartjs-2';
+
+import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
+import type { Timestep } from '../TimeIntervalButtonGroup/TimeIntervalButtonGroup';
 import styles from './PriceChart.module.scss';
+import { PriceChartContext } from './PriceChartProvider';
 
 type RealTimePrices = {
   data: [Price];

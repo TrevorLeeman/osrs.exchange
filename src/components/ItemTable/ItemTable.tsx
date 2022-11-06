@@ -1,11 +1,10 @@
+import { Container, Spacer, Table, useTheme as useNextUiTheme } from '@nextui-org/react';
 import { flexRender } from '@tanstack/react-table';
-import { Container, Spacer, Table } from '@nextui-org/react';
 
-import ItemsPerPageDropdown from './ItemsPerPageDropdown';
-import { SortIcon } from '../Icons/Sort';
+import SortIcon from '../Icons/Sort';
 import { useItemTableContext } from './ItemTableProvider';
+import ItemsPerPageDropdown from './ItemsPerPageDropdown';
 import ItemTablePagination from './TablePagination';
-import { useTheme as useNextUiTheme } from '@nextui-org/react';
 
 const ItemTable = () => {
   const { isDark } = useNextUiTheme();

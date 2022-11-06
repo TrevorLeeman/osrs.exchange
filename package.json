@@ -11,7 +11,8 @@
     "migrate:new": "cross-var knex migrate:make $npm_config_name -x ts --migrations-directory ./src/db/migrations",
     "migrate:latest": "knex migrate:latest",
     "migrate:revert": "knex migrate:rollback --all",
-    "seed": "knex seed:run"
+    "seed": "knex seed:run",
+    "format-react-components": "prettier --write \"**/*.(jsx|tsx)\""
   },
   "dependencies": {
     "@nextui-org/react": "1.0.0-beta.9",
