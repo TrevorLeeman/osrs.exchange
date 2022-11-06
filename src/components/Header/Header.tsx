@@ -4,12 +4,11 @@ import { Input, Text } from '@nextui-org/react';
 
 import Search from '../Search/Search';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
-import styles from './Header.module.scss';
 
 const Header = () => {
   return (
-    <header className={styles.header}>
-      <div className={styles.left}>
+    <header className="grid grid-cols-3 grid-rows-1 p-4">
+      <div className="flex grow items-center">
         <Link href="/">
           <Text
             css={{
@@ -23,10 +22,10 @@ const Header = () => {
           </Text>
         </Link>
       </div>
-      <div className={styles.center}>
+      <div className="flex justify-center">
         <Search />
       </div>
-      <div className={styles.right}>
+      <div className="flex justify-end">
         <ThemeToggle />
       </div>
     </header>

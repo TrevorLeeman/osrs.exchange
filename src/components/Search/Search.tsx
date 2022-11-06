@@ -10,7 +10,6 @@ import { useDebounce } from 'usehooks-ts';
 
 import type { BasicItem } from '../../db/items';
 import ItemIcon from '../ItemIcon/ItemIcon';
-import styles from './Search.module.scss';
 
 type SearchItem = Pick<BasicItem, 'id' | 'name' | 'icon'>;
 
@@ -79,7 +78,7 @@ const Search = () => {
   } = useAutocompleteList({ inputValue: debouncedSearch, setItems });
 
   return (
-    <div className={styles.searchContainer}>
+    <div className="relative w-full">
       <div {...getComboboxProps()}>
         <Input
           placeholder="Search for an item"
@@ -92,7 +91,7 @@ const Search = () => {
           {...getInputProps()}
         />
       </div>
-      <Card as="ul" className={styles.itemListContainer} {...getMenuProps()}>
+      <Card as="ul" className="absolute z-[300] m-0 max-h-[250px] w-full overflow-y-auto" {...getMenuProps()}>
         {isOpen &&
           items.map((item, index) => (
             <AutocompleteItem
@@ -111,8 +110,9 @@ const Search = () => {
 const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: AutocompleteItemProps) => (
   <Grid
     as="li"
-    css={{ backgroundColor: highlightedIndex === index ? '$green100' : '' }}
-    className={`${styles.item}`}
+    className={`flex cursor-pointer items-center p-3 ${
+      highlightedIndex === index ? 'bg-green-200 dark:bg-green-800' : ''
+    }`}
     key={`${item.id}`}
     {...getItemProps({ item, index })}
   >
