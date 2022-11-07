@@ -15,7 +15,6 @@ const myPlugin = {
 };
 
 module.exports = {
-  // plugins: [require('@trivago/prettier-plugin-sort-imports')],
   plugins: [myPlugin],
   semi: true,
   printWidth: 120,

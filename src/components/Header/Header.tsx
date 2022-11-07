@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { Input, Text } from '@nextui-org/react';
+import { Text } from '@nextui-org/react';
 
 import Search from '../Search/Search';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';

@@ -1,10 +1,11 @@
-import { createContext, useContext, useEffect, useMemo } from 'react';
+import { Dispatch, SetStateAction, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import {
+  PaginationState,
   Table,
   createColumnHelper,
   getCoreRowModel,
@@ -15,6 +16,7 @@ import {
 import axios from 'axios';
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict';
 import fromUnixTime from 'date-fns/fromUnixTime';
+import { useLocalStorage } from 'usehooks-ts';
 
 import { HomepageMappingItem, HomepageMappingItems } from '../../../pages/api/homepage_items';
 import ItemIcon from '../ItemIcon/ItemIcon';
@@ -65,6 +67,8 @@ type ItemTableProviderProps = {
 type ItemTableContextType = {
   items: TableCompleteItem[];
   table: Table<TableCompleteItem>;
+  setPageIndex: Dispatch<SetStateAction<number>>;
+  setPageSize: Dispatch<SetStateAction<number>>;
 };
 
 const HOMEPAGE_QUERIES = {
@@ -173,6 +177,8 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
   });
 
   const router = useRouter();
+  const [pageIndex, setPageIndex] = useState(!isNaN(Number(router.query?.page)) ? Number(router.query.page) - 1 : 0);
+  const [pageSize, setPageSize] = useLocalStorage('pageSize', 10);
   const completeItems = useMemo(
     () =>
       itemMappings
@@ -207,10 +213,10 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
   const table = useReactTable({
     data: completeItems?.length ? completeItems : [],
     columns: defaultColumns,
-    initialState: {
+    state: {
       pagination: {
-        pageIndex: !isNaN(Number(router.query?.page)) ? Number(router.query.page) - 1 : 0,
-        pageSize: 10,
+        pageIndex,
+        pageSize,
       },
     },
     autoResetPageIndex: false,
@@ -218,8 +224,6 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
-  const pageIndex = table.getState().pagination.pageIndex;
 
   useEffect(() => {
     if (updateUrlOnPagination) {
@@ -231,7 +235,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
   }, [pageIndex, updateUrlOnPagination]);
 
   return (
-    <ItemTableContext.Provider value={{ items: completeItems ?? [], ...{ table } }}>
+    <ItemTableContext.Provider value={{ items: completeItems ?? [], ...{ table }, setPageIndex, setPageSize }}>
       {children}
     </ItemTableContext.Provider>
   );

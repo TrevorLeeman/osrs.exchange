@@ -58,7 +58,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
         <title>{title}</title>
       </Head>
       <Container fluid>
-        <Container display="flex" alignItems="center">
+        <div className="flex items-center gap-5">
           <button
             onClick={() => router.back()}
             title="Go back"
@@ -66,13 +66,11 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
           >
             <BackArrowIcon width={48} height={48} />
           </button>
-          <Spacer x={1} />
           <Text h1 className="m-0">
             {item.name}
           </Text>
-          <Spacer x={1} />
           <ItemIcon icon={item.icon} name={item.name} width={44} />
-        </Container>
+        </div>
         <Spacer y={1} />
         <DynamicGrandExchangeCard item={item} />
         <Spacer y={2} />
