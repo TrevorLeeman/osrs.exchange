@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently -k -p name -n \"next,postgres\" -c  \"blue,red\" \"pnpm next dev\" \"pnpm dev:db\"",
+    "dev": "concurrently -k -p name -n \"next,postgres\" -c  \"blue,red\" \"next dev\" \"npm run dev:db\"",
     "dev:db": "docker-compose --env-file ./.env.local up",
     "build": "next build",
     "start": "next start",
@@ -15,7 +15,7 @@
     "format-react-components": "prettier --write \"**/*.+(jsx|tsx)\""
   },
   "dependencies": {
-    "@nextui-org/react": "1.0.0-beta.9",
+    "@nextui-org/react": "^1.0.0-beta.10",
     "@tanstack/react-query": "^4.2.1",
     "@tanstack/react-query-devtools": "^4.2.1",
     "@tanstack/react-table": "^8.5.13",

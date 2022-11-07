@@ -1,6 +1,22 @@
+const pluginSortImports = require('@trivago/prettier-plugin-sort-imports');
+const pluginTailwindcss = require('prettier-plugin-tailwindcss');
+
+/** @type {import("prettier").Parser}  */
+const myParser = {
+  ...pluginSortImports.parsers.typescript,
+  parse: pluginTailwindcss.parsers.typescript.parse,
+};
+
+/** @type {import("prettier").Plugin}  */
+const myPlugin = {
+  parsers: {
+    typescript: myParser,
+  },
+};
+
 module.exports = {
   // plugins: [require('@trivago/prettier-plugin-sort-imports')],
-  plugins: [require('prettier-plugin-tailwindcss')],
+  plugins: [myPlugin],
   semi: true,
   printWidth: 120,
   trailingComma: 'all',

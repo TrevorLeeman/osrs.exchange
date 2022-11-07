@@ -23,8 +23,8 @@ import enUS from 'date-fns/locale/en-US';
 import { Line } from 'react-chartjs-2';
 
 import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
-import type { Timestep } from './TimeIntervalButtonGroup';
 import { PriceChartContext } from './PriceChartProvider';
+import type { Timestep } from './TimeIntervalButtonGroup';
 
 type RealTimePrices = {
   data: [Price];
