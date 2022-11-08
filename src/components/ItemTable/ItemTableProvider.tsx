@@ -19,6 +19,7 @@ import fromUnixTime from 'date-fns/fromUnixTime';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { HomepageMappingItem, HomepageMappingItems } from '../../../pages/api/homepage_items';
+import useNextQueryParams from '../../hooks/useNextQueryParams';
 import ItemIcon from '../ItemIcon/ItemIcon';
 import { TaxCell } from './Cells/Tax';
 
@@ -67,7 +68,7 @@ type ItemTableProviderProps = {
 type ItemTableContextType = {
   items: TableCompleteItem[];
   table: Table<TableCompleteItem>;
-  setPageIndex: Dispatch<SetStateAction<number>>;
+  setPageIndex: (state: number) => void;
   setPageSize: Dispatch<SetStateAction<number>>;
 };
 
@@ -91,15 +92,15 @@ const fetchHomepageMappingItems: QueryFunction<HomepageMappingItem[]> = async ()
     .then(res => JSON.parse(res.data.items));
 };
 
-const calculateTax = (sellPrice: number | null | undefined) => {
-  if (!sellPrice || sellPrice < 100) return 0;
-  if (sellPrice >= 500_000_000) return 5_000_000;
-  return Math.floor(sellPrice * 0.01);
+const calculateTax = (instaBuyPrice: number | null | undefined) => {
+  if (!instaBuyPrice || instaBuyPrice < 100) return 0;
+  if (instaBuyPrice >= 500_000_000) return 5_000_000;
+  return Math.floor(instaBuyPrice * 0.01);
 };
 
 const calculateROI = (instaBuyPrice: number | null | undefined, instaSellPrice: number | null | undefined) => {
   if (!instaBuyPrice || !instaSellPrice) return null;
-  return ((instaBuyPrice - (instaSellPrice + calculateTax(instaSellPrice))) / instaBuyPrice) * 100;
+  return ((instaBuyPrice - (instaSellPrice + calculateTax(instaSellPrice))) / instaSellPrice) * 100;
 };
 
 // const calculatePotentialProfit = ()
@@ -128,7 +129,7 @@ const defaultColumns = [
     sortingFn: 'text',
   }),
   columnHelper.accessor('dailyVolume', { header: 'Daily Volume', cell: info => info.getValue()?.toLocaleString() }),
-  columnHelper.accessor('limit', { header: 'Limit', cell: info => info.getValue()?.toLocaleString() ?? 'Unknown' }),
+  columnHelper.accessor('limit', { header: 'Limit', cell: info => info.getValue()?.toLocaleString() ?? '??' }),
   columnHelper.accessor('instaSellPrice', { header: 'Instasell', cell: info => info.getValue()?.toLocaleString() }),
   columnHelper.accessor('instaBuyPrice', {
     header: 'Instabuy',
@@ -176,8 +177,12 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     staleTime: Infinity,
   });
 
-  const router = useRouter();
-  const [pageIndex, setPageIndex] = useState(!isNaN(Number(router.query?.page)) ? Number(router.query.page) - 1 : 0);
+  const [pageIndex, setPageIndex] = useNextQueryParams(
+    'page',
+    0,
+    pageIndex => encodeURIComponent(pageIndex + 1),
+    pageIndex => (Number(pageIndex) !== NaN ? Number(pageIndex) - 1 : 10),
+  );
   const [pageSize, setPageSize] = useLocalStorage('pageSize', 10);
   const completeItems = useMemo(
     () =>
@@ -224,15 +229,6 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
-  useEffect(() => {
-    if (updateUrlOnPagination) {
-      router.push({ pathname: router.pathname, query: { ...router.query, page: pageIndex + 1 } }, undefined, {
-        scroll: false,
-        shallow: true,
-      });
-    }
-  }, [pageIndex, updateUrlOnPagination]);
 
   return (
     <ItemTableContext.Provider value={{ items: completeItems ?? [], ...{ table }, setPageIndex, setPageSize }}>
