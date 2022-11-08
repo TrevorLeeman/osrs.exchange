@@ -1,11 +1,9 @@
-import { Dispatch, SetStateAction, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { Dispatch, SetStateAction, createContext, useContext, useMemo } from 'react';
 
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import {
-  PaginationState,
   Table,
   createColumnHelper,
   getCoreRowModel,
@@ -117,25 +115,52 @@ const columnHelper = createColumnHelper<TableCompleteItem>();
 const defaultColumns = [
   columnHelper.accessor('icon', {
     header: 'Icon',
-    cell: info => <ItemIcon icon={info.getValue()} name={info.row.original.name} width={30} />,
+    cell: info => (
+      <div className="flex justify-center">
+        <ItemIcon icon={info.getValue()} name={info.row.original.name} width={30} />
+      </div>
+    ),
     enableSorting: false,
   }),
   // columnHelper.accessor('id', { cell: info => info.getValue() }),
   columnHelper.accessor('name', {
-    header: 'Name',
-    cell: info => <Link href={`/item/${info.row.original.id}`}>{info.getValue()}</Link>,
-    enableHiding: true,
+    header: () => <div className="text-left">Name</div>,
+    cell: info => (
+      <div className="whitespace-nowrap text-left">
+        <Link href={`/item/${info.row.original.id}`}>
+          <a className="text-blue-600 hover:underline dark:text-blue-300">{info.getValue()}</a>
+        </Link>
+      </div>
+    ),
     enableSorting: true,
+    enableHiding: true,
     sortingFn: 'text',
   }),
-  columnHelper.accessor('dailyVolume', { header: 'Daily Volume', cell: info => info.getValue()?.toLocaleString() }),
-  columnHelper.accessor('limit', { header: 'Limit', cell: info => info.getValue()?.toLocaleString() ?? '??' }),
-  columnHelper.accessor('instaSellPrice', { header: 'Instasell', cell: info => info.getValue()?.toLocaleString() }),
+  columnHelper.accessor('dailyVolume', {
+    header: 'Daily Volume',
+    cell: info => info.getValue()?.toLocaleString(),
+    enableSorting: true,
+  }),
+  columnHelper.accessor('limit', {
+    header: 'Limit',
+    cell: info => info.getValue()?.toLocaleString() ?? '??',
+    enableSorting: true,
+  }),
+  columnHelper.accessor('instaSellPrice', {
+    header: 'Instasell',
+    cell: info => info.getValue()?.toLocaleString(),
+    enableSorting: true,
+  }),
   columnHelper.accessor('instaBuyPrice', {
     header: 'Instabuy',
     cell: info => info.getValue()?.toLocaleString(),
+    enableSorting: true,
   }),
-  columnHelper.accessor('roi', { header: 'ROI', cell: info => `${info.getValue()?.toFixed(1) ?? 0}%` }),
+  columnHelper.accessor('roi', {
+    header: 'ROI',
+    cell: info => `${info.getValue()?.toFixed(1) ?? 0}%`,
+    enableSorting: true,
+  }),
   // columnHelper.accessor('value', { header: 'Value', cell: info => info.getValue().toLocaleString() }),
   // columnHelper.accessor('lowalch', { header: 'Low Alch', cell: info => info.getValue().toLocaleString() }),
   // columnHelper.accessor('highalch', { header: 'High Alch', cell: info => info.getValue().toLocaleString() }),
@@ -143,12 +168,14 @@ const defaultColumns = [
   columnHelper.accessor('instaSellTime', {
     header: 'Instasell Time',
     cell: info => distanceToNowFromUnixTime(info.getValue()),
+    enableSorting: true,
   }),
   columnHelper.accessor('instaBuyTime', {
     header: 'Instabuy Time',
     cell: info => distanceToNowFromUnixTime(info.getValue()),
+    enableSorting: true,
   }),
-  columnHelper.accessor('tax', { cell: info => <TaxCell tax={info.getValue()} /> }),
+  columnHelper.accessor('tax', { header: 'Tax', cell: info => <TaxCell tax={info.getValue()} />, enableSorting: true }),
 ];
 
 const ItemTableContext = createContext<ItemTableContextType>(undefined!);
@@ -229,6 +256,10 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  // useIsomorphicLayoutEffect(() => {
+  //   window.document.title = `OSRS Prices${pageIndex ? ` | Item Page ${pageIndex + 1}` : ''}`;
+  // }, [pageIndex]);
 
   return (
     <ItemTableContext.Provider value={{ items: completeItems ?? [], ...{ table }, setPageIndex, setPageSize }}>

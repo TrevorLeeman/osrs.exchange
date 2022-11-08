@@ -48,7 +48,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
 
   const router = useRouter();
   const item = itemData ? itemData[0] : null;
-  const title = useMemo(() => `${item?.name} | OSRS Prices`, [item?.name]);
+  const title = useMemo(() => `OSRS Prices | ${item?.name}`, [item?.name]);
 
   if (itemIsLoading) return <Loading />;
 
@@ -69,7 +69,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
           <Text h1 className="m-0">
             {item.name}
           </Text>
-          <ItemIcon icon={item.icon} name={item.name} width={44} />
+          <ItemIcon icon={item.icon} name={item.name} width={44} shadow={true} />
         </div>
         <Spacer y={1} />
         <DynamicGrandExchangeCard item={item} />

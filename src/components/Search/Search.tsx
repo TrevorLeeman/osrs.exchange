@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
-import { Card, Grid, Input, Spacer } from '@nextui-org/react';
+import { Input, Spacer } from '@nextui-org/react';
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { UseComboboxGetItemPropsOptions, useCombobox } from 'downshift';
@@ -85,13 +85,16 @@ const Search = () => {
           aria-label="Item search"
           type="search"
           autoComplete="false"
-          css={{ width: '100%' }}
+          css={{ width: '100%', borderI: 0 }}
           onClearClick={() => setItems(() => [])}
           clearable
           {...getInputProps()}
         />
       </div>
-      <Card as="ul" className="absolute z-[300] m-0 max-h-[250px] w-full overflow-y-auto" {...getMenuProps()}>
+      <ul
+        className="absolute z-[300] m-0 max-h-[250px] w-full overflow-y-auto rounded-xl bg-green-100 dark:bg-green-700"
+        {...getMenuProps()}
+      >
         {isOpen &&
           items.map((item, index) => (
             <AutocompleteItem
@@ -102,15 +105,14 @@ const Search = () => {
               getItemProps={getItemProps}
             />
           ))}
-      </Card>
+      </ul>
     </div>
   );
 };
 
 const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: AutocompleteItemProps) => (
-  <Grid
-    as="li"
-    className={`flex cursor-pointer items-center p-3 ${
+  <li
+    className={`m-0 flex cursor-pointer items-center border-b-[1px] p-3 ${
       highlightedIndex === index ? 'bg-green-200 dark:bg-green-800' : ''
     }`}
     key={`${item.id}`}
@@ -119,7 +121,7 @@ const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: Autoc
     <ItemIcon id={item.id} name={item.name} icon={item.icon} />
     <Spacer x={1} />
     <span>{item.name}</span>
-  </Grid>
+  </li>
 );
 
 export default Search;
