@@ -112,7 +112,7 @@ const Search = () => {
 
 const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: AutocompleteItemProps) => (
   <li
-    className={`m-0 flex cursor-pointer items-center border-b-[1px] p-3 ${
+    className={`m-0 flex cursor-pointer items-center border-b-[1px] p-3 last-of-type:border-b-0 ${
       highlightedIndex === index ? 'bg-green-200 dark:bg-green-800' : ''
     }`}
     key={`${item.id}`}

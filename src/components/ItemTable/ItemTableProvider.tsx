@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, createContext, useContext, useMemo } from 'react';
+import React, { Dispatch, SetStateAction, createContext, useContext, useEffect, useMemo } from 'react';
 
 import Link from 'next/link';
 
@@ -14,7 +14,7 @@ import {
 import axios from 'axios';
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict';
 import fromUnixTime from 'date-fns/fromUnixTime';
-import { useLocalStorage } from 'usehooks-ts';
+import { useIsomorphicLayoutEffect, useLocalStorage, useUpdateEffect } from 'usehooks-ts';
 
 import { HomepageMappingItem, HomepageMappingItems } from '../../../pages/api/homepage_items';
 import useNextQueryParams from '../../hooks/useNextQueryParams';
@@ -258,8 +258,12 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
   });
 
   // useIsomorphicLayoutEffect(() => {
-  //   window.document.title = `OSRS Prices${pageIndex ? ` | Item Page ${pageIndex + 1}` : ''}`;
+  //   window.document.title = `OSRS Exchange${pageIndex ? ` | Item Page ${pageIndex + 1}` : ''}`;
   // }, [pageIndex]);
+
+  useUpdateEffect(() => {
+    setPageIndex(0);
+  }, [pageSize]);
 
   return (
     <ItemTableContext.Provider value={{ items: completeItems ?? [], ...{ table }, setPageIndex, setPageSize }}>
@@ -269,5 +273,11 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
 };
 
 export const useItemTableContext = () => {
-  return useContext(ItemTableContext);
+  const context = useContext(ItemTableContext);
+
+  if (context === undefined) {
+    throw new Error('useItemTableContext must be used within an ItemTableProvider');
+  }
+
+  return context;
 };

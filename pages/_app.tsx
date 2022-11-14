@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>OSRS Prices</title>
+        <title>OSRS Exchange</title>
       </Head>
       <QueryClientProvider client={queryClient.current}>
         <Hydrate state={pageProps.dehydratedState}>

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#__next {
+  height: 100%;
+}
+
 /* clears the ‘X’ from Internet Explorer */
 input[type='search']::-ms-clear {
   display: none;

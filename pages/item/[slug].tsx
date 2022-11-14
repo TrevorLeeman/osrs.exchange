@@ -48,7 +48,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
 
   const router = useRouter();
   const item = itemData ? itemData[0] : null;
-  const title = useMemo(() => `OSRS Prices | ${item?.name}`, [item?.name]);
+  const title = useMemo(() => `OSRS Exchange | ${item?.name}`, [item?.name]);
 
   if (itemIsLoading) return <Loading />;
 
