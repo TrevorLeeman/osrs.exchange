@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import Head from 'next/head';
 
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 
@@ -11,9 +10,6 @@ import TablePagination from '../src/components/ItemTable/TablePagination';
 const Home: NextPage = () => {
   return (
     <ItemTableProvider>
-      <Head>
-        <title>Testing</title>
-      </Head>
       <div className="flex flex-col justify-center px-4">
         <div className="mb-4 flex flex-col-reverse items-center gap-4 md:grid md:grid-cols-3">
           <div className="col-start-2 place-self-center">

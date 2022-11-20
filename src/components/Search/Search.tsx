@@ -91,10 +91,7 @@ const Search = () => {
           {...getInputProps()}
         />
       </div>
-      <ul
-        className="absolute z-[300] m-0 max-h-[250px] w-full overflow-y-auto rounded-xl bg-green-100 dark:bg-green-700"
-        {...getMenuProps()}
-      >
+      <ul className="absolute z-[300] m-0 max-h-[300px] w-full overflow-y-auto rounded-xl" {...getMenuProps()}>
         {isOpen &&
           items.map((item, index) => (
             <AutocompleteItem
@@ -112,15 +109,16 @@ const Search = () => {
 
 const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: AutocompleteItemProps) => (
   <li
-    className={`m-0 flex cursor-pointer items-center border-b-[1px] p-3 last-of-type:border-b-0 ${
-      highlightedIndex === index ? 'bg-green-200 dark:bg-green-800' : ''
+    className={`m-0 flex min-h-[60px] cursor-pointer items-center border-2 p-3 first:rounded-t-xl last:rounded-b-xl odd:bg-slate-200 even:bg-slate-100 dark:odd:bg-slate-800 dark:even:bg-slate-700 ${
+      highlightedIndex === index ? 'border-slate-900 dark:border-white' : 'border-transparent'
     }`}
     key={`${item.id}`}
     {...getItemProps({ item, index })}
   >
-    <ItemIcon id={item.id} name={item.name} icon={item.icon} />
-    <Spacer x={1} />
-    <span>{item.name}</span>
+    <div className="flex min-w-[40px] items-center justify-center">
+      <ItemIcon id={item.id} name={item.name} icon={item.icon} />
+    </div>
+    <span className="ml-4">{item.name}</span>
   </li>
 );
 

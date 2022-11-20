@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
-import type { GetServerSideProps, GetStaticPaths, GetStaticProps, NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -66,9 +66,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
           >
             <BackArrowIcon width={48} height={48} />
           </button>
-          <Text h1 className="m-0">
-            {item.name}
-          </Text>
+          <h1 className="text-5xl font-bold ">{item.name}</h1>
           <ItemIcon icon={item.icon} name={item.name} width={44} shadow={true} />
         </div>
         <Spacer y={1} />
