@@ -14,7 +14,7 @@ type TimeIntervalButtonProps = {
   changeHandler: (timestep: Timestep) => void;
 };
 
-const timestepMap = { '5m': 'Day', '1h': 'Week', '6h': 'Month', '1y': 'Year', all: 'All' };
+const timestepMap = { '5m': 'Day', '1h': 'Week', '6h': 'Month', '1y': 'Year', all: 'All Time' };
 
 export type Timestep = StringKeyOf<typeof timestepMap>;
 
@@ -42,7 +42,7 @@ const TimeIntervalOptions = () => {
 
   return isMaxMobileLarge ? (
     <Dropdown isBordered={'true'}>
-      <Dropdown.Button className="bg-blue-600">Show {timestepMap[selectedTimestep]} Prices</Dropdown.Button>
+      <Dropdown.Button className="bg-blue-600">{timestepMap[selectedTimestep]} Prices</Dropdown.Button>
       <Dropdown.Menu onAction={changeHandler as (key: Key) => void} selectedKeys={[selectedTimestep]}>
         {(Object.entries(timestepMap) as Entries<typeof timestepMap>).map(([timestep, title]) => (
           <Dropdown.Item key={timestep}>{title}</Dropdown.Item>
