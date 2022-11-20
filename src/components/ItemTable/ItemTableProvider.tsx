@@ -1,6 +1,4 @@
-import React, { Dispatch, SetStateAction, createContext, useContext, useEffect, useMemo } from 'react';
-
-import Link from 'next/link';
+import React, { Dispatch, SetStateAction, createContext, useContext, useMemo } from 'react';
 
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import {
@@ -14,12 +12,13 @@ import {
 import axios from 'axios';
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict';
 import fromUnixTime from 'date-fns/fromUnixTime';
-import { useIsomorphicLayoutEffect, useLocalStorage, useUpdateEffect } from 'usehooks-ts';
+import { useLocalStorage, useUpdateEffect } from 'usehooks-ts';
 
 import { HomepageMappingItem, HomepageMappingItems } from '../../../pages/api/homepage_items';
 import useNextQueryParams from '../../hooks/useNextQueryParams';
 import ItemIcon from '../ItemIcon/ItemIcon';
-import { TaxCell } from './Cells/Tax';
+import NameCell from './Cells/Name';
+import TaxCell from './Cells/Tax';
 
 type LatestPrices = {
   data: {
@@ -39,7 +38,7 @@ type DailyVolumes = {
   };
 };
 
-type TableCompleteItem = {
+export type TableCompleteItem = {
   id: number;
   name: string;
   limit: number;
@@ -114,7 +113,7 @@ const columnHelper = createColumnHelper<TableCompleteItem>();
 
 const defaultColumns = [
   columnHelper.accessor('icon', {
-    header: 'Icon',
+    header: () => <div className="text-center">Icon</div>,
     cell: info => (
       <div className="flex justify-center">
         <ItemIcon icon={info.getValue()} name={info.row.original.name} width={30} />
@@ -124,14 +123,8 @@ const defaultColumns = [
   }),
   // columnHelper.accessor('id', { cell: info => info.getValue() }),
   columnHelper.accessor('name', {
-    header: () => <div className="text-left">Name</div>,
-    cell: info => (
-      <div className="whitespace-nowrap text-left">
-        <Link href={`/item/${info.row.original.id}`}>
-          <a className="text-blue-600 hover:underline dark:text-blue-300">{info.getValue()}</a>
-        </Link>
-      </div>
-    ),
+    header: 'Name',
+    cell: context => <NameCell context={context} />,
     enableSorting: true,
     enableHiding: true,
     sortingFn: 'text',
@@ -175,7 +168,11 @@ const defaultColumns = [
     cell: info => distanceToNowFromUnixTime(info.getValue()),
     enableSorting: true,
   }),
-  columnHelper.accessor('tax', { header: 'Tax', cell: info => <TaxCell tax={info.getValue()} />, enableSorting: true }),
+  columnHelper.accessor('tax', {
+    header: 'Tax',
+    cell: context => <TaxCell context={context} />,
+    enableSorting: true,
+  }),
 ];
 
 const ItemTableContext = createContext<ItemTableContextType>(undefined!);

@@ -13,9 +13,9 @@ const ItemTable = () => {
       <table
         role="table"
         aria-label="Price information for all items tradeable on the OSRS grand exchange"
-        className="w-full border-collapse bg-slate-300 dark:bg-slate-500"
+        className="w-full border-collapse rounded-md bg-slate-300 font-plex-sans tracking-tight dark:bg-slate-500"
       >
-        <thead className="select-none">
+        <thead className="select-none text-left">
           {table.getHeaderGroups()[0].headers.map(header => (
             <th
               key={header.id}
@@ -40,7 +40,7 @@ const ItemTable = () => {
               className="h-16 transition-all duration-75 odd:bg-cyan-200 even:bg-cyan-100 hover:bg-cyan-50 dark:odd:bg-cyan-800 dark:even:bg-cyan-900 dark:hover:bg-cyan-700 "
             >
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="px-3 text-center">
+                <td key={cell.id} className="px-3">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
