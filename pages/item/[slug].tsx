@@ -71,7 +71,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
             </div>
             <div className="col-start-2 col-end-4 flex items-center gap-6">
               <h1 className="text-3xl font-bold xs:text-4xl sm:text-5xl">{item.name}</h1>
-              <ItemIcon icon={item.icon} name={item.name} shadow={true} className="xs:scale-125 sm:scale-150" />
+              <ItemIcon icon={item.icon} name={item.name} shadow={true} className="scale-125 sm:scale-150" />
             </div>
             <div className="col-start-2 col-end-4">
               <span className="text-gray-500">Live Grand Exchange pricing information for {item.name}</span>
