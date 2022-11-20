@@ -11,6 +11,9 @@ module.exports = {
       ...defaultTheme.screens,
     },
     extend: {
+      fontFamily: {
+        'plex-sans': ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
+      },
       dropShadow: {
         'item-icon-light': '0 1px 2px rgb(0 0 0 / .18)',
         'item-icon-dark': '0 1px 2px rgb(255 255 255 / .22)',

@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             attribute="class"
             value={{ light: lightTheme.className, dark: darkTheme.className }}
           >
-            <NextUIProvider>
+            <NextUIProvider disableBaseline={true}>
               <AriaSSRProvider>
                 <Header />
                 <Component {...pageProps} />
