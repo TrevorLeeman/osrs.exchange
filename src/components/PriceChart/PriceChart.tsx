@@ -24,7 +24,7 @@ import { Line } from 'react-chartjs-2';
 
 import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
 import { usePriceChartContext } from './PriceChartProvider';
-import type { Timestep } from './TimeIntervalButtonGroup';
+import type { Timestep } from './TimeIntervalOptions';
 
 type RealTimePrices = {
   data: [Price];
@@ -184,6 +184,8 @@ const PriceChart = ({ id }: { id: number }) => {
       }}
       options={{
         spanGaps: true,
+        aspectRatio: 1 / 2,
+        resizeDelay: 50,
         scales: {
           x: {
             type: 'time',

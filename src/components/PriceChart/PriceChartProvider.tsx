@@ -1,6 +1,6 @@
 import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 
-import type { Timestep } from './TimeIntervalButtonGroup';
+import type { Timestep } from './TimeIntervalOptions';
 
 interface PriceChartContextType {
   timestep: Timestep;

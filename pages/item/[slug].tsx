@@ -14,7 +14,7 @@ import BackArrowIcon from '../../src/components/Icons/BackArrow';
 import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
 import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
 import PriceChartProvider from '../../src/components/PriceChart/PriceChartProvider';
-import TimeIntervalButtonGroup from '../../src/components/PriceChart/TimeIntervalButtonGroup';
+import TimeIntervalButtonGroup from '../../src/components/PriceChart/TimeIntervalOptions';
 import knex from '../../src/db/db';
 import type { BasicItem } from '../../src/db/items';
 import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
@@ -63,7 +63,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       </Head>
       <div className="mb-3">
         <PriceChartProvider>
-          <div className="col mb-3 grid grid-cols-[min-content_auto] gap-1 sm:grid-rows-[auto_auto_minmax(0,1fr)] sm:gap-3">
+          <div className="col grid grid-cols-[min-content_auto] gap-y-1 gap-x-3 sm:grid-rows-[auto_auto_minmax(0,1fr)] sm:gap-y-3">
             <div>
               <button onClick={() => router.back()} title="Go back">
                 <BackArrowIcon width={isMaxMobile ? 36 : 48} height={isMaxMobile ? 36 : 48} />
@@ -77,7 +77,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
               <span className="text-gray-500">Live Grand Exchange pricing information for {item.name}</span>
             </div>
 
-            <div className="col-start-2">
+            <div className="col-start-2 my-3">
               <TimeIntervalButtonGroup />
             </div>
           </div>
