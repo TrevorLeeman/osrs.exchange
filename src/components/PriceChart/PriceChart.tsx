@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useTheme as useNextUiTheme } from '@nextui-org/react';
 import { QueryFunction, useQuery } from '@tanstack/react-query';
@@ -23,7 +23,7 @@ import enUS from 'date-fns/locale/en-US';
 import { Line } from 'react-chartjs-2';
 
 import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
-import { PriceChartContext } from './PriceChartProvider';
+import { usePriceChartContext } from './PriceChartProvider';
 import type { Timestep } from './TimeIntervalButtonGroup';
 
 type RealTimePrices = {
@@ -84,7 +84,7 @@ const fetchLongTermPrices: QueryFunction<LongTermPriceData> = async ({ queryKey 
 
 const PriceChart = ({ id }: { id: number }) => {
   const { isDark } = useNextUiTheme();
-  const { timestep, longTermPricesEnabled } = useContext(PriceChartContext);
+  const { timestep, longTermPricesEnabled } = usePriceChartContext();
   const gridColor = isDark ? '#3A3F42' : '#D7DBDF';
 
   const {

@@ -1,10 +1,8 @@
-import { useContext } from 'react';
-
 import { Button } from '@nextui-org/react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { ITEM_PAGE_QUERIES } from '../../../pages/item/[slug]';
-import { PriceChartContext } from './PriceChartProvider';
+import { usePriceChartContext } from './PriceChartProvider';
 
 export type Timestep = '5m' | '1h' | '6h' | '1y' | 'all';
 
@@ -27,7 +25,7 @@ const TimeIntervalButtonGroup = () => {
 
 const TimeIntervalButton = ({ title, timestep }: TimeIntervalButtonProps) => {
   const queryClient = useQueryClient();
-  const { timestep: selectedTimestep, setTimestep, setLongTermPricesEnabled } = useContext(PriceChartContext);
+  const { timestep: selectedTimestep, setTimestep, setLongTermPricesEnabled } = usePriceChartContext();
   const active = selectedTimestep === timestep;
 
   return (

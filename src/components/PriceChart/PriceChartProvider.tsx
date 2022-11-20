@@ -1,4 +1,4 @@
-import { Dispatch, ReactNode, SetStateAction, createContext, useState } from 'react';
+import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 
 import type { Timestep } from './TimeIntervalButtonGroup';
 
@@ -34,6 +34,16 @@ const PriceChartProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </PriceChartContext.Provider>
   );
+};
+
+export const usePriceChartContext = () => {
+  const context = useContext(PriceChartContext);
+
+  if (context === initialValues) {
+    throw new Error('usePriceChartContext must be used within a PriceChartProvider');
+  }
+
+  return context;
 };
 
 export default PriceChartProvider;
