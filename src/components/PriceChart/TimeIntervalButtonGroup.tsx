@@ -2,6 +2,7 @@ import { Button } from '@nextui-org/react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { ITEM_PAGE_QUERIES } from '../../../pages/item/[slug]';
+import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
 import { usePriceChartContext } from './PriceChartProvider';
 
 export type Timestep = '5m' | '1h' | '6h' | '1y' | 'all';
@@ -12,7 +13,11 @@ type TimeIntervalButtonProps = {
 };
 
 const TimeIntervalButtonGroup = () => {
-  return (
+  const isMaxMobileLarge = !useTailwindMinBreakpoint('sm');
+
+  return isMaxMobileLarge ? (
+    <></>
+  ) : (
     <Button.Group color="primary" bordered>
       <TimeIntervalButton title="All" timestep="all" />
       <TimeIntervalButton title="Year" timestep="1y" />
@@ -25,6 +30,7 @@ const TimeIntervalButtonGroup = () => {
 
 const TimeIntervalButton = ({ title, timestep }: TimeIntervalButtonProps) => {
   const queryClient = useQueryClient();
+
   const { timestep: selectedTimestep, setTimestep, setLongTermPricesEnabled } = usePriceChartContext();
   const active = selectedTimestep === timestep;
 

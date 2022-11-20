@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
-import { Input, Spacer } from '@nextui-org/react';
+import { Input } from '@nextui-org/react';
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { UseComboboxGetItemPropsOptions, useCombobox } from 'downshift';

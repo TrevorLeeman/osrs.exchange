@@ -13,31 +13,33 @@ const ItemTable = () => {
       <table
         role="table"
         aria-label="Price information for all items tradeable on the OSRS grand exchange"
-        className="w-full border-collapse rounded-md bg-slate-300 font-plex-sans tracking-tight dark:bg-slate-500"
+        className=" w-full border-separate border-spacing-0  rounded-xl  font-plex-sans text-sm  sm:text-base"
       >
         <thead className="select-none text-left">
-          {table.getHeaderGroups()[0].headers.map(header => (
-            <th
-              key={header.id}
-              onClick={header.column.getToggleSortingHandler()}
-              className={`h-16 px-3 ${
-                header.column.columnDef.enableSorting
-                  ? 'cursor-pointer transition-all duration-75 hover:bg-slate-400 dark:hover:bg-slate-600'
-                  : ''
-              }`}
-            >
-              <div>
-                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                {/* {header.column.columnDef.enableSorting ? <SortIcon /> : null} */}
-              </div>
-            </th>
-          ))}
+          <tr>
+            {table.getHeaderGroups()[0].headers.map(header => (
+              <th
+                key={header.id}
+                onClick={header.column.getToggleSortingHandler()}
+                className={`sticky top-0 z-10 h-16 border-b-2 border-yellow-400 bg-slate-300 px-3 first:rounded-tl-xl last:rounded-tr-xl dark:bg-slate-500 ${
+                  header.column.columnDef.enableSorting
+                    ? 'cursor-pointer transition-all duration-75 hover:bg-slate-400 dark:hover:bg-slate-600'
+                    : ''
+                }`}
+              >
+                <div>
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  {/* {header.column.columnDef.enableSorting ? <SortIcon /> : null} */}
+                </div>
+              </th>
+            ))}
+          </tr>
         </thead>
-        <tbody>
+        <tbody className="tracking-tight">
           {table.getRowModel().rows.map(row => (
             <tr
               key={row.id}
-              className="h-16 transition-all duration-75 odd:bg-cyan-200 even:bg-cyan-100 hover:bg-cyan-50 dark:odd:bg-cyan-800 dark:even:bg-cyan-900 dark:hover:bg-cyan-700 "
+              className="h-16 transition-all duration-75 odd:bg-cyan-200 even:bg-cyan-100 hover:bg-cyan-50 dark:odd:bg-cyan-800 dark:even:bg-cyan-900 dark:hover:bg-cyan-700 [&:last-child_:first-child]:rounded-bl-xl [&:last-child_:last-child]:rounded-br-xl"
             >
               {row.getVisibleCells().map(cell => (
                 <td key={cell.id} className="px-3">

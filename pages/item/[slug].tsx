@@ -13,12 +13,14 @@ import NotFound from '../../src/components/404/NotFound';
 import BackArrowIcon from '../../src/components/Icons/BackArrow';
 import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
 import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
+import PriceChartProvider from '../../src/components/PriceChart/PriceChartProvider';
+import TimeIntervalButtonGroup from '../../src/components/PriceChart/TimeIntervalButtonGroup';
 import knex from '../../src/db/db';
 import type { BasicItem } from '../../src/db/items';
 import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
 import useTailwindMinBreakpoint from '../../src/hooks/useTailwindBreakpoint';
 
-const PriceChartWithControls = dynamic(() => import('../../src/components/PriceChart/PriceChartWithControls'), {
+const DynamicPriceChart = dynamic(() => import('../../src/components/PriceChart/PriceChart'), {
   ssr: false,
 });
 
@@ -59,31 +61,34 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       <Head>
         <title>{title}</title>
       </Head>
-      <div className="mb-3 px-1 3xs:px-2 2xs:px-3 sm:px-10">
-        <div className="col mb-3 grid grid-cols-[auto_minmax(0,1fr)] gap-3 sm:grid-rows-2 lg:grid-cols-3">
-          <button
-            onClick={() => router.back()}
-            title="Go back"
-            className="flex cursor-pointer items-center rounded border-0 bg-transparent"
-          >
-            <BackArrowIcon width={isMaxMobile ? 36 : 48} height={isMaxMobile ? 36 : 48} />
-          </button>
-          <div className="col-start-2 col-end-4 flex items-center gap-5">
-            <h1 className="text-2xl font-bold xs:text-3xl sm:text-5xl">{item.name}</h1>
-            <ItemIcon icon={item.icon} name={item.name} shadow={true} />
+      <div className="mb-3">
+        <PriceChartProvider>
+          <div className="col mb-3 grid grid-cols-[min-content_auto] gap-1 sm:grid-rows-[auto_auto_minmax(0,1fr)] sm:gap-3">
+            <div>
+              <button onClick={() => router.back()} title="Go back">
+                <BackArrowIcon width={isMaxMobile ? 36 : 48} height={isMaxMobile ? 36 : 48} />
+              </button>
+            </div>
+            <div className="col-start-2 col-end-4 flex items-center gap-6">
+              <h1 className="text-3xl font-bold xs:text-4xl sm:text-5xl">{item.name}</h1>
+              <ItemIcon icon={item.icon} name={item.name} shadow={true} className="xs:scale-125 sm:scale-150" />
+            </div>
+            <div className="col-start-2 col-end-4">
+              <span className="text-gray-500">Live Grand Exchange pricing information for {item.name}</span>
+            </div>
+
+            <div className="col-start-2">
+              <TimeIntervalButtonGroup />
+            </div>
           </div>
-          <div className="col-start-2 col-end-4 hidden sm:block">
-            <span className="text-gray-500">Live Grand Exchange pricing information for {item.name}</span>
-          </div>
-        </div>
-        <PriceChartWithControls item={item} />
-        <Spacer y={2} />
-        <Collapse.Group accordion={false} shadow>
-          <Collapse title="Item Info" className="select-none">
-            <ItemInfo item={item} />
-          </Collapse>
-        </Collapse.Group>
+          <DynamicPriceChart id={item.id} />
+        </PriceChartProvider>
       </div>
+      <Collapse.Group accordion={false} shadow>
+        <Collapse title="Item Info" className="select-none">
+          <ItemInfo item={item} />
+        </Collapse>
+      </Collapse.Group>
     </>
   ) : (
     <NotFound />

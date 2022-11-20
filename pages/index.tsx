@@ -10,7 +10,7 @@ import TablePagination from '../src/components/ItemTable/TablePagination';
 const Home: NextPage = () => {
   return (
     <ItemTableProvider>
-      <div className="flex flex-col justify-center px-4">
+      <div className="flex flex-col justify-center">
         <div className="mb-4 flex flex-col-reverse items-center gap-4 md:grid md:grid-cols-3">
           <div className="col-start-2 place-self-center">
             <TablePagination />

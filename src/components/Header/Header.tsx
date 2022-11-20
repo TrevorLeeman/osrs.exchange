@@ -1,10 +1,7 @@
 import Link from 'next/link';
 
-import { Text } from '@nextui-org/react';
-
 import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
 import HomeIcon from '../Icons/Home';
-import ItemTable from '../ItemTable/ItemTable';
 import Search from '../Search/Search';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
@@ -12,7 +9,7 @@ const Header = () => {
   const isMinTablet = useTailwindMinBreakpoint('sm');
 
   return (
-    <header className="flex items-center gap-5 p-4 sm:grid sm:grid-cols-3">
+    <header className="mb-3 flex items-center gap-5 sm:mb-6 sm:grid sm:grid-cols-3 lg:mb-12">
       <Link href="/" title="OSRS Exchange Homepage">
         {isMinTablet ? (
           <span className="bg-gradient-to-b from-yellow-400 to-yellow-500 bg-clip-text text-2xl font-bold text-transparent">

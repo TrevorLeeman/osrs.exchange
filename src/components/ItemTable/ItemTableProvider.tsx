@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict';
 import fromUnixTime from 'date-fns/fromUnixTime';
+import locale from 'date-fns/locale/en-US';
 import { useLocalStorage, useUpdateEffect } from 'usehooks-ts';
 
 import { HomepageMappingItem, HomepageMappingItems } from '../../../pages/api/homepage_items';
@@ -116,7 +117,7 @@ const defaultColumns = [
     header: () => <div className="text-center">Icon</div>,
     cell: info => (
       <div className="flex justify-center">
-        <ItemIcon icon={info.getValue()} name={info.row.original.name} width={30} />
+        <ItemIcon icon={info.getValue()} name={info.row.original.name} className="scale-110" />
       </div>
     ),
     enableSorting: false,

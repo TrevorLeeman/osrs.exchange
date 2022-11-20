@@ -37,9 +37,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           >
             <NextUIProvider disableBaseline={true}>
               <AriaSSRProvider>
-                <Header />
-                <Component {...pageProps} />
-                <ReactQueryDevtools initialIsOpen={false} />
+                <div className="px-1 py-3 3xs:px-2 2xs:px-3 xs:px-5 lg:px-10 lg:py-6 xl:px-12">
+                  <Header />
+                  <Component {...pageProps} />
+                  <ReactQueryDevtools initialIsOpen={false} />
+                </div>
               </AriaSSRProvider>
             </NextUIProvider>
           </NextThemesProvider>

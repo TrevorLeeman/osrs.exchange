@@ -1,5 +1,3 @@
-import { Container } from '@nextui-org/react';
-
 import { BasicItem } from '../../db/items';
 import PriceChart from './PriceChart';
 import PriceChartProvider from './PriceChartProvider';
@@ -11,9 +9,9 @@ type PriceChartWithControlsProps = {
 
 const PriceChartWithControls = ({ item }: PriceChartWithControlsProps) => (
   <PriceChartProvider>
-    <Container display="flex" alignItems="center" justify="flex-end">
+    <div className="flex items-center justify-start md:justify-end">
       <TimeIntervalButtonGroup />
-    </Container>
+    </div>
     <PriceChart id={item.id} />
   </PriceChartProvider>
 );
