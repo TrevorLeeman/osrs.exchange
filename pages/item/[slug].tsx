@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
-import { Collapse, Container, Loading, Spacer, Text } from '@nextui-org/react';
+import { Collapse, Loading, Spacer } from '@nextui-org/react';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { ParsedUrlQuery } from 'querystring';
 
@@ -16,8 +16,9 @@ import ItemInfo from '../../src/components/ItemInfo/ItemInfo';
 import knex from '../../src/db/db';
 import type { BasicItem } from '../../src/db/items';
 import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
+import useTailwindMinBreakpoint from '../../src/hooks/useTailwindBreakpoint';
 
-const DynamicGrandExchangeCard = dynamic(() => import('../../src/components/GrandExchangeCard/GrandExchangeCard'), {
+const PriceChartWithControls = dynamic(() => import('../../src/components/PriceChart/PriceChartWithControls'), {
   ssr: false,
 });
 
@@ -49,6 +50,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
   const router = useRouter();
   const item = itemData ? itemData[0] : null;
   const title = useMemo(() => `OSRS Exchange | ${item?.name}`, [item?.name]);
+  const isMaxMobile = !useTailwindMinBreakpoint('xs');
 
   if (itemIsLoading) return <Loading />;
 
@@ -57,28 +59,31 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       <Head>
         <title>{title}</title>
       </Head>
-      <Container fluid>
-        <div className="flex items-center gap-5">
+      <div className="mb-3 px-1 3xs:px-2 2xs:px-3 sm:px-10">
+        <div className="col mb-3 grid grid-cols-[auto_minmax(0,1fr)] gap-3 sm:grid-rows-2 lg:grid-cols-3">
           <button
             onClick={() => router.back()}
             title="Go back"
             className="flex cursor-pointer items-center rounded border-0 bg-transparent"
           >
-            <BackArrowIcon width={48} height={48} />
+            <BackArrowIcon width={isMaxMobile ? 36 : 48} height={isMaxMobile ? 36 : 48} />
           </button>
-          <h1 className="text-5xl font-bold ">{item.name}</h1>
-          <ItemIcon icon={item.icon} name={item.name} width={44} shadow={true} />
+          <div className="col-start-2 col-end-4 flex items-center gap-5">
+            <h1 className="text-2xl font-bold xs:text-3xl sm:text-5xl">{item.name}</h1>
+            <ItemIcon icon={item.icon} name={item.name} shadow={true} />
+          </div>
+          <div className="col-start-2 col-end-4 hidden sm:block">
+            <span className="text-gray-500">Live Grand Exchange pricing information for {item.name}</span>
+          </div>
         </div>
-        <Spacer y={1} />
-        <DynamicGrandExchangeCard item={item} />
+        <PriceChartWithControls item={item} />
         <Spacer y={2} />
         <Collapse.Group accordion={false} shadow>
           <Collapse title="Item Info" className="select-none">
             <ItemInfo item={item} />
           </Collapse>
         </Collapse.Group>
-        <Spacer y={1} />
-      </Container>
+      </div>
     </>
   ) : (
     <NotFound />
