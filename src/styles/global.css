@@ -4,7 +4,8 @@
 
 html,
 body,
-#__next {
+#__next,
+div[data-overlay-container='true'] {
   height: 100%;
 }
 
