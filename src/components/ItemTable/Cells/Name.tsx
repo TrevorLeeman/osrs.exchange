@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { CellContext } from '@tanstack/react-table';
 
+import LinkBlue from '../../Common/LinkBlue';
 import { TableCompleteItem } from '../ItemTableProvider';
 
 type NameCellProps = {
@@ -10,9 +11,7 @@ type NameCellProps = {
 
 const NameCell = ({ context }: NameCellProps) => (
   <div className="whitespace-nowrap text-left">
-    <Link href={`/item/${context.row.original.id}`} className="text-blue-600 hover:underline dark:text-blue-300">
-      {context.getValue()}
-    </Link>
+    <LinkBlue href={`/item/${context.row.original.id}`}>{context.getValue()}</LinkBlue>
   </div>
 );
 
