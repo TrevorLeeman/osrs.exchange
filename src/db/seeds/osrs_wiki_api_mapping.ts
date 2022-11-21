@@ -1,5 +1,5 @@
-import type { Knex } from 'knex';
 import axios from 'axios';
+import type { Knex } from 'knex';
 
 export type WikiApiMappingItem = {
   id: number;
@@ -13,6 +13,16 @@ export type WikiApiMappingItem = {
   examine: string;
 };
 
+// Fix icons that are broken in the wiki api mapping
+const iconOverride = (iconUrl: string) => {
+  switch (iconUrl) {
+    case "Pharaoh's sceptre (uncharged).png":
+      return "Pharaoh's sceptre.png";
+    default:
+      return iconUrl;
+  }
+};
+
 export async function seed(knex: Knex): Promise<void> {
   await truncateAllTables(knex);
   const apiItems = await axios
@@ -23,7 +33,7 @@ export async function seed(knex: Knex): Promise<void> {
       id: item.id,
       name: item.name,
       limit: item.limit,
-      icon: item.icon,
+      icon: iconOverride(item.icon),
       value: item.value,
       lowalch: item.lowalch,
       highalch: item.highalch,
