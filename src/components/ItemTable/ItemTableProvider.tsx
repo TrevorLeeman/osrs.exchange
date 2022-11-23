@@ -1,7 +1,9 @@
-import React, { Dispatch, SetStateAction, createContext, useContext, useMemo } from 'react';
+import React, { Dispatch, SetStateAction, createContext, useCallback, useContext, useMemo } from 'react';
 
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import {
+  Header,
+  SortDirection,
   Table,
   createColumnHelper,
   getCoreRowModel,
@@ -12,8 +14,7 @@ import {
 import axios from 'axios';
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict';
 import fromUnixTime from 'date-fns/fromUnixTime';
-import locale from 'date-fns/locale/en-US';
-import { useLocalStorage, useUpdateEffect } from 'usehooks-ts';
+import { useLocalStorage, useSessionStorage, useUpdateEffect } from 'usehooks-ts';
 
 import { HomepageMappingItem, HomepageMappingItems } from '../../../pages/api/homepage_items';
 import useNextQueryParams from '../../hooks/useNextQueryParams';
@@ -63,11 +64,16 @@ type ItemTableProviderProps = {
   updateUrlOnPagination?: boolean;
 };
 
+type SortHandler = (params: { header: Header<TableCompleteItem, unknown> }) => void;
+
+type SortDescNext = (params: { currentSortDirection: SortDirection | false }) => boolean;
+
 type ItemTableContextType = {
   items: TableCompleteItem[];
   table: Table<TableCompleteItem>;
   setPageIndex: (state: number) => void;
   setPageSize: Dispatch<SetStateAction<number>>;
+  sortHandler: SortHandler;
 };
 
 const HOMEPAGE_QUERIES = {
@@ -110,6 +116,17 @@ const distanceToNowFromUnixTime = (unixTime: number | null | undefined) => {
   return formatDistanceToNowStrict(fromUnixTime(unixTime));
 };
 
+const sortDescNext: SortDescNext = ({ currentSortDirection }) => {
+  switch (currentSortDirection) {
+    case false:
+      return true;
+    case 'asc':
+      return true;
+    case 'desc':
+      return false;
+  }
+};
+
 const columnHelper = createColumnHelper<TableCompleteItem>();
 
 const defaultColumns = [
@@ -137,16 +154,16 @@ const defaultColumns = [
   }),
   columnHelper.accessor('limit', {
     header: 'Limit',
-    cell: info => info.getValue()?.toLocaleString() ?? '??',
+    cell: info => info.getValue()?.toLocaleString(),
     enableSorting: true,
   }),
   columnHelper.accessor('instaSellPrice', {
-    header: 'Instasell',
+    header: 'Sell Price',
     cell: info => info.getValue()?.toLocaleString(),
     enableSorting: true,
   }),
   columnHelper.accessor('instaBuyPrice', {
-    header: 'Instabuy',
+    header: 'Buy Price',
     cell: info => info.getValue()?.toLocaleString(),
     enableSorting: true,
   }),
@@ -160,12 +177,12 @@ const defaultColumns = [
   // columnHelper.accessor('highalch', { header: 'High Alch', cell: info => info.getValue().toLocaleString() }),
   // columnHelper.accessor('members', { header: 'Members', cell: info => info.getValue() }),
   columnHelper.accessor('instaSellTime', {
-    header: 'Instasell Time',
+    header: 'Latest Sell',
     cell: info => distanceToNowFromUnixTime(info.getValue()),
     enableSorting: true,
   }),
   columnHelper.accessor('instaBuyTime', {
-    header: 'Instabuy Time',
+    header: 'Latest Buy',
     cell: info => distanceToNowFromUnixTime(info.getValue()),
     enableSorting: true,
   }),
@@ -209,6 +226,21 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     pageIndex => (Number(pageIndex) !== NaN ? Number(pageIndex) - 1 : 10),
   );
   const [pageSize, setPageSize] = useLocalStorage('pageSize', 10);
+  // const [sortOptions, setSortOptions] = useNextQueryParams(
+  //   'sortOptions',
+  //   [{ id: 'instaSellPrice', desc: true }],
+  //   options => encodeURIComponent(JSON.stringify(options)),
+  //   options =>
+  //     typeof options === 'string' ? JSON.parse(decodeURIComponent(options)) : [{ id: 'instaSellPrice', desc: true }],
+  // );
+  const [sortOptions, setSortOptions] = useSessionStorage('sortOptions', [{ id: 'instaSellPrice', desc: true }]);
+
+  const sortHandler: SortHandler = useCallback(({ header }) => {
+    setSortOptions([
+      { id: header.column.id, desc: sortDescNext({ currentSortDirection: header.column.getIsSorted() }) },
+    ]);
+  }, []);
+
   const completeItems = useMemo(
     () =>
       itemMappings
@@ -244,11 +276,13 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     data: completeItems?.length ? completeItems : [],
     columns: defaultColumns,
     state: {
+      sorting: sortOptions,
       pagination: {
         pageIndex,
         pageSize,
       },
     },
+    sortDescFirst: true,
     autoResetPageIndex: false,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -264,7 +298,9 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
   }, [pageSize]);
 
   return (
-    <ItemTableContext.Provider value={{ items: completeItems ?? [], ...{ table }, setPageIndex, setPageSize }}>
+    <ItemTableContext.Provider
+      value={{ items: completeItems ?? [], ...{ table }, setPageIndex, setPageSize, sortHandler }}
+    >
       {children}
     </ItemTableContext.Provider>
   );
