@@ -1,10 +1,15 @@
-import { flexRender } from '@tanstack/react-table';
+import { Header, flexRender } from '@tanstack/react-table';
 import { useIsClient } from 'usehooks-ts';
 
-import SortIcon from '../Icons/Sort';
-import { useItemTableContext } from './ItemTableProvider';
+import SortAscIcon from '../Icons/SortAsc';
+import SortDescIcon from '../Icons/SortDesc';
+import { TableCompleteItem, useItemTableContext } from './ItemTableProvider';
 
-const ItemTable = () => {
+type SortIconProps = {
+  header: Header<TableCompleteItem, unknown>;
+};
+
+export const ItemTable = () => {
   const isClient = useIsClient();
 
   return isClient ? (
@@ -37,9 +42,9 @@ const TableHead = () => {
                 : ''
             }`}
           >
-            <div className="flex">
+            <div className="flex gap-2">
               {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-              {header.column.columnDef.enableSorting ? <SortIcon /> : null}
+              <SortIcon header={header} />
             </div>
           </th>
         ))}
@@ -69,4 +74,7 @@ const TableBody = () => {
   );
 };
 
-export default ItemTable;
+const SortIcon = ({ header }: SortIconProps) => {
+  if (!header.column.getIsSorted()) return null;
+  return header.column.getIsSorted() === 'asc' ? <SortAscIcon /> : <SortDescIcon />;
+};

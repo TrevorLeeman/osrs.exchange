@@ -86,7 +86,7 @@ const columnHelper = createColumnHelper<TableCompleteItem>();
 
 const defaultColumns = [
   columnHelper.accessor('icon', {
-    header: () => <div className="text-center">Icon</div>,
+    header: () => <div className="grow text-center">Icon</div>,
     cell: info => (
       <div className="flex justify-center">
         <ItemIcon icon={info.getValue()} name={info.row.original.name} className="scale-110" />
