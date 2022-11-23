@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 
-import ItemTable from '../src/components/ItemTable/ItemTable';
+import { ItemTable } from '../src/components/ItemTable/ItemTable';
 import { ItemTableProvider } from '../src/components/ItemTable/ItemTableProvider';
 import ItemsPerPageDropdown from '../src/components/ItemTable/ItemsPerPageDropdown';
 import TablePagination from '../src/components/ItemTable/TablePagination';

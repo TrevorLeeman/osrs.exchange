@@ -20,31 +20,7 @@ type AutocompleteItemProps = {
   getItemProps: (options: UseComboboxGetItemPropsOptions<SearchItem>) => any;
 };
 
-const fetchAutocompleteList: QueryFunction<SearchItem[]> = async ({ queryKey }) => {
-  const [_key, { inputValue }] = queryKey as [string, { inputValue: string }];
-  if (!inputValue) return [];
-
-  return axios
-    .get<{ items: SearchItem[] }>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/item_search/${inputValue}`)
-    .then(res => res.data.items);
-};
-
-const useAutocompleteList = ({
-  inputValue,
-  setItems,
-}: {
-  inputValue: string;
-  setItems: Dispatch<SetStateAction<SearchItem[]>>;
-}) => {
-  return useQuery<SearchItem[]>(['autocomplete', { inputValue }], fetchAutocompleteList, {
-    initialData: [],
-    onSuccess(data) {
-      setItems(() => data);
-    },
-  });
-};
-
-const Search = () => {
+export const Search = () => {
   const router = useRouter();
   const [items, setItems] = useState<SearchItem[]>([]);
 
@@ -107,6 +83,15 @@ const Search = () => {
   );
 };
 
+const fetchAutocompleteList: QueryFunction<SearchItem[]> = async ({ queryKey }) => {
+  const [_key, { inputValue }] = queryKey as [string, { inputValue: string }];
+  if (!inputValue) return [];
+
+  return axios
+    .get<{ items: SearchItem[] }>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/item_search/${inputValue}`)
+    .then(res => res.data.items);
+};
+
 const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: AutocompleteItemProps) => (
   <li
     className={`m-0 flex min-h-[60px] cursor-pointer items-center border-2 p-3 first:rounded-t-xl last:rounded-b-xl odd:bg-slate-200 even:bg-slate-100 dark:odd:bg-slate-800 dark:even:bg-slate-700 ${
@@ -122,4 +107,17 @@ const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: Autoc
   </li>
 );
 
-export default Search;
+const useAutocompleteList = ({
+  inputValue,
+  setItems,
+}: {
+  inputValue: string;
+  setItems: Dispatch<SetStateAction<SearchItem[]>>;
+}) => {
+  return useQuery<SearchItem[]>(['autocomplete', { inputValue }], fetchAutocompleteList, {
+    initialData: [],
+    onSuccess(data) {
+      setItems(() => data);
+    },
+  });
+};

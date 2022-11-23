@@ -1,5 +1,6 @@
-import type { Knex } from 'knex';
 import dotenv from 'dotenv';
+import type { Knex } from 'knex';
+
 dotenv.config({ path: '.env.local' });
 
 const config: { [key: string]: Knex.Config } = {
@@ -25,5 +26,4 @@ const config: { [key: string]: Knex.Config } = {
     useNullAsDefault: true,
   },
 };
-
 export default config;

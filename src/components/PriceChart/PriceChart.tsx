@@ -26,6 +26,8 @@ import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
 import { usePriceChartContext } from './PriceChartProvider';
 import type { Timestep } from './TimeIntervalOptions';
 
+export type PriceChartProps = { id: number };
+
 type RealTimePrices = {
   data: [Price];
 };
@@ -68,21 +70,7 @@ const LABELS = {
   average: 'Average price',
 };
 
-const fetchRealTimePrices: QueryFunction<RealTimePrices> = async ({ queryKey }) => {
-  const [_key, { id, timestep }] = queryKey as [string, { id: number; timestep: Timestep }];
-  return axios
-    .get<RealTimePrices>(`https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=${timestep}&id=${id}`)
-    .then(res => res.data);
-};
-
-const fetchLongTermPrices: QueryFunction<LongTermPriceData> = async ({ queryKey }) => {
-  const [_key, { id }] = queryKey as [string, { id: number }];
-  return axios
-    .get<LongTermPriceData>(`https://api.weirdgloop.org/exchange/history/osrs/all?id=${id}&compress=false`)
-    .then(res => res.data);
-};
-
-const PriceChart = ({ id }: { id: number }) => {
+export const PriceChart = ({ id }: PriceChartProps) => {
   const { isDark } = useNextUiTheme();
   const { timestep, longTermPricesEnabled } = usePriceChartContext();
   const gridColor = isDark ? '#3A3F42' : '#D7DBDF';
@@ -281,4 +269,16 @@ const PriceChart = ({ id }: { id: number }) => {
   );
 };
 
-export default PriceChart;
+const fetchRealTimePrices: QueryFunction<RealTimePrices> = async ({ queryKey }) => {
+  const [_key, { id, timestep }] = queryKey as [string, { id: number; timestep: Timestep }];
+  return axios
+    .get<RealTimePrices>(`https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=${timestep}&id=${id}`)
+    .then(res => res.data);
+};
+
+const fetchLongTermPrices: QueryFunction<LongTermPriceData> = async ({ queryKey }) => {
+  const [_key, { id }] = queryKey as [string, { id: number }];
+  return axios
+    .get<LongTermPriceData>(`https://api.weirdgloop.org/exchange/history/osrs/all?id=${id}&compress=false`)
+    .then(res => res.data);
+};

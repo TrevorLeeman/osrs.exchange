@@ -82,51 +82,6 @@ const HOMEPAGE_QUERIES = {
   itemMapping: 'item_mapping',
 };
 
-const fetchLatestPrices: QueryFunction<LatestPrices> = async () => {
-  return axios.get<LatestPrices>('https://prices.runescape.wiki/api/v1/osrs/latest').then(res => res.data);
-};
-
-const fetchDailyVolumes: QueryFunction<DailyVolumes> = async () => {
-  return axios.get<DailyVolumes>('https://prices.runescape.wiki/api/v1/osrs/volumes').then(res => res.data);
-};
-
-const fetchHomepageMappingItems: QueryFunction<HomepageMappingItem[]> = async () => {
-  return axios
-    .get<HomepageMappingItems>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/homepage_items`)
-    .then(res => JSON.parse(res.data.items));
-};
-
-const calculateTax = (instaBuyPrice: number | null | undefined) => {
-  if (!instaBuyPrice || instaBuyPrice < 100) return 0;
-  if (instaBuyPrice >= 500_000_000) return 5_000_000;
-  return Math.floor(instaBuyPrice * 0.01);
-};
-
-const calculateROI = (instaBuyPrice: number | null | undefined, instaSellPrice: number | null | undefined) => {
-  if (!instaBuyPrice || !instaSellPrice) return null;
-  return ((instaBuyPrice - (instaSellPrice + calculateTax(instaSellPrice))) / instaSellPrice) * 100;
-};
-
-// const calculatePotentialProfit = ()
-
-// const calculateHighAlchProfit = ()
-
-const distanceToNowFromUnixTime = (unixTime: number | null | undefined) => {
-  if (!unixTime) return null;
-  return formatDistanceToNowStrict(fromUnixTime(unixTime));
-};
-
-const sortDescNext: SortDescNext = ({ currentSortDirection }) => {
-  switch (currentSortDirection) {
-    case false:
-      return true;
-    case 'asc':
-      return true;
-    case 'desc':
-      return false;
-  }
-};
-
 const columnHelper = createColumnHelper<TableCompleteItem>();
 
 const defaultColumns = [
@@ -314,4 +269,49 @@ export const useItemTableContext = () => {
   }
 
   return context;
+};
+
+const fetchLatestPrices: QueryFunction<LatestPrices> = async () => {
+  return axios.get<LatestPrices>('https://prices.runescape.wiki/api/v1/osrs/latest').then(res => res.data);
+};
+
+const fetchDailyVolumes: QueryFunction<DailyVolumes> = async () => {
+  return axios.get<DailyVolumes>('https://prices.runescape.wiki/api/v1/osrs/volumes').then(res => res.data);
+};
+
+const fetchHomepageMappingItems: QueryFunction<HomepageMappingItem[]> = async () => {
+  return axios
+    .get<HomepageMappingItems>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/homepage_items`)
+    .then(res => JSON.parse(res.data.items));
+};
+
+const calculateTax = (instaBuyPrice: number | null | undefined) => {
+  if (!instaBuyPrice || instaBuyPrice < 100) return 0;
+  if (instaBuyPrice >= 500_000_000) return 5_000_000;
+  return Math.floor(instaBuyPrice * 0.01);
+};
+
+const calculateROI = (instaBuyPrice: number | null | undefined, instaSellPrice: number | null | undefined) => {
+  if (!instaBuyPrice || !instaSellPrice) return null;
+  return ((instaBuyPrice - (instaSellPrice + calculateTax(instaSellPrice))) / instaSellPrice) * 100;
+};
+
+// const calculatePotentialProfit = ()
+
+// const calculateHighAlchProfit = ()
+
+const distanceToNowFromUnixTime = (unixTime: number | null | undefined) => {
+  if (!unixTime) return null;
+  return formatDistanceToNowStrict(fromUnixTime(unixTime));
+};
+
+const sortDescNext: SortDescNext = ({ currentSortDirection }) => {
+  switch (currentSortDirection) {
+    case false:
+      return true;
+    case 'asc':
+      return true;
+    case 'desc':
+      return false;
+  }
 };

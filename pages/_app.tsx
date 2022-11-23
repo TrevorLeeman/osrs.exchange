@@ -21,7 +21,7 @@ const darkTheme = createNextUiTheme({
   type: 'dark',
 });
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   const queryClient = useRef(new QueryClient());
 
   return (
@@ -53,6 +53,5 @@ function MyApp({ Component, pageProps }: AppProps) {
       </QueryClientProvider>
     </>
   );
-}
-
+};
 export default MyApp;
