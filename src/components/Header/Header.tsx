@@ -13,7 +13,7 @@ const Header = () => {
       <div>
         <Link href="/" title="OSRS Exchange Homepage">
           {isMinTablet ? (
-            <span className="bg-gradient-to-b from-yellow-400 to-yellow-500 bg-clip-text text-2xl font-bold text-transparent">
+            <span className="bg-gradient-to-b from-indigo-500 to-indigo-600 bg-clip-text text-2xl font-bold text-transparent dark:from-yellow-400 dark:to-yellow-500">
               OSRS Exchange
             </span>
           ) : (

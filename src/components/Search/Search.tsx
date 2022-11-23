@@ -95,7 +95,7 @@ const fetchAutocompleteList: QueryFunction<SearchItem[]> = async ({ queryKey }) 
 const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: AutocompleteItemProps) => (
   <li
     className={`m-0 flex min-h-[60px] cursor-pointer items-center border-2 p-3 first:rounded-t-xl last:rounded-b-xl odd:bg-slate-200 even:bg-slate-100 dark:odd:bg-slate-800 dark:even:bg-slate-700 ${
-      highlightedIndex === index ? 'border-slate-900 dark:border-white' : 'border-transparent'
+      highlightedIndex === index ? 'border-indigo-600 dark:border-yellow-400' : 'border-transparent'
     }`}
     key={`${item.id}`}
     {...getItemProps({ item, index })}
