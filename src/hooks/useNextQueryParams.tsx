@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
+import omit from 'lodash/omit';
+
 function useNextQueryParams<T>(
   paramsName: string,
   initialState: T,
@@ -17,6 +19,13 @@ function useNextQueryParams<T>(
     // Updates state when user navigates backwards or forwards in browser history
     if (existingValue && deserialize(existingValue) !== state) {
       setState(deserialize(existingValue));
+    }
+
+    if (existingValue === 'null') {
+      router.push({ pathname: router.pathname, query: { ...omit(router.query, paramsName) } }, undefined, {
+        scroll: false,
+        shallow: true,
+      });
     }
 
     if (existingValue === undefined) {
