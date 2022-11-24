@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+
 import knex from '../../../src/db/db';
 import { WikiApiMappingItem } from '../../../src/db/seeds/osrs_wiki_api_mapping';
 
@@ -6,16 +7,11 @@ export type HomepageMappingItems = {
   items: string;
 };
 
-export type HomepageMappingItem = Pick<
-  WikiApiMappingItem,
-  'id' | 'name' | 'limit' | 'icon' | 'value' | 'lowalch' | 'highalch' | 'members'
->;
-
 const handler = async (req: NextApiRequest, res: NextApiResponse<HomepageMappingItems>) => {
   try {
     if (req.method === 'GET') {
       const homepageMappingItems = await knex
-        .select<HomepageMappingItem[]>(
+        .select<WikiApiMappingItem[]>(
           'im.id',
           'im.name',
           'im.limit',
@@ -24,6 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<HomepageMapping
           'im.lowalch',
           'im.highalch',
           'im.members',
+          'im.examine',
         )
         .from<WikiApiMappingItem>({
           im: 'item_mapping',

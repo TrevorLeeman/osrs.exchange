@@ -70,6 +70,27 @@ const LABELS = {
   average: 'Average price',
 };
 
+export const CHART_THEME = {
+  colors: {
+    buy: {
+      light: '#90ed99',
+      dark: '#30a339',
+      border: '#38c744',
+    },
+    sell: {
+      light: '#a21144',
+      dark: '#F881AB',
+      border: '#F4256D',
+    },
+    longterm: {
+      border: '#1e779c',
+    },
+    crosshair: {
+      border: '#F4256D',
+    },
+  },
+};
+
 export const PriceChart = ({ id }: PriceChartProps) => {
   const { isDark } = useNextUiTheme();
   const { timestep, longTermPricesEnabled } = usePriceChartContext();
@@ -142,18 +163,18 @@ export const PriceChart = ({ id }: PriceChartProps) => {
         datasets: [
           {
             label: LABELS.instabuy,
-            backgroundColor: isDark ? '#90ed99' : '#30a339',
+            backgroundColor: isDark ? CHART_THEME.colors.buy.dark : CHART_THEME.colors.buy.light,
             pointRadius: 2,
-            borderColor: '#38c744',
+            borderColor: CHART_THEME.colors.buy.border,
             data: realTimeInstaBuyPrices,
             cubicInterpolationMode: 'monotone',
             showLine: !longTermPricesEnabled,
           },
           {
             label: LABELS.instasell,
-            backgroundColor: isDark ? '#F881AB' : '#a21144',
+            backgroundColor: isDark ? CHART_THEME.colors.sell.dark : CHART_THEME.colors.sell.light,
             pointRadius: 2,
-            borderColor: '#F4256D',
+            borderColor: CHART_THEME.colors.sell.border,
             data: realTimeInstaSellPrices,
             cubicInterpolationMode: 'monotone',
             showLine: !longTermPricesEnabled,
@@ -227,7 +248,7 @@ export const PriceChart = ({ id }: PriceChartProps) => {
           //@ts-ignore
           crosshair: {
             line: {
-              color: '#F4256D',
+              color: CHART_THEME.colors.crosshair.border,
               width: 1,
               dashPattern: [10, 5],
             },

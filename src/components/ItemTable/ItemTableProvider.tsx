@@ -16,24 +16,27 @@ import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import { useLocalStorage, useSessionStorage, useUpdateEffect } from 'usehooks-ts';
 
-import { HomepageMappingItem, HomepageMappingItems } from '../../../pages/api/homepage_items';
+import { HomepageMappingItems } from '../../../pages/api/homepage_items';
+import { WikiApiMappingItem } from '../../db/seeds/osrs_wiki_api_mapping';
 import useNextQueryParams from '../../hooks/useNextQueryParams';
 import ItemIcon from '../ItemIcon/ItemIcon';
 import NameCell from './Cells/Name';
 import TaxCell from './Cells/Tax';
 
-type LatestPrices = {
+export type LatestTransactions = {
   data: {
-    [id: string]: {
-      high: number | null;
-      highTime: number | null;
-      low: number | null;
-      lowTime: number | null;
-    };
+    [id: string]: LatestTransaction;
   };
 };
 
-type DailyVolumes = {
+type LatestTransaction = {
+  high: number | null;
+  highTime: number | null;
+  low: number | null;
+  lowTime: number | null;
+};
+
+export type DailyVolumes = {
   timestamp: number;
   data: {
     [id: string]: number;
@@ -41,14 +44,14 @@ type DailyVolumes = {
 };
 
 export type TableCompleteItem = {
-  id: number;
-  name: string;
-  limit: number;
-  icon: string;
-  value: number;
-  lowalch: number;
-  highalch: number;
-  members: boolean;
+  id: WikiApiMappingItem['id'];
+  name: WikiApiMappingItem['name'];
+  limit: WikiApiMappingItem['limit'];
+  icon: WikiApiMappingItem['icon'];
+  value: WikiApiMappingItem['value'];
+  lowalch: WikiApiMappingItem['lowalch'];
+  highalch: WikiApiMappingItem['highalch'];
+  members: WikiApiMappingItem['members'];
   instaBuyPrice: number | null | undefined;
   instaBuyTime: number | null | undefined;
   instaSellPrice: number | null | undefined;
@@ -76,7 +79,12 @@ type ItemTableContextType = {
   sortHandler: SortHandler;
 };
 
-const HOMEPAGE_QUERIES = {
+type DistanceToNowStrictFromUnixTime = (params: {
+  unixTime: number | null | undefined;
+  addSuffix?: boolean;
+}) => string | null;
+
+export const HOMEPAGE_QUERIES = {
   latestPrices: 'latest_prices',
   dailyVolumes: 'daily_volumes',
   itemMapping: 'item_mapping',
@@ -124,7 +132,7 @@ const defaultColumns = [
   }),
   columnHelper.accessor('roi', {
     header: 'ROI',
-    cell: info => `${info.getValue()?.toFixed(1) ?? 0}%`,
+    cell: info => roiOutput(info.getValue() ?? 0),
     enableSorting: true,
   }),
   // columnHelper.accessor('value', { header: 'Value', cell: info => info.getValue().toLocaleString() }),
@@ -133,12 +141,12 @@ const defaultColumns = [
   // columnHelper.accessor('members', { header: 'Members', cell: info => info.getValue() }),
   columnHelper.accessor('instaSellTime', {
     header: 'Latest Sell',
-    cell: info => distanceToNowFromUnixTime(info.getValue()),
+    cell: info => distanceToNowStrictFromUnixTime({ unixTime: info.getValue() }),
     enableSorting: true,
   }),
   columnHelper.accessor('instaBuyTime', {
     header: 'Latest Buy',
-    cell: info => distanceToNowFromUnixTime(info.getValue()),
+    cell: info => distanceToNowStrictFromUnixTime({ unixTime: info.getValue() }),
     enableSorting: true,
   }),
   columnHelper.accessor('tax', {
@@ -155,7 +163,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     data: latestPrices,
     isLoading: latestPricesLoading,
     isFetching: latestPricesFetching,
-  } = useQuery<LatestPrices>([HOMEPAGE_QUERIES.latestPrices], fetchLatestPrices, {
+  } = useQuery<LatestTransactions>([HOMEPAGE_QUERIES.latestPrices], fetchLatestPrices, {
     refetchInterval: 60 * 1000, // 1 min
   });
   const {
@@ -169,7 +177,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     data: itemMappings,
     isLoading: itemMappingLoading,
     isFetching: itemMappingFetching,
-  } = useQuery<HomepageMappingItem[]>([HOMEPAGE_QUERIES.itemMapping], fetchHomepageMappingItems, {
+  } = useQuery<WikiApiMappingItem[]>([HOMEPAGE_QUERIES.itemMapping], fetchHomepageMappingItems, {
     cacheTime: Infinity,
     staleTime: Infinity,
   });
@@ -253,9 +261,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
   }, [pageSize]);
 
   return (
-    <ItemTableContext.Provider
-      value={{ items: completeItems ?? [], ...{ table }, setPageIndex, setPageSize, sortHandler }}
-    >
+    <ItemTableContext.Provider value={{ items: completeItems ?? [], table, setPageIndex, setPageSize, sortHandler }}>
       {children}
     </ItemTableContext.Provider>
   );
@@ -271,38 +277,63 @@ export const useItemTableContext = () => {
   return context;
 };
 
-const fetchLatestPrices: QueryFunction<LatestPrices> = async () => {
-  return axios.get<LatestPrices>('https://prices.runescape.wiki/api/v1/osrs/latest').then(res => res.data);
+const fetchLatestPrices: QueryFunction<LatestTransactions> = async () => {
+  return axios.get<LatestTransactions>('https://prices.runescape.wiki/api/v1/osrs/latest').then(res => res.data);
 };
 
-const fetchDailyVolumes: QueryFunction<DailyVolumes> = async () => {
+export const fetchDailyVolumes: QueryFunction<DailyVolumes> = async () => {
   return axios.get<DailyVolumes>('https://prices.runescape.wiki/api/v1/osrs/volumes').then(res => res.data);
 };
 
-const fetchHomepageMappingItems: QueryFunction<HomepageMappingItem[]> = async () => {
+const fetchHomepageMappingItems: QueryFunction<WikiApiMappingItem[]> = async () => {
   return axios
     .get<HomepageMappingItems>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/homepage_items`)
     .then(res => JSON.parse(res.data.items));
 };
 
-const calculateTax = (instaBuyPrice: number | null | undefined) => {
+const calculateTax = (instaBuyPrice: TableCompleteItem['instaBuyPrice']) => {
   if (!instaBuyPrice || instaBuyPrice < 100) return 0;
   if (instaBuyPrice >= 500_000_000) return 5_000_000;
   return Math.floor(instaBuyPrice * 0.01);
 };
 
-const calculateROI = (instaBuyPrice: number | null | undefined, instaSellPrice: number | null | undefined) => {
+export const calculateROI = (
+  instaBuyPrice: TableCompleteItem['instaBuyPrice'],
+  instaSellPrice: TableCompleteItem['instaSellPrice'],
+) => {
   if (!instaBuyPrice || !instaSellPrice) return null;
   return ((instaBuyPrice - (instaSellPrice + calculateTax(instaSellPrice))) / instaSellPrice) * 100;
 };
 
-// const calculatePotentialProfit = ()
+export const calculateMargin = (
+  instaBuyPrice: TableCompleteItem['instaBuyPrice'],
+  instaSellPrice: TableCompleteItem['instaSellPrice'],
+) => {
+  if (!instaBuyPrice || !instaSellPrice) return null;
+  return instaBuyPrice - instaSellPrice;
+};
+
+export const calculatePotentialProfit = (
+  instaBuyPrice: TableCompleteItem['instaBuyPrice'],
+  instaSellPrice: TableCompleteItem['instaSellPrice'],
+  limit: TableCompleteItem['limit'],
+) => {
+  if (!instaBuyPrice || !instaSellPrice || !limit) return null;
+  return Number(
+    (calculateMargin(instaBuyPrice, instaSellPrice)! * limit - calculateTax(instaBuyPrice) * limit).toFixed(0),
+  );
+};
+
+export const roiOutput = (roi: ReturnType<typeof calculateROI>) => {
+  if (!roi) return null;
+  return `${roi.toFixed(1)}%`;
+};
 
 // const calculateHighAlchProfit = ()
 
-const distanceToNowFromUnixTime = (unixTime: number | null | undefined) => {
+export const distanceToNowStrictFromUnixTime: DistanceToNowStrictFromUnixTime = ({ unixTime, addSuffix = false }) => {
   if (!unixTime) return null;
-  return formatDistanceToNowStrict(fromUnixTime(unixTime));
+  return formatDistanceToNowStrict(fromUnixTime(unixTime), { addSuffix });
 };
 
 const sortDescNext: SortDescNext = ({ currentSortDirection }) => {

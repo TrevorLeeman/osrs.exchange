@@ -1,17 +1,17 @@
 import axios from 'axios';
 import type { Knex } from 'knex';
 
-export type WikiApiMappingItem = {
+export interface WikiApiMappingItem {
   id: number;
   name: string;
-  limit: number;
+  limit: number | null | undefined;
   icon: string;
   value: number;
-  lowalch: number;
-  highalch: number;
+  lowalch: number | null;
+  highalch: number | null;
   members: boolean;
   examine: string;
-};
+}
 
 // Fix icons that are broken in the wiki api mapping
 const iconOverride = (iconUrl: string) => {

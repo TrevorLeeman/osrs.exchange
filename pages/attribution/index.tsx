@@ -24,6 +24,7 @@ const Attribution: NextPage = () => (
   </div>
   // Sort Asc SVG Vector - https://www.svgrepo.com/svg/389434/sort-asc
   // Sort Up SVG Vector - https://www.svgrepo.com/svg/348484/sort-up
+  // Down Arrow SVG Vector - https://www.svgrepo.com/svg/80323/down-arrow
 );
 
 export default Attribution;
