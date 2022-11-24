@@ -1,5 +1,7 @@
 import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 
+import { useSessionStorage } from 'usehooks-ts';
+
 import type { Timestep } from './TimeIntervalOptions';
 
 interface PriceChartContextType {
@@ -19,7 +21,7 @@ const initialValues: PriceChartContextType = {
 export const PriceChartContext = createContext<PriceChartContextType>(initialValues);
 
 const PriceChartProvider = ({ children }: { children: ReactNode }) => {
-  const [timestep, setTimestep] = useState<Timestep>(initialValues.timestep);
+  const [timestep, setTimestep] = useSessionStorage<Timestep>('timestep', initialValues.timestep);
   const [longTermPricesEnabled, setLongTermPricesEnabled] = useState(initialValues.longTermPricesEnabled);
 
   return (
