@@ -65,8 +65,8 @@ const TIMESTEP_TO_HOURS = new Map<Timestep, number>([
 ]);
 
 const LABELS = {
-  instabuy: 'Instabuy',
-  instasell: 'Instasell',
+  instabuy: 'Buy Price',
+  instasell: 'Sell price',
   average: 'Average price',
 };
 
@@ -80,7 +80,7 @@ export const PriceChart = ({ id }: PriceChartProps) => {
     isLoading: realTimePricesLoading,
     isFetching: realTimePricesFetching,
   } = useQuery<RealTimePrices>([ITEM_PAGE_QUERIES.realTimePrices, { id, timestep }], fetchRealTimePrices, {
-    refetchInterval: 60 * 1000,
+    refetchInterval: 60 * 1000, // 1 min
     enabled: !longTermPricesEnabled,
   });
   const {
@@ -136,7 +136,7 @@ export const PriceChart = ({ id }: PriceChartProps) => {
 
   return (
     <Line
-      className="max-h-[500px]"
+      className="max-h-[50vh]"
       data={{
         labels: longTermPricesEnabled ? longTermLabels : realTimeLabels,
         datasets: [
@@ -229,6 +229,7 @@ export const PriceChart = ({ id }: PriceChartProps) => {
             line: {
               color: '#F4256D',
               width: 1,
+              dashPattern: [10, 5],
             },
             zoom: {
               enabled: false,
