@@ -1,14 +1,15 @@
-const HomeIcon = () => (
+type HomeIconProps = {
+  className?: string;
+};
+
+const HomeIcon = ({ className }: HomeIconProps) => (
   <svg
     version="1.1"
-    id="Capa_1"
     xmlns="http://www.w3.org/2000/svg"
     x="0px"
     y="0px"
-    width="24px"
-    height="24px"
     viewBox="0 0 330.242 330.242"
-    className="fill-black hover:fill-slate-800 dark:fill-white dark:hover:fill-slate-200"
+    className={`h-6 w-6 fill-zinc-900 hover:fill-zinc-600 dark:fill-white dark:hover:fill-slate-300 ${className}`}
     xmlSpace="preserve"
   >
     <path

@@ -1,16 +1,13 @@
 type BackArrowIconProps = {
-  width?: number;
-  height?: number;
+  className?: string;
 };
 
-const BackArrowIcon = ({ width = 24, height = 24 }: BackArrowIconProps) => {
+const BackArrowIcon = ({ className }: BackArrowIconProps) => {
   return (
     <svg
-      width={`${width}px`}
-      height={`${height}px`}
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      className="hover:fill-blue-600 dark:fill-white dark:hover:fill-blue-500"
+      className={`fill-zinc-900 hover:fill-zinc-600 dark:fill-white dark:hover:fill-slate-300 ${className}`}
     >
       <g data-name="Layer 2">
         <g data-name="arrow-back">

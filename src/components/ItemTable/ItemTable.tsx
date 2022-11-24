@@ -42,9 +42,11 @@ const TableHead = () => {
                 : ''
             }`}
           >
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-              <SortIcon header={header} />
+              <div className="shrink-0">
+                <SortIcon header={header} />
+              </div>
             </div>
           </th>
         ))}
@@ -61,7 +63,7 @@ const TableBody = () => {
       {table.getRowModel().rows.map(row => (
         <tr
           key={row.id}
-          className="h-16 transition-all duration-75 odd:bg-slate-200 even:bg-slate-100 hover:bg-slate-300 dark:odd:bg-cyan-800 dark:even:bg-cyan-900 dark:hover:bg-cyan-700 [&:last-child_:first-child]:rounded-bl-xl [&:last-child_:last-child]:rounded-br-xl"
+          className="h-14 transition-all duration-75 odd:bg-slate-200 even:bg-slate-100 hover:bg-slate-300 dark:odd:bg-cyan-800 dark:even:bg-cyan-900 dark:hover:bg-cyan-700 [&:last-child_td:first-of-type]:rounded-bl-xl [&:last-child_td:last-of-type]:rounded-br-xl"
         >
           {row.getVisibleCells().map(cell => (
             <td key={cell.id} className="px-3">
