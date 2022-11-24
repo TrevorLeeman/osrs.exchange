@@ -9,7 +9,7 @@ const Header = () => {
   const isMinTablet = useTailwindMinBreakpoint('sm');
 
   return (
-    <header className="mb-3 flex items-center gap-5 sm:mb-6 sm:grid sm:grid-cols-3 lg:mb-12">
+    <header className="mb-4 flex items-center gap-5 px-2 sm:mb-6 sm:grid sm:grid-cols-3 lg:mb-12">
       <div>
         <Link href="/" title="OSRS Exchange Homepage">
           {isMinTablet ? (
