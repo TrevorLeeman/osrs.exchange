@@ -59,6 +59,7 @@ export type TableCompleteItem = {
   dailyVolume: number | undefined;
   tax: number | null | undefined;
   roi: number | null | undefined;
+  profit: number | null | undefined;
   potentialProfit: number | null | undefined;
 };
 
@@ -83,6 +84,14 @@ type DistanceToNowStrictFromUnixTime = (params: {
   unixTime: number | null | undefined;
   addSuffix?: boolean;
 }) => string | null;
+
+type RoiOutput = (params: {
+  instaBuyPrice?: TableCompleteItem['instaBuyPrice'];
+  instaSellPrice?: TableCompleteItem['instaSellPrice'];
+  roi?: ReturnType<typeof calculateROI>;
+}) => string | null;
+
+type IsEmpty = (value: any) => boolean;
 
 export const HOMEPAGE_QUERIES = {
   latestPrices: 'latest_prices',
@@ -132,7 +141,7 @@ const defaultColumns = [
   }),
   columnHelper.accessor('roi', {
     header: 'ROI',
-    cell: info => roiOutput(info.getValue() ?? 0),
+    cell: info => roiOutput({ roi: info.getValue() }),
     enableSorting: true,
   }),
   // columnHelper.accessor('value', { header: 'Value', cell: info => info.getValue().toLocaleString() }),
@@ -189,6 +198,8 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     pageIndex => (Number(pageIndex) !== NaN ? Number(pageIndex) - 1 : 10),
   );
   const [pageSize, setPageSize] = useLocalStorage('pageSize', 10);
+  const [sortOptions, setSortOptions] = useSessionStorage('sortOptions', [{ id: 'instaSellPrice', desc: true }]);
+  // Store sort options in URL
   // const [sortOptions, setSortOptions] = useNextQueryParams(
   //   'sortOptions',
   //   [{ id: 'instaSellPrice', desc: true }],
@@ -196,7 +207,6 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
   //   options =>
   //     typeof options === 'string' ? JSON.parse(decodeURIComponent(options)) : [{ id: 'instaSellPrice', desc: true }],
   // );
-  const [sortOptions, setSortOptions] = useSessionStorage('sortOptions', [{ id: 'instaSellPrice', desc: true }]);
 
   const sortHandler: SortHandler = useCallback(({ header }) => {
     setSortOptions([
@@ -227,7 +237,8 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
             dailyVolume: dailyVolumes?.data[item.id],
             tax: calculateTax(latestPrices?.data[item.id]?.high),
             roi: calculateROI(instaBuyPrice, instaSellPrice),
-            potentialProfit: 0,
+            profit: calculateProfit(instaBuyPrice, instaSellPrice),
+            potentialProfit: calculatePotentialProfit(instaBuyPrice, instaSellPrice, item.limit),
           };
         })
         // If an item does not have a recent buy or sell record, that indicates it is either a Deadman mode item, or an item that has been removed from the game. All of which we want to filter out.
@@ -251,10 +262,6 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, 
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
-  // useIsomorphicLayoutEffect(() => {
-  //   window.document.title = `OSRS Exchange${pageIndex ? ` | Item Page ${pageIndex + 1}` : ''}`;
-  // }, [pageIndex]);
 
   useUpdateEffect(() => {
     setPageIndex(0);
@@ -291,18 +298,10 @@ const fetchHomepageMappingItems: QueryFunction<WikiApiMappingItem[]> = async () 
     .then(res => JSON.parse(res.data.items));
 };
 
-const calculateTax = (instaBuyPrice: TableCompleteItem['instaBuyPrice']) => {
+export const calculateTax = (instaBuyPrice: TableCompleteItem['instaBuyPrice']) => {
   if (!instaBuyPrice || instaBuyPrice < 100) return 0;
   if (instaBuyPrice >= 500_000_000) return 5_000_000;
   return Math.floor(instaBuyPrice * 0.01);
-};
-
-export const calculateROI = (
-  instaBuyPrice: TableCompleteItem['instaBuyPrice'],
-  instaSellPrice: TableCompleteItem['instaSellPrice'],
-) => {
-  if (!instaBuyPrice || !instaSellPrice) return null;
-  return ((instaBuyPrice - (instaSellPrice + calculateTax(instaSellPrice))) / instaSellPrice) * 100;
 };
 
 export const calculateMargin = (
@@ -313,20 +312,39 @@ export const calculateMargin = (
   return instaBuyPrice - instaSellPrice;
 };
 
+export const calculateProfit = (
+  instaBuyPrice: TableCompleteItem['instaBuyPrice'],
+  instaSellPrice: TableCompleteItem['instaSellPrice'],
+) => {
+  if (!instaBuyPrice || !instaSellPrice) return null;
+  return Number((calculateMargin(instaBuyPrice, instaSellPrice)! - calculateTax(instaBuyPrice)).toFixed(0));
+};
+
 export const calculatePotentialProfit = (
   instaBuyPrice: TableCompleteItem['instaBuyPrice'],
   instaSellPrice: TableCompleteItem['instaSellPrice'],
   limit: TableCompleteItem['limit'],
 ) => {
   if (!instaBuyPrice || !instaSellPrice || !limit) return null;
-  return Number(
-    (calculateMargin(instaBuyPrice, instaSellPrice)! * limit - calculateTax(instaBuyPrice) * limit).toFixed(0),
-  );
+  return Number((calculateProfit(instaBuyPrice, instaSellPrice)! * limit).toFixed(0));
 };
 
-export const roiOutput = (roi: ReturnType<typeof calculateROI>) => {
-  if (!roi) return null;
-  return `${roi.toFixed(1)}%`;
+export const calculateROI = (
+  instaBuyPrice: TableCompleteItem['instaBuyPrice'],
+  instaSellPrice: TableCompleteItem['instaSellPrice'],
+) => {
+  if (!instaBuyPrice || !instaSellPrice) return null;
+  return (calculateProfit(instaBuyPrice, instaSellPrice)! / instaSellPrice) * 100;
+};
+
+export const roiOutput: RoiOutput = ({ instaBuyPrice, instaSellPrice, roi }) => {
+  // Accept 0 as a valid roi using isEmpty
+  let output = !isEmpty(roi) ? roi : calculateROI(instaBuyPrice, instaSellPrice);
+  // Handle -0.00%
+  if (!isEmpty(output) && output! < 0 && Math.abs(output!) < 0.01) {
+    output = 0;
+  }
+  return !isEmpty(output) ? `${parseFloat(output!.toFixed(2))}%` : null;
 };
 
 // const calculateHighAlchProfit = ()
@@ -345,4 +363,8 @@ const sortDescNext: SortDescNext = ({ currentSortDirection }) => {
     case 'desc':
       return false;
   }
+};
+
+const isEmpty: IsEmpty = value => {
+  return value === null || value === undefined;
 };
