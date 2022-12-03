@@ -8,7 +8,7 @@ const ItemIcon = ({ name, icon, id, className, shadow = false, title }: ItemIcon
       alt={name}
       title={title ?? name}
       key={id}
-      className={`brightness-125 contrast-150 dark:contrast-125 ${
+      className={`brightness-125 contrast-125 ${
         shadow ? 'drop-shadow-item-icon-light filter dark:drop-shadow-item-icon-dark' : ''
       } ${className}`}
     />
