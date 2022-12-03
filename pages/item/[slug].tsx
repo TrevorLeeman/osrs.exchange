@@ -15,7 +15,7 @@ import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
 import { ItemInfoGrid } from '../../src/components/ItemInfoGrid/ItemInfoGrid';
 import { PriceChartProps } from '../../src/components/PriceChart/PriceChart';
 import PriceChartProvider from '../../src/components/PriceChart/PriceChartProvider';
-import TimeIntervalButtonGroup from '../../src/components/PriceChart/TimeIntervalOptions';
+import TimeIntervalOptions from '../../src/components/PriceChart/TimeIntervalOptions';
 import knex from '../../src/db/db';
 import type { BasicItem } from '../../src/db/items';
 import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
@@ -51,6 +51,10 @@ const DynamicPriceChart = dynamic<PriceChartProps>(
   },
 );
 
+const DynamicTimeIntervalOptions = dynamic(() => import('../../src/components/PriceChart/TimeIntervalOptions'), {
+  ssr: false,
+});
+
 const ItemPage: NextPage = ({ dehydratedState }: any) => {
   const {
     data: itemData,
@@ -71,15 +75,12 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       </Head>
       <div className="mb-3">
         <PriceChartProvider>
-          <div className="grid grid-cols-[min-content_auto] gap-y-2 gap-x-3 px-3 sm:grid-cols-[min-content_auto_minmax(0,1fr)] ">
-            <div>
-              <button onClick={() => router.back()} title="Go back">
-                <BackArrowIcon className="h-9 w-9 xs:h-12 xs:w-12" />
-              </button>
-            </div>
+          <div className="grid grid-cols-[min-content_auto] gap-y-2 gap-x-3 px-3">
+            <button onClick={() => router.back()} title="Go back" className="w-min">
+              <BackArrowIcon className="h-9 w-9 xs:h-12 xs:w-12" />
+            </button>
             <div className="col-start-2 flex items-center gap-1.5 xs:gap-6">
               <h1 className="text-3xl font-bold xs:text-4xl sm:text-5xl">{item.name}</h1>
-
               <ItemIcon
                 icon={item.icon}
                 name={item.name}
@@ -88,17 +89,19 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
                 className="mr-4 3xs:scale-125 sm:scale-150"
               />
             </div>
-            <div className="col-start-3 row-span-3">
-              <ItemInfoGrid item={item} />
-            </div>
             <div className="col-start-2 mb-3">
               <span className="text-gray-500">Live Grand Exchange pricing information for {item.name}</span>
             </div>
-            <div className="col-start-2 my-3">
-              <TimeIntervalButtonGroup />
+            <div className="col-start-2">
+              <ItemInfoGrid item={item} />
+            </div>
+            <div className="col-start-2 mt-10">
+              <DynamicTimeIntervalOptions />
+            </div>
+            <div className="col-start-2">
+              <DynamicPriceChart id={item.id} />
             </div>
           </div>
-          <DynamicPriceChart id={item.id} />
         </PriceChartProvider>
       </div>
     </>

@@ -9,7 +9,8 @@ import {
   LatestTransactions,
   calculateMargin,
   calculatePotentialProfit,
-  calculateROI,
+  calculateProfit,
+  calculateTax,
   distanceToNowStrictFromUnixTime,
   fetchDailyVolumes,
   roiOutput,
@@ -17,15 +18,16 @@ import {
 
 type ItemInfoGridProps = { item: ItemPageItem | null };
 
+type GridGroupProps = {
+  label: string;
+  children?: React.ReactNode;
+};
+
 type GridCellProps = {
   children?: React.ReactNode;
 };
 
 type GridLabelProps = {
-  children?: React.ReactNode;
-};
-
-type GridFlexWrapperProps = {
   children?: React.ReactNode;
 };
 
@@ -52,76 +54,74 @@ export const ItemInfoGrid = ({ item }: ItemInfoGridProps) => {
   const latestTransaction = id ? latestTransactionData?.data[id] : null;
   const dailyVolume = item?.id ? dailyVolumes?.data[item.id.toString()] : null;
 
-  console.log(item);
-
   return (
-    <div className="grid w-fit grid-cols-2 gap-y-2 gap-x-10 font-plex-sans">
-      <GridCell>
-        <GridLabel>Buy Price</GridLabel>
-        <GridFlexWrapper>
-          <span>{latestTransaction?.high?.toLocaleString()}</span>
-          <GridSmallText>
-            {distanceToNowStrictFromUnixTime({ unixTime: latestTransaction?.highTime, addSuffix: true })}
-          </GridSmallText>
-          <DownArrowIcon className=" fill-[#38c744]" />
-        </GridFlexWrapper>
-      </GridCell>
-      <GridCell>
-        <GridLabel>High Alch</GridLabel>
-        <span>{item?.highalch?.toLocaleString()}</span>
-      </GridCell>
-      <GridCell>
-        <GridLabel>Sell Price</GridLabel>
-        <GridFlexWrapper>
-          <span>{latestTransaction?.low?.toLocaleString()}</span>
-          <GridSmallText>
-            {distanceToNowStrictFromUnixTime({ unixTime: latestTransaction?.lowTime, addSuffix: true })}
-          </GridSmallText>
-          <DownArrowIcon className="rotate-180 fill-[#F4256D]" />
-        </GridFlexWrapper>
-      </GridCell>
-      <GridCell>
-        <GridLabel>Low Alch</GridLabel>
-        <span>{item?.lowalch?.toLocaleString()}</span>
-      </GridCell>
-      <GridCell>
-        <GridLabel>Volume</GridLabel>
-        <GridFlexWrapper>
-          <div>{dailyVolume?.toLocaleString()}</div>
-          <GridSmallText>per day</GridSmallText>
-        </GridFlexWrapper>
-      </GridCell>
-      <GridCell>
-        <GridLabel>Margin</GridLabel>
-        <span>{calculateMargin(latestTransaction?.high, latestTransaction?.low)?.toLocaleString()}</span>
-      </GridCell>
-      <GridCell>
-        <GridLabel>Potential Profit</GridLabel>
-        <span>
-          {calculatePotentialProfit(latestTransaction?.high, latestTransaction?.low, item?.limit)?.toLocaleString()}
-        </span>
-      </GridCell>
-      <GridCell>
-        <GridLabel>Buy Limit</GridLabel>
-        <span>{item?.limit?.toLocaleString()}</span>
-      </GridCell>
-      <GridCell>
-        <GridLabel>ROI</GridLabel>
-        <span>{roiOutput(calculateROI(latestTransaction?.high, latestTransaction?.low))}</span>
-      </GridCell>
+    <div className="grid w-fit grid-cols-2 gap-y-0.5 gap-x-5 rounded-lg bg-slate-100 py-4 px-6 font-plex-sans dark:bg-gray-800 xl:grid-cols-[min-content_auto_min-content_auto]">
+      <GridGroup label="Buy Price">
+        <span>{latestTransaction?.high?.toLocaleString()}</span>
+        <GridSmallText>
+          {distanceToNowStrictFromUnixTime({ unixTime: latestTransaction?.highTime, addSuffix: true })}
+        </GridSmallText>
+        <DownArrowIcon className=" shrink-0 fill-[#38c744]" />
+      </GridGroup>
+
+      <GridGroup label="High Alch">{item?.highalch?.toLocaleString()}</GridGroup>
+      <GridGroup label="Sell Price">
+        <span>{latestTransaction?.low?.toLocaleString()}</span>
+        <GridSmallText>
+          {distanceToNowStrictFromUnixTime({ unixTime: latestTransaction?.lowTime, addSuffix: true })}
+        </GridSmallText>
+        <DownArrowIcon className="shrink-0 rotate-180 fill-[#F4256D]" />
+      </GridGroup>
+
+      <GridGroup label="Low Alch">{item?.lowalch?.toLocaleString()}</GridGroup>
+
+      <GridGroup label="Margin">
+        {calculateMargin(latestTransaction?.high, latestTransaction?.low)?.toLocaleString()}
+      </GridGroup>
+      <GridGroup label="Volume">
+        {dailyVolume ? (
+          <>
+            <div>{dailyVolume.toLocaleString()}</div>
+            <GridSmallText>per day</GridSmallText>
+          </>
+        ) : null}
+      </GridGroup>
+      <GridGroup label="Tax">{calculateTax(latestTransaction?.high).toLocaleString()}</GridGroup>
+      <GridGroup label="Buy Limit">
+        {item?.limit ? (
+          <>
+            <div>{item?.limit?.toLocaleString()}</div>
+            <GridSmallText>/ 4 hours</GridSmallText>
+          </>
+        ) : null}
+      </GridGroup>
+      <GridGroup label="Profit">
+        {calculateProfit(latestTransaction?.high, latestTransaction?.low)?.toLocaleString()}
+      </GridGroup>
+      <GridGroup label="Potential Profit">
+        {calculatePotentialProfit(latestTransaction?.high, latestTransaction?.low, item?.limit)?.toLocaleString()}
+      </GridGroup>
+      <GridGroup label="ROI">
+        {roiOutput({ instaBuyPrice: latestTransaction?.high, instaSellPrice: latestTransaction?.low })}
+      </GridGroup>
     </div>
   );
 };
 
-const GridCell = ({ children }: GridCellProps) => <div className="flex gap-2">{children}</div>;
+const GridGroup = ({ label, children }: GridGroupProps) => (
+  <>
+    <GridCell>
+      <GridLabel>{label}</GridLabel>
+    </GridCell>
+    <GridCell>{children}</GridCell>
+  </>
+);
+
+const GridCell = ({ children }: GridCellProps) => <div className="flex items-center gap-2 text-base">{children}</div>;
 
 const GridLabel = ({ children }: GridLabelProps) => {
-  return <div className="place-self-center justify-self-end whitespace-nowrap text-base font-bold">{children}</div>;
+  return <div className="w-full whitespace-nowrap text-lg font-bold">{children}</div>;
 };
-
-const GridFlexWrapper = ({ children }: GridFlexWrapperProps) => (
-  <div className="flex items-center gap-2">{children}</div>
-);
 
 const GridSmallText = ({ children }: GridSmallTextProps) => <span className="text-center text-xs">{children}</span>;
 
