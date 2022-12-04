@@ -27,7 +27,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <Head>
-        <title>OSRS Exchange</title>
+        <title>OSRS Exchange - Grand Exchange Flipping and Money Making</title>
       </Head>
       <QueryClientProvider client={queryClient.current}>
         <Hydrate state={pageProps.dehydratedState}>

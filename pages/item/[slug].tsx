@@ -11,7 +11,7 @@ import { ParsedUrlQuery } from 'querystring';
 import NotFound from '../../src/components/404/NotFound';
 import H1 from '../../src/components/Common/H1';
 import PageDescription from '../../src/components/Common/PageDescription';
-import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
+import ItemIcon, { itemIconSrc } from '../../src/components/ItemIcon/ItemIcon';
 import { ItemInfoGridDisplay } from '../../src/components/ItemInfoGrid/ItemInfoGrid';
 import { PriceChartProvider } from '../../src/components/PriceChart/PriceChartProvider';
 import knex from '../../src/db/db';
@@ -58,7 +58,9 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
   } = useQuery<ItemPageItem[]>([ITEM_PAGE_QUERIES.itemById]);
 
   const item = itemData ? itemData[0] : null;
-  const title = useMemo(() => `${item?.name} | OSRS Exchange`, [item?.name]);
+  const title = `${item?.name} - OSRS Exchange`;
+  const description = `Live Grand Exchange price graph. Flip and trade ${item?.name} with day, week, month, year, and all time price information.`;
+  const icon = item ? itemIconSrc(item.icon) : null;
 
   if (itemIsLoading)
     return (
@@ -71,6 +73,16 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
     <>
       <Head>
         <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta property="og:description" content={description} />
+        {icon ? (
+          <>
+            <meta property="og:image" content={icon} />
+            <meta property="twitter:image" content={icon} />
+            {/* <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" /> */}
+          </>
+        ) : null}
       </Head>
       <div className="mb-3">
         <PriceChartProvider id={item.id}>

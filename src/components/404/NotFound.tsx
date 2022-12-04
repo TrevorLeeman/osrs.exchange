@@ -8,10 +8,11 @@ import PageDescription from '../Common/PageDescription';
 const NotFound = () => (
   <>
     <Head>
+      <title>Item Not Found - OSRS Exchange</title>
       <meta name="robots" content="noindex" />
     </Head>
-    <div className="flex w-full flex-col items-center justify-center gap-5">
-      <div>
+    <div className="flex w-full flex-col items-center justify-center gap-5 px-3">
+      <div className="flex flex-col gap-2">
         <H1>Item Not Found</H1>
         <PageDescription>
           Search for another item, or <LinkBlue href="/">return to the homepage</LinkBlue>.
