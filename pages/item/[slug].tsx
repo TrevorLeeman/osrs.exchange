@@ -58,7 +58,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
   } = useQuery<ItemPageItem[]>([ITEM_PAGE_QUERIES.itemById]);
 
   const item = itemData ? itemData[0] : null;
-  const title = `${item?.name} - OSRS Exchange`;
+  const title = `${item?.name} - Live GE Price Graph - OSRS Exchange`;
   const description = `Live Grand Exchange price graph. Flip and trade ${item?.name} with day, week, month, year, and all time price information.`;
   const icon = item ? itemIconSrc(item.icon) : null;
 
