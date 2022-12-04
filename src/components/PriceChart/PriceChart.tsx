@@ -1,8 +1,4 @@
-import { useMemo } from 'react';
-
 import { useTheme as useNextUiTheme } from '@nextui-org/react';
-import { QueryFunction, useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -18,30 +14,10 @@ import 'chartjs-adapter-date-fns';
 //@ts-ignore
 import { CrosshairPlugin } from 'chartjs-plugin-crosshair';
 import Zoom from 'chartjs-plugin-zoom';
-import { fromUnixTime, subHours } from 'date-fns';
 import enUS from 'date-fns/locale/en-US';
 import { Line } from 'react-chartjs-2';
 
-import { ITEM_PAGE_QUERIES, Price } from '../../../pages/item/[slug]';
 import { usePriceChartContext } from './PriceChartProvider';
-import type { Timestep } from './TimeIntervalOptions';
-
-export type PriceChartProps = { id: number };
-
-type RealTimePrices = {
-  data: [Price];
-};
-
-type LongTermPriceData = {
-  [key: number]: LongTermPrice[];
-};
-
-type LongTermPrice = {
-  id: string;
-  price: number;
-  volume: number | null;
-  timestamp: number;
-};
 
 ChartJS.register(
   CategoryScale,
@@ -56,131 +32,45 @@ ChartJS.register(
   CrosshairPlugin,
 );
 
-const TIMESTEP_TO_HOURS = new Map<Timestep, number>([
-  ['5m', 24],
-  ['1h', 7 * 24],
-  ['6h', 30 * 24],
-  ['1y', 365 * 24],
-  ['all', 99999999],
-]);
-
-const LABELS = {
-  instabuy: 'Buy Price',
-  instasell: 'Sell price',
-  average: 'Average price',
-};
-
-export const CHART_THEME = {
-  colors: {
-    buy: {
-      light: '#90ed99',
-      dark: '#30a339',
-      border: '#38c744',
-    },
-    sell: {
-      light: '#a21144',
-      dark: '#F881AB',
-      border: '#F4256D',
-    },
-    longterm: {
-      border: '#1e779c',
-    },
-    crosshair: {
-      border: '#F4256D',
-    },
-  },
-};
-
-export const PriceChart = ({ id }: PriceChartProps) => {
+const PriceChart = () => {
   const { isDark } = useNextUiTheme();
-  const { timestep, longTermPricesEnabled } = usePriceChartContext();
-  const gridColor = isDark ? '#3A3F42' : '#D7DBDF';
-
   const {
-    data: realTimePriceData,
-    isLoading: realTimePricesLoading,
-    isFetching: realTimePricesFetching,
-  } = useQuery<RealTimePrices>([ITEM_PAGE_QUERIES.realTimePrices, { id, timestep }], fetchRealTimePrices, {
-    refetchInterval: 60 * 1000, // 1 min
-    enabled: !longTermPricesEnabled,
-  });
-  const {
-    data: longTermPriceData,
-    isLoading: longTermPricesLoading,
-    isFetching: longTermPricesFetching,
-  } = useQuery<LongTermPriceData>([ITEM_PAGE_QUERIES.longTermPrices, { id }], fetchLongTermPrices, {
-    enabled: longTermPricesEnabled,
-  });
-
-  const realTimePrices = useMemo(() => (realTimePriceData ? realTimePriceData?.data : null), [realTimePriceData]);
-  const longTermPrices = useMemo(() => (longTermPriceData ? longTermPriceData[id] : null), [longTermPriceData]);
-
-  const stringifiedLatestPrice = useMemo(
-    () => (realTimePrices?.length ? JSON.stringify(realTimePrices[realTimePrices.length - 1]) : null),
-    [realTimePrices],
-  );
-
-  const realTimePricesDateFiltered = useMemo(
-    () =>
-      realTimePrices?.filter(
-        price => fromUnixTime(price.timestamp) > subHours(new Date(), TIMESTEP_TO_HOURS.get(timestep)!),
-      ),
-    [stringifiedLatestPrice],
-  );
-  const realTimeLabels = useMemo(
-    () => realTimePricesDateFiltered?.reverse().map(priceEntry => fromUnixTime(priceEntry.timestamp)),
-    [stringifiedLatestPrice],
-  );
-  const realTimeInstaBuyPrices = useMemo(
-    () => realTimePricesDateFiltered?.map(priceEntry => priceEntry.avgHighPrice),
-    [stringifiedLatestPrice],
-  );
-  const realTimeInstaSellPrices = useMemo(
-    () => realTimePricesDateFiltered?.map(priceEntry => priceEntry.avgLowPrice),
-    [stringifiedLatestPrice],
-  );
-  const longTermPricesDateFiltered = useMemo(
-    () =>
-      longTermPrices?.filter(
-        price => fromUnixTime(price.timestamp / 1000) > subHours(new Date(), TIMESTEP_TO_HOURS.get(timestep)!),
-      ),
-    [longTermPriceData, timestep],
-  );
-  const longTermLabels = useMemo(
-    () => longTermPricesDateFiltered?.map(priceEntry => fromUnixTime(priceEntry.timestamp / 1000)),
-    [longTermPricesDateFiltered],
-  );
-  const averageLongTermPrices = useMemo(
-    () => longTermPricesDateFiltered?.map(priceEntry => priceEntry.price),
-    [longTermPricesDateFiltered],
-  );
+    realTimeInstaBuyPrices,
+    averageLongTermPrices,
+    realTimeInstaSellPrices,
+    longTermPricesEnabled,
+    lineLabels,
+    xAxisLabels,
+    theme,
+  } = usePriceChartContext();
+  const gridColor = isDark ? theme.colors.gridLines.dark : theme.colors.gridLines.light;
 
   return (
     <Line
       className="max-h-[50vh]"
       data={{
-        labels: longTermPricesEnabled ? longTermLabels : realTimeLabels,
+        labels: xAxisLabels,
         datasets: [
           {
-            label: LABELS.instabuy,
-            backgroundColor: isDark ? CHART_THEME.colors.buy.dark : CHART_THEME.colors.buy.light,
+            label: lineLabels.instabuy,
+            backgroundColor: isDark ? theme.colors.buy.dark : theme.colors.buy.light,
             pointRadius: 2,
-            borderColor: CHART_THEME.colors.buy.border,
+            borderColor: theme.colors.buy.border,
             data: realTimeInstaBuyPrices,
             cubicInterpolationMode: 'monotone',
             showLine: !longTermPricesEnabled,
           },
           {
-            label: LABELS.instasell,
-            backgroundColor: isDark ? CHART_THEME.colors.sell.dark : CHART_THEME.colors.sell.light,
+            label: lineLabels.instasell,
+            backgroundColor: isDark ? theme.colors.sell.dark : theme.colors.sell.light,
             pointRadius: 2,
-            borderColor: CHART_THEME.colors.sell.border,
+            borderColor: theme.colors.sell.border,
             data: realTimeInstaSellPrices,
             cubicInterpolationMode: 'monotone',
             showLine: !longTermPricesEnabled,
           },
           {
-            label: LABELS.average,
+            label: lineLabels.average,
             pointRadius: 0,
             pointHoverRadius: longTermPricesEnabled ? 4 : 0,
             borderColor: '#1e779c',
@@ -240,15 +130,15 @@ export const PriceChart = ({ id }: PriceChartProps) => {
             filter: (item, index, array) => {
               if (longTermPricesEnabled) return index === 0 ? true : false;
 
-              const firstInstaBuyIndex = array.findIndex(el => el.dataset.label === LABELS.instabuy);
-              const firstInstaSellIndex = array.findIndex(el => el.dataset.label === LABELS.instasell);
+              const firstInstaBuyIndex = array.findIndex(el => el.dataset.label === lineLabels.instabuy);
+              const firstInstaSellIndex = array.findIndex(el => el.dataset.label === lineLabels.instasell);
               return index === firstInstaBuyIndex || index === firstInstaSellIndex;
             },
           },
           //@ts-ignore
           crosshair: {
             line: {
-              color: CHART_THEME.colors.crosshair.border,
+              color: theme.colors.crosshair.border,
               width: 1,
               dashPattern: [10, 5],
             },
@@ -267,10 +157,10 @@ export const PriceChart = ({ id }: PriceChartProps) => {
           legend: {
             labels: {
               filter: legendItem => {
-                if (longTermPricesEnabled && legendItem.text === LABELS.average) return true;
+                if (longTermPricesEnabled && legendItem.text === lineLabels.average) return true;
                 if (
                   !longTermPricesEnabled &&
-                  (legendItem.text === LABELS.instabuy || legendItem.text === LABELS.instasell)
+                  (legendItem.text === lineLabels.instabuy || legendItem.text === lineLabels.instasell)
                 )
                   return true;
 
@@ -291,16 +181,4 @@ export const PriceChart = ({ id }: PriceChartProps) => {
   );
 };
 
-const fetchRealTimePrices: QueryFunction<RealTimePrices> = async ({ queryKey }) => {
-  const [_key, { id, timestep }] = queryKey as [string, { id: number; timestep: Timestep }];
-  return axios
-    .get<RealTimePrices>(`https://prices.runescape.wiki/api/v1/osrs/timeseries?timestep=${timestep}&id=${id}`)
-    .then(res => res.data);
-};
-
-const fetchLongTermPrices: QueryFunction<LongTermPriceData> = async ({ queryKey }) => {
-  const [_key, { id }] = queryKey as [string, { id: number }];
-  return axios
-    .get<LongTermPriceData>(`https://api.weirdgloop.org/exchange/history/osrs/all?id=${id}&compress=false`)
-    .then(res => res.data);
-};
+export default PriceChart;

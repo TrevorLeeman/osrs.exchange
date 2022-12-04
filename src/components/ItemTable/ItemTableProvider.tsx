@@ -65,7 +65,6 @@ export type TableCompleteItem = {
 
 type ItemTableProviderProps = {
   children?: React.ReactNode;
-  updateUrlOnPagination?: boolean;
 };
 
 type SortHandler = (params: { header: Header<TableCompleteItem, unknown> }) => void;
@@ -167,7 +166,7 @@ const defaultColumns = [
 
 const ItemTableContext = createContext<ItemTableContextType>(undefined!);
 
-export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children, updateUrlOnPagination = true }) => {
+export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }) => {
   const {
     data: latestPrices,
     isLoading: latestPricesLoading,

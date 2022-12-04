@@ -13,8 +13,7 @@ import H1 from '../../src/components/Common/H1';
 import PageDescription from '../../src/components/Common/PageDescription';
 import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
 import { ItemInfoGridDisplay } from '../../src/components/ItemInfoGrid/ItemInfoGrid';
-import { PriceChartProps } from '../../src/components/PriceChart/PriceChart';
-import PriceChartProvider from '../../src/components/PriceChart/PriceChartProvider';
+import { PriceChartProvider } from '../../src/components/PriceChart/PriceChartProvider';
 import knex from '../../src/db/db';
 import type { BasicItem } from '../../src/db/items';
 import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
@@ -43,12 +42,9 @@ export const ITEM_PAGE_QUERIES = {
   itemById: 'item_by_id',
 };
 
-const DynamicPriceChart = dynamic<PriceChartProps>(
-  () => import('../../src/components/PriceChart/PriceChart').then(mod => mod.PriceChart),
-  {
-    ssr: false,
-  },
-);
+const DynamicPriceChart = dynamic(() => import('../../src/components/PriceChart/PriceChart'), {
+  ssr: false,
+});
 
 const DynamicTimeIntervalOptions = dynamic(() => import('../../src/components/PriceChart/TimeIntervalOptions'), {
   ssr: false,
@@ -77,7 +73,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
         <title>{title}</title>
       </Head>
       <div className="mb-3">
-        <PriceChartProvider>
+        <PriceChartProvider id={item.id}>
           <div className="flex flex-col gap-y-2 px-3">
             <div className="flex items-center gap-1.5 xs:gap-6">
               <H1>{item.name}</H1>
@@ -96,7 +92,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
             <div className="mt-8">
               <DynamicTimeIntervalOptions />
             </div>
-            <DynamicPriceChart id={item.id} />
+            <DynamicPriceChart />
           </div>
         </PriceChartProvider>
       </div>
