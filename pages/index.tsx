@@ -1,11 +1,17 @@
 import type { NextPage } from 'next';
 
 import { QueryClient, dehydrate } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 
 import { ItemTable } from '../src/components/ItemTable/ItemTable';
 import { ItemTableProvider } from '../src/components/ItemTable/ItemTableProvider';
 import ItemsPerPageDropdown from '../src/components/ItemTable/ItemsPerPageDropdown';
 import TablePagination from '../src/components/ItemTable/TablePagination';
+
+const itemTableVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.3 } },
+};
 
 const Home: NextPage = () => (
   <ItemTableProvider>
@@ -18,9 +24,9 @@ const Home: NextPage = () => (
           <ItemsPerPageDropdown />
         </div>
       </div>
-      <div className="mb-4">
+      <motion.div variants={itemTableVariants} initial="hidden" animate="show" className="mb-4">
         <ItemTable />
-      </div>
+      </motion.div>
       <div className="mb-4 flex justify-center">
         <TablePagination />
       </div>

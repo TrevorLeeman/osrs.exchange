@@ -27,6 +27,7 @@
     "date-fns": "^2.29.2",
     "dotenv": "^16.0.1",
     "downshift": "^6.1.9",
+    "framer-motion": "^7.6.18",
     "knex": "^2.2.0",
     "lodash": "^4.17.21",
     "next": "13.0.4",

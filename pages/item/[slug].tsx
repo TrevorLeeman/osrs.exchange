@@ -4,6 +4,7 @@ import Head from 'next/head';
 
 import { Loading } from '@nextui-org/react';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import { ParsedUrlQuery } from 'querystring';
 
 import NotFound from '../../src/components/404/404';
@@ -50,6 +51,16 @@ const DynamicTimeIntervalOptions = dynamic(() => import('../../src/components/Pr
   ssr: false,
 });
 
+const containerVariants = {
+  hidden: {},
+  show: {},
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, x: -500, scale: 0.8 },
+  show: { opacity: 1, x: 0, scale: 1, transition: { type: 'spring', bounce: 0.2, duration: 0.7 } },
+};
+
 const ItemPage: NextPage = ({ dehydratedState }: any) => {
   const {
     data: itemData,
@@ -86,8 +97,13 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
       </Head>
       <div className="mb-3">
         <PriceChartProvider id={item.id}>
-          <div className="flex flex-col gap-y-2 px-3">
-            <div className="flex items-center gap-1.5 xs:gap-6">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="flex flex-col gap-y-2 px-3"
+          >
+            <motion.div variants={itemVariants} className="flex items-center gap-1.5 xs:gap-6">
               <H1>{item.name}</H1>
               <ItemIcon
                 icon={item.icon}
@@ -96,12 +112,14 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
                 title={item?.examine ?? undefined}
                 className="mr-4 3xs:scale-125 sm:scale-150"
               />
-            </div>
-            <div className="mb-3">
+            </motion.div>
+            <motion.div variants={itemVariants} className="mb-3">
               <PageDescription>Live Grand Exchange pricing information for {item.name}</PageDescription>
-            </div>
-            <ItemInfoGridDisplay item={item} />
-            <div className="mt-8 flex gap-3">
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <ItemInfoGridDisplay item={item} />
+            </motion.div>
+            <motion.div variants={itemVariants} className="mt-8 flex gap-3">
               <DynamicTimeIntervalOptions />
               {item?.wiki_url ? (
                 <LinkBlue href={item.wiki_url} className="flex items-center gap-1">
@@ -109,9 +127,9 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
                   <span>Wiki</span>
                 </LinkBlue>
               ) : null}
-            </div>
+            </motion.div>
             <DynamicPriceChart />
-          </div>
+          </motion.div>
         </PriceChartProvider>
       </div>
     </>
