@@ -5,7 +5,8 @@
 html,
 body,
 #__next,
-div[data-overlay-container='true'] {
+/*Hacky way of targeting NextUI global overlay*/
+div[data-overlay-container='true']:first-of-type {
   height: 100%;
 }
 
