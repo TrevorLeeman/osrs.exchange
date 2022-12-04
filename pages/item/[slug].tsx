@@ -3,13 +3,14 @@ import { useMemo } from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 
 import { Loading } from '@nextui-org/react';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { ParsedUrlQuery } from 'querystring';
 
 import NotFound from '../../src/components/404/NotFound';
+import H1 from '../../src/components/Common/H1';
+import PageDescription from '../../src/components/Common/PageDescription';
 import ItemIcon from '../../src/components/ItemIcon/ItemIcon';
 import { ItemInfoGridDisplay } from '../../src/components/ItemInfoGrid/ItemInfoGrid';
 import { PriceChartProps } from '../../src/components/PriceChart/PriceChart';
@@ -60,11 +61,15 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
     isFetching: itemIsFetching,
   } = useQuery<ItemPageItem[]>([ITEM_PAGE_QUERIES.itemById]);
 
-  const router = useRouter();
   const item = itemData ? itemData[0] : null;
   const title = useMemo(() => `${item?.name} | OSRS Exchange`, [item?.name]);
 
-  if (itemIsLoading) return <Loading />;
+  if (itemIsLoading)
+    return (
+      <div className="grid h-full place-items-center ">
+        <Loading />
+      </div>
+    );
 
   return item ? (
     <>
@@ -75,7 +80,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
         <PriceChartProvider>
           <div className="flex flex-col gap-y-2 px-3">
             <div className="flex items-center gap-1.5 xs:gap-6">
-              <h1 className="text-3xl font-bold xs:text-4xl sm:text-5xl">{item.name}</h1>
+              <H1>{item.name}</H1>
               <ItemIcon
                 icon={item.icon}
                 name={item.name}
@@ -84,7 +89,9 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
                 className="mr-4 3xs:scale-125 sm:scale-150"
               />
             </div>
-            <div className="mb-3 text-gray-500">Live Grand Exchange pricing information for {item.name}</div>
+            <div className="mb-3">
+              <PageDescription>Live Grand Exchange pricing information for {item.name}</PageDescription>
+            </div>
             <ItemInfoGridDisplay item={item} />
             <div className="mt-8">
               <DynamicTimeIntervalOptions />
