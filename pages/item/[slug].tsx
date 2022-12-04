@@ -58,7 +58,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, x: -500, scale: 0.8 },
-  show: { opacity: 1, x: 0, scale: 1, transition: { type: 'spring', bounce: 0.2, duration: 0.7 } },
+  show: { opacity: 1, x: 0, scale: 1, transition: { type: 'spring', bounce: 0.2, duration: 1 } },
 };
 
 const ItemPage: NextPage = ({ dehydratedState }: any) => {
