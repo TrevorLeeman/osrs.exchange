@@ -1,8 +1,8 @@
-## (WIP) osrs-prices.trevorleeman.com
+## [osrs.exchange](https://www.osrs.exchange)
 
-Item flipping utility for the game Old School Runescape. Leverages the OSRS wiki [Real-Time Prices API](https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices).
+Item flipping utility for the game Old School Runescape. Leverages the OSRS wiki [Real-Time Prices API](https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices) and [Weird Gloop](https://api.weirdgloop.org/).
 
-Built using NextJS, PostgreSQL, NextUI, and SCSS modules. Hosted on Vercel and AWS RDS.
+Built using NextJS, PostgreSQL, React Query, NextUI, TailwindCSS, and Chart.js. Hosted on Vercel and Railway.
 
 ## Initialize Project
 
