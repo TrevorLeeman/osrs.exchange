@@ -119,7 +119,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
             <motion.div variants={itemVariants}>
               <ItemInfoGridDisplay item={item} />
             </motion.div>
-            <motion.div variants={itemVariants} className="mt-8 flex gap-3">
+            <motion.div variants={itemVariants} className="mt-4 mb-1 flex gap-3 sm:mt-8 sm:mb-0">
               <DynamicTimeIntervalOptions />
               {item?.wiki_url ? (
                 <LinkBlue href={item.wiki_url} className="flex items-center gap-1">
