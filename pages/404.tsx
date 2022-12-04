@@ -1,4 +1,4 @@
-import NotFound from '../src/components/404/NotFound';
+import NotFound from '../src/components/404/404';
 
 const Custom404 = () => <NotFound />;
 
