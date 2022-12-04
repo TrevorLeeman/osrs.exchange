@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import type { GetServerSideProps, NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
@@ -8,9 +6,11 @@ import { Loading } from '@nextui-org/react';
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query';
 import { ParsedUrlQuery } from 'querystring';
 
-import NotFound from '../../src/components/404/NotFound';
+import NotFound from '../../src/components/404/404';
 import H1 from '../../src/components/Common/H1';
+import LinkBlue from '../../src/components/Common/LinkBlue';
 import PageDescription from '../../src/components/Common/PageDescription';
+import LinkExternalIcon from '../../src/components/Icons/LinkExternal';
 import ItemIcon, { itemIconSrc } from '../../src/components/ItemIcon/ItemIcon';
 import { ItemInfoGridDisplay } from '../../src/components/ItemInfoGrid/ItemInfoGrid';
 import { PriceChartProvider } from '../../src/components/PriceChart/PriceChartProvider';
@@ -101,8 +101,14 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
               <PageDescription>Live Grand Exchange pricing information for {item.name}</PageDescription>
             </div>
             <ItemInfoGridDisplay item={item} />
-            <div className="mt-8">
+            <div className="mt-8 flex gap-3">
               <DynamicTimeIntervalOptions />
+              {item?.wiki_url ? (
+                <LinkBlue href={item.wiki_url} className="flex items-center gap-1">
+                  <LinkExternalIcon />
+                  <span>Wiki</span>
+                </LinkBlue>
+              ) : null}
             </div>
             <DynamicPriceChart />
           </div>
