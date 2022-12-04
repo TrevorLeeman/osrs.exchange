@@ -1,4 +1,4 @@
-## [osrs.exchange](https://www.osrs.exchange)
+### [osrs.exchange](https://www.osrs.exchange)
 
 Item flipping utility for the game Old School Runescape. Leverages the OSRS wiki [Real-Time Prices API](https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices) and [Weird Gloop](https://api.weirdgloop.org/).
 
