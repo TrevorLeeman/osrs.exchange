@@ -1,29 +1,24 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import Link from 'next/link';
 
-import { Container, Text } from '@nextui-org/react';
+import H1 from '../Common/H1';
+import LinkBlue from '../Common/LinkBlue';
+import PageDescription from '../Common/PageDescription';
 
 const NotFound = () => (
   <>
     <Head>
       <meta name="robots" content="noindex" />
     </Head>
-    <Container display="flex" direction="column" justify="center" fluid>
-      <Text h1>Item Not Found</Text>
-      <Text size="$lg" color="$gray800">
-        Search for another item, or <Link href="/">return to the homepage</Link>.
-      </Text>
-      <Container display="flex" direction="column" justify="center" alignItems="center" fluid>
-        <Image src={'/item-not-found.gif'} width={384} height={384} alt="Nieve starring into the distant sun" />
-        <Text size="$sm" color="$gray700">
-          Image sourced{' '}
-          <a href="https://gfycat.com/celebratedunfitdolphin" target="_blank" rel="noreferrer">
-            via Gfycat
-          </a>
-        </Text>
-      </Container>
-    </Container>
+    <div className="flex w-full flex-col items-center justify-center gap-5">
+      <div>
+        <H1>Item Not Found</H1>
+        <PageDescription>
+          Search for another item, or <LinkBlue href="/">return to the homepage</LinkBlue>.
+        </PageDescription>
+      </div>
+      <Image src={'/item-not-found.gif'} width={384} height={384} alt="Nieve starring into the distant sun" />
+    </div>
   </>
 );
 
