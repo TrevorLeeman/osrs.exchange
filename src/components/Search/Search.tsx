@@ -6,6 +6,7 @@ import { Input } from '@nextui-org/react';
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { UseComboboxGetItemPropsOptions, useCombobox } from 'downshift';
+import { motion } from 'framer-motion';
 import { useDebounce } from 'usehooks-ts';
 
 import type { BasicItem } from '../../db/items';
@@ -18,6 +19,16 @@ type AutocompleteItemProps = {
   index: number;
   highlightedIndex: number;
   getItemProps: (options: UseComboboxGetItemPropsOptions<SearchItem>) => any;
+};
+
+const containerVariants = {
+  hidden: {},
+  show: {},
+};
+
+const childVariants = {
+  hidden: { opacity: 0, scale: 0 },
+  show: { opacity: 1, scale: 1 },
 };
 
 export const Search = () => {
@@ -67,7 +78,13 @@ export const Search = () => {
           {...getInputProps()}
         />
       </div>
-      <ul className="absolute z-[300] m-0 max-h-[300px] w-full overflow-y-auto rounded-xl" {...getMenuProps()}>
+      <motion.ul
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="absolute z-[300] m-0 max-h-[300px] w-full overflow-y-auto overflow-x-hidden rounded-xl"
+        {...getMenuProps()}
+      >
         {isOpen &&
           items.map((item, index) => (
             <AutocompleteItem
@@ -78,7 +95,7 @@ export const Search = () => {
               getItemProps={getItemProps}
             />
           ))}
-      </ul>
+      </motion.ul>
     </div>
   );
 };
@@ -93,18 +110,21 @@ const fetchAutocompleteList: QueryFunction<SearchItem[]> = async ({ queryKey }) 
 };
 
 const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: AutocompleteItemProps) => (
-  <li
+  <motion.li
+    variants={childVariants}
+    initial="hidden"
+    animate="show"
     className={`m-0 flex min-h-[60px] cursor-pointer items-center border-2 p-3 first:rounded-t-xl last:rounded-b-xl odd:bg-slate-200 even:bg-slate-100 dark:odd:bg-slate-800 dark:even:bg-slate-700 ${
       highlightedIndex === index ? 'border-indigo-600 dark:border-yellow-400' : 'border-transparent'
     }`}
-    key={`${item.id}`}
+    key={item.id}
     {...getItemProps({ item, index })}
   >
     <div className="flex min-w-[40px] items-center justify-center">
       <ItemIcon id={item.id} name={item.name} icon={item.icon} />
     </div>
     <span className="ml-4">{item.name}</span>
-  </li>
+  </motion.li>
 );
 
 const useAutocompleteList = ({
