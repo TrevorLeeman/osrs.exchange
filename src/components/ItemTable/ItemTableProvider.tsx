@@ -29,11 +29,11 @@ export type LatestTransactions = {
   };
 };
 
-type LatestTransaction = {
+export type LatestTransaction = {
   high: number | null;
-  highTime: number | null;
+  highTime: number | null | undefined;
   low: number | null;
-  lowTime: number | null;
+  lowTime: number | null | undefined;
 };
 
 export type DailyVolumes = {
