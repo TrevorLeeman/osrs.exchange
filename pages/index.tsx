@@ -1,7 +1,6 @@
 import type { NextPage } from 'next';
 
 import { QueryClient, dehydrate } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
 
 import { ItemTable } from '../src/components/ItemTable/ItemTable';
 import { ItemTableProvider } from '../src/components/ItemTable/ItemTableProvider';
