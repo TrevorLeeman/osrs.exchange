@@ -8,11 +8,6 @@ import { ItemTableProvider } from '../src/components/ItemTable/ItemTableProvider
 import ItemsPerPageDropdown from '../src/components/ItemTable/ItemsPerPageDropdown';
 import TablePagination from '../src/components/ItemTable/TablePagination';
 
-const itemTableVariants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.3 } },
-};
-
 const Home: NextPage = () => (
   <ItemTableProvider>
     <div className="flex flex-col justify-center">
@@ -24,9 +19,9 @@ const Home: NextPage = () => (
           <ItemsPerPageDropdown />
         </div>
       </div>
-      <motion.div variants={itemTableVariants} initial="hidden" animate="show" className="mb-4">
+      <div className="mb-4">
         <ItemTable />
-      </motion.div>
+      </div>
       <div className="mb-4 flex justify-center">
         <TablePagination />
       </div>
