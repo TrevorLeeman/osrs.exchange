@@ -21,6 +21,7 @@ import { WikiApiMappingItem } from '../../db/seeds/osrs_wiki_api_mapping';
 import useNextQueryParams from '../../hooks/useNextQueryParams';
 import ItemIcon from '../ItemIcon/ItemIcon';
 import NameCell from './Cells/Name';
+import SkeletonCell from './Cells/Skeleton';
 import TaxCell from './Cells/Tax';
 
 export type LatestTransactions = {
@@ -74,6 +75,7 @@ type SortDescNext = (params: { currentSortDirection: SortDirection | false }) =>
 type ItemTableContextType = {
   items: TableCompleteItem[];
   table: Table<TableCompleteItem>;
+  tableDataReady: boolean;
   setPageIndex: (state: number) => void;
   setPageSize: Dispatch<SetStateAction<number>>;
   sortHandler: SortHandler;
@@ -100,95 +102,33 @@ export const HOMEPAGE_QUERIES = {
 
 const columnHelper = createColumnHelper<TableCompleteItem>();
 
-const defaultColumns = [
-  columnHelper.accessor('icon', {
-    header: () => <div className="grow text-center">Icon</div>,
-    cell: info => (
-      <div className="flex justify-center">
-        <ItemIcon icon={info.getValue()} name={info.row.original.name} className="scale-110" />
-      </div>
-    ),
-    enableSorting: false,
-  }),
-  // columnHelper.accessor('id', { cell: info => info.getValue() }),
-  columnHelper.accessor('name', {
-    header: 'Name',
-    cell: context => <NameCell context={context} />,
-    enableSorting: true,
-    enableHiding: true,
-    sortingFn: 'text',
-  }),
-  columnHelper.accessor('dailyVolume', {
-    header: 'Daily Volume',
-    cell: info => info.getValue()?.toLocaleString(),
-    enableSorting: true,
-  }),
-  columnHelper.accessor('limit', {
-    header: 'Limit',
-    cell: info => info.getValue()?.toLocaleString(),
-    enableSorting: true,
-  }),
-  columnHelper.accessor('instaSellPrice', {
-    header: 'Sell Price',
-    cell: info => info.getValue()?.toLocaleString(),
-    enableSorting: true,
-  }),
-  columnHelper.accessor('instaBuyPrice', {
-    header: 'Buy Price',
-    cell: info => info.getValue()?.toLocaleString(),
-    enableSorting: true,
-  }),
-  columnHelper.accessor('roi', {
-    header: 'ROI',
-    cell: info => roiOutput({ roi: info.getValue() }),
-    enableSorting: true,
-  }),
-  // columnHelper.accessor('value', { header: 'Value', cell: info => info.getValue().toLocaleString() }),
-  // columnHelper.accessor('lowalch', { header: 'Low Alch', cell: info => info.getValue().toLocaleString() }),
-  // columnHelper.accessor('highalch', { header: 'High Alch', cell: info => info.getValue().toLocaleString() }),
-  // columnHelper.accessor('members', { header: 'Members', cell: info => info.getValue() }),
-  columnHelper.accessor('instaSellTime', {
-    header: 'Latest Sell',
-    cell: info => distanceToNowStrictFromUnixTime({ unixTime: info.getValue() }),
-    enableSorting: true,
-  }),
-  columnHelper.accessor('instaBuyTime', {
-    header: 'Latest Buy',
-    cell: info => distanceToNowStrictFromUnixTime({ unixTime: info.getValue() }),
-    enableSorting: true,
-  }),
-  columnHelper.accessor('tax', {
-    header: 'Tax',
-    cell: context => <TaxCell context={context} />,
-    enableSorting: true,
-  }),
-];
-
 const ItemTableContext = createContext<ItemTableContextType>(undefined!);
 
 export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }) => {
-  const {
-    data: latestPrices,
-    isLoading: latestPricesLoading,
-    isFetching: latestPricesFetching,
-  } = useQuery<LatestTransactions>([HOMEPAGE_QUERIES.latestPrices], fetchLatestPrices, {
-    refetchInterval: 60 * 1000, // 1 min
-  });
-  const {
-    data: dailyVolumes,
-    isLoading: dailyVolumeLoading,
-    isFetching: dailyVolumeFetching,
-  } = useQuery<DailyVolumes>([HOMEPAGE_QUERIES.dailyVolumes], fetchDailyVolumes, {
-    refetchInterval: 24 * 60 * 60 * 1000, // 24 hrs
-  });
-  const {
-    data: itemMappings,
-    isLoading: itemMappingLoading,
-    isFetching: itemMappingFetching,
-  } = useQuery<WikiApiMappingItem[]>([HOMEPAGE_QUERIES.itemMapping], fetchHomepageMappingItems, {
-    cacheTime: Infinity,
-    staleTime: Infinity,
-  });
+  const { data: latestPrices, isSuccess: latestPricesReady } = useQuery<LatestTransactions>(
+    [HOMEPAGE_QUERIES.latestPrices],
+    fetchLatestPrices,
+    {
+      refetchInterval: 60 * 1000, // 1 min
+    },
+  );
+  const { data: dailyVolumes, isSuccess: dailyVolumesReady } = useQuery<DailyVolumes>(
+    [HOMEPAGE_QUERIES.dailyVolumes],
+    fetchDailyVolumes,
+    {
+      refetchInterval: 24 * 60 * 60 * 1000, // 24 hrs
+    },
+  );
+  const { data: itemMappings, isSuccess: itemMappingsReady } = useQuery<WikiApiMappingItem[]>(
+    [HOMEPAGE_QUERIES.itemMapping],
+    fetchHomepageMappingItems,
+    {
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    },
+  );
+
+  const tableDataReady = latestPricesReady && dailyVolumesReady && itemMappingsReady;
 
   const [pageIndex, setPageIndex] = useNextQueryParams(
     'page',
@@ -215,34 +155,114 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
 
   const completeItems = useMemo(
     () =>
-      itemMappings
-        ?.map(item => {
-          const instaBuyPrice = latestPrices?.data[item.id]?.high;
-          const instaSellPrice = latestPrices?.data[item.id]?.low;
+      tableDataReady
+        ? itemMappings
+            ?.map(item => {
+              const instaBuyPrice = latestPrices?.data[item.id]?.high;
+              const instaSellPrice = latestPrices?.data[item.id]?.low;
 
-          return {
-            id: item.id,
-            name: item.name,
-            limit: item.limit,
-            icon: item.icon,
-            value: item.value,
-            lowalch: item.lowalch,
-            highalch: item.highalch,
-            members: item.members,
-            instaBuyPrice: instaBuyPrice ?? 0,
-            instaBuyTime: latestPrices?.data[item.id]?.highTime,
-            instaSellPrice: instaSellPrice ?? 0,
-            instaSellTime: latestPrices?.data[item.id]?.lowTime,
-            dailyVolume: dailyVolumes?.data[item.id],
-            tax: calculateTax(latestPrices?.data[item.id]?.high),
-            roi: calculateROI(instaBuyPrice, instaSellPrice),
-            profit: calculateProfit(instaBuyPrice, instaSellPrice),
-            potentialProfit: calculatePotentialProfit(instaBuyPrice, instaSellPrice, item.limit),
-          };
-        })
-        // If an item does not have a recent buy or sell record, that indicates it is either a Deadman mode item, or an item that has been removed from the game. All of which we want to filter out.
-        .filter(item => item.instaBuyTime || item.instaSellTime),
-    [itemMappings, dailyVolumes, latestPrices],
+              return {
+                id: item.id,
+                name: item.name,
+                limit: item.limit,
+                icon: item.icon,
+                value: item.value,
+                lowalch: item.lowalch,
+                highalch: item.highalch,
+                members: item.members,
+                instaBuyPrice: instaBuyPrice ?? 0,
+                instaBuyTime: latestPrices?.data[item.id]?.highTime,
+                instaSellPrice: instaSellPrice ?? 0,
+                instaSellTime: latestPrices?.data[item.id]?.lowTime,
+                dailyVolume: dailyVolumes?.data[item.id],
+                tax: calculateTax(latestPrices?.data[item.id]?.high),
+                roi: calculateROI(instaBuyPrice, instaSellPrice),
+                profit: calculateProfit(instaBuyPrice, instaSellPrice),
+                potentialProfit: calculatePotentialProfit(instaBuyPrice, instaSellPrice, item.limit),
+              };
+            })
+            // If an item does not have a recent buy or sell record, that indicates it is either a Deadman mode item, or an item that has been removed from the game. All of which we want to filter out.
+            .filter(item => item.instaBuyTime || item.instaSellTime)
+        : // Fill with empty rows equivalent to the number of tradeable items
+          Array(pageSize).fill({}),
+    [tableDataReady, itemMappings, dailyVolumes, latestPrices],
+  );
+
+  const defaultColumns = useMemo(
+    () => [
+      columnHelper.accessor('icon', {
+        header: () => <div className="grow text-center">Icon</div>,
+        cell: info => (
+          <SkeletonCell>
+            <div className="flex justify-center">
+              <ItemIcon icon={info.getValue()} name={info.row.original.name} className="scale-110" />
+            </div>
+          </SkeletonCell>
+        ),
+        enableSorting: false,
+      }),
+      // columnHelper.accessor('id', { cell: info => info.getValue() }),
+      columnHelper.accessor('name', {
+        header: 'Name',
+        cell: context => (
+          <SkeletonCell>
+            <NameCell context={context} />
+          </SkeletonCell>
+        ),
+        enableSorting: true,
+        enableHiding: true,
+        sortingFn: 'text',
+      }),
+      columnHelper.accessor('dailyVolume', {
+        header: 'Daily Volume',
+        cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
+        enableSorting: true,
+      }),
+      columnHelper.accessor('limit', {
+        header: 'Limit',
+        cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
+        enableSorting: true,
+      }),
+      columnHelper.accessor('instaSellPrice', {
+        header: 'Sell Price',
+        cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
+        enableSorting: true,
+      }),
+      columnHelper.accessor('instaBuyPrice', {
+        header: 'Buy Price',
+        cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
+        enableSorting: true,
+      }),
+      columnHelper.accessor('roi', {
+        header: 'ROI',
+        cell: info => <SkeletonCell>{roiOutput({ roi: info.getValue() })}</SkeletonCell>,
+        enableSorting: true,
+      }),
+      // columnHelper.accessor('value', { header: 'Value', cell: info => info.getValue().toLocaleString() }),
+      // columnHelper.accessor('lowalch', { header: 'Low Alch', cell: info => info.getValue().toLocaleString() }),
+      // columnHelper.accessor('highalch', { header: 'High Alch', cell: info => info.getValue().toLocaleString() }),
+      // columnHelper.accessor('members', { header: 'Members', cell: info => info.getValue() }),
+      columnHelper.accessor('instaSellTime', {
+        header: 'Latest Sell',
+        cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
+        enableSorting: true,
+      }),
+      columnHelper.accessor('instaBuyTime', {
+        header: 'Latest Buy',
+        cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
+        enableSorting: true,
+      }),
+      columnHelper.accessor('tax', {
+        header: 'Tax',
+        cell: context => (
+          <SkeletonCell>
+            <TaxCell context={context} />
+          </SkeletonCell>
+        ),
+        enableSorting: true,
+      }),
+    ],
+    [tableDataReady],
   );
 
   const table = useReactTable({
@@ -251,7 +271,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
     state: {
       sorting: sortOptions,
       pagination: {
-        pageIndex,
+        pageIndex: tableDataReady ? pageIndex : 0,
         pageSize,
       },
     },
@@ -267,7 +287,16 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
   }, [pageSize]);
 
   return (
-    <ItemTableContext.Provider value={{ items: completeItems ?? [], table, setPageIndex, setPageSize, sortHandler }}>
+    <ItemTableContext.Provider
+      value={{
+        items: completeItems ?? [],
+        table,
+        tableDataReady,
+        setPageIndex,
+        setPageSize,
+        sortHandler,
+      }}
+    >
       {children}
     </ItemTableContext.Provider>
   );
