@@ -17,6 +17,7 @@ const ThemeToggle = () => {
       iconOn={<MoonIcon />}
       iconOff={<SunIcon />}
       onChange={e => setTheme(e.target.checked ? 'dark' : 'light')}
+      size="lg"
     />
   ) : null;
 };
