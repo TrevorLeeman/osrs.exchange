@@ -34,6 +34,14 @@ const Attribution: NextPage = () => (
         <li>
           <LinkBlue href="https://www.svgrepo.com/svg/80323/down-arrow">Down Arrow SVG Vector</LinkBlue>
         </li>
+        <li>
+          <LinkBlue href="https://www.svgrepo.com/svg/167895/sun-shape">Sun Shape SVG Vector</LinkBlue>
+        </li>
+        <li>
+          <LinkBlue href="https://www.svgrepo.com/svg/19740/crescent-moon-phase">
+            Crescent Moon Phase SVG Vector
+          </LinkBlue>
+        </li>
       </ul>
     </div>
   </>
