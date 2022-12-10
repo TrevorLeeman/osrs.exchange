@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 type ArrowIconProps = {
   className?: string;
 };
@@ -12,7 +14,7 @@ const ArrowIcon = ({ className }: ArrowIconProps) => (
     y="0px"
     viewBox="0 0 17.526 17.526"
     xmlSpace="preserve"
-    className={`h-4 w-4 ${className}`}
+    className={twMerge([`h-4 w-4`, className])}
   >
     <g>
       <g>

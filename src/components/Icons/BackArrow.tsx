@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 type BackArrowIconProps = {
   className?: string;
 };
@@ -7,7 +9,7 @@ const BackArrowIcon = ({ className }: BackArrowIconProps) => {
     <svg
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      className={`fill-zinc-900 hover:fill-zinc-600 dark:fill-white dark:hover:fill-slate-300 ${className}`}
+      className={twMerge(`fill-zinc-900 hover:fill-zinc-600 dark:fill-white dark:hover:fill-slate-300`, className)}
     >
       <g data-name="Layer 2">
         <g data-name="arrow-back">
