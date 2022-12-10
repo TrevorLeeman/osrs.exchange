@@ -7,7 +7,7 @@ const SortAscIcon = () => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="stroke-indigo-600 dark:stroke-yellow-400"
+    className="stroke-current"
   >
     <path d="M11 5h4" />
     <path d="M11 9h7" />

@@ -8,7 +8,7 @@ const SortDescIcon = () => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="stroke-indigo-600 dark:stroke-yellow-400"
+    className="stroke-current"
   >
     <title id="sortUpIconTitle">Sort in ascending order</title> <path d="M11 16H17" /> <path d="M11 20H19" />
     <path d="M11 12H15" /> <path d="M4 8L7 5L10 8" /> <path d="M7 20L7 6" />

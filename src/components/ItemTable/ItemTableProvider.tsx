@@ -148,6 +148,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
   // );
 
   const sortHandler: SortHandler = useCallback(({ header }) => {
+    if (!header.column.columnDef.enableSorting) return;
     setSortOptions([
       { id: header.column.id, desc: sortDescNext({ currentSortDirection: header.column.getIsSorted() }) },
     ]);

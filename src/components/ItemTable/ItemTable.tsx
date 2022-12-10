@@ -1,11 +1,16 @@
 import { Header, flexRender } from '@tanstack/react-table';
 import { useIsClient } from 'usehooks-ts';
 
+import SortIcon from '../Icons/Sort';
 import SortAscIcon from '../Icons/SortAsc';
 import SortDescIcon from '../Icons/SortDesc';
 import { TableCompleteItem, useItemTableContext } from './ItemTableProvider';
 
 type SortIconProps = {
+  header: Header<TableCompleteItem, unknown>;
+};
+
+type TableHeaderProps = {
   header: Header<TableCompleteItem, unknown>;
 };
 
@@ -27,31 +32,39 @@ export const ItemTable = () => {
 };
 
 const TableHead = () => {
-  const { table, sortHandler } = useItemTableContext();
+  const { table } = useItemTableContext();
 
   return (
     <thead className="select-none text-left">
       <tr>
         {table.getHeaderGroups()[0].headers.map(header => (
-          <th
-            key={header.id}
-            onClick={e => sortHandler({ header })}
-            className={`sticky top-0 z-10 h-16 border-b-2 border-indigo-600 bg-slate-300 px-3 first:rounded-tl-xl last:rounded-tr-xl dark:border-yellow-400 dark:bg-slate-500 ${
-              header.column.columnDef.enableSorting
-                ? 'cursor-pointer transition-all duration-75 hover:bg-slate-400/80 dark:hover:bg-slate-600'
-                : ''
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-              <div className="shrink-0">
-                <SortIcon header={header} />
-              </div>
-            </div>
-          </th>
+          <TableHeader key={header.id} header={header} />
         ))}
       </tr>
     </thead>
+  );
+};
+
+const TableHeader = ({ header }: TableHeaderProps) => {
+  const { sortHandler } = useItemTableContext();
+  const sortableClasses = header.column.columnDef.enableSorting
+    ? 'cursor-pointer transition-all duration-75 hover:bg-slate-400/80 hover:text-indigo-600 dark:hover:bg-slate-600 dark:hover:text-yellow-400'
+    : '';
+  const activelySortedClasses = header.column.getIsSorted() ? 'text-indigo-600 dark:text-yellow-400' : '';
+
+  return (
+    <th
+      onClick={e => sortHandler({ header })}
+      className={`sticky top-0 z-10 h-16 border-b-2 border-indigo-600 bg-slate-300 px-3 first:rounded-tl-xl last:rounded-tr-xl  dark:border-yellow-400 dark:bg-slate-500 ${sortableClasses} ${activelySortedClasses}
+    `}
+    >
+      <div className="flex items-center gap-2">
+        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+        <div className="shrink-0">
+          <SortIconDisplay header={header} />
+        </div>
+      </div>
+    </th>
   );
 };
 
@@ -76,7 +89,17 @@ const TableBody = () => {
   );
 };
 
-const SortIcon = ({ header }: SortIconProps) => {
-  if (!header.column.getIsSorted()) return null;
-  return header.column.getIsSorted() === 'asc' ? <SortAscIcon /> : <SortDescIcon />;
+const SortIconDisplay = ({ header }: SortIconProps) => {
+  const sortDirection = header.column.getIsSorted();
+
+  if (!sortDirection && header.column.columnDef.enableSorting) return <SortIcon />;
+  if (header.column.columnDef.enableSorting) {
+    switch (sortDirection) {
+      case 'asc':
+        return <SortAscIcon />;
+      case 'desc':
+        return <SortDescIcon />;
+    }
+  }
+  return null;
 };
