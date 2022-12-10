@@ -139,6 +139,7 @@ const ItemInfoGrid = ({ item }: ItemInfoGridProps) => {
 
         <LabelValueWrapper label="Potential Profit">
           {calculatePotentialProfit(latestTransaction?.high, latestTransaction?.low, item?.limit)?.toLocaleString()}
+          <GridSmallText>/ 4 hours</GridSmallText>
         </LabelValueWrapper>
       </GridSection>
     </div>
