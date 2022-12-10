@@ -53,15 +53,14 @@ export const Search = () => {
     isFetching: autocompleteListIsFetching,
   } = useAutocompleteList({ inputValue: debouncedSearch, setItems });
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      inputRef.current?.blur();
-    }
+  const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    inputRef.current?.blur();
   };
 
   return (
     <div className="relative w-full">
-      <div {...getComboboxProps()}>
+      <form onSubmit={handleSubmit} {...getComboboxProps()}>
         <Input
           placeholder="Search for an item"
           aria-label="Item search"
@@ -70,11 +69,10 @@ export const Search = () => {
           css={{ width: '100%', borderI: 0 }}
           onClearClick={() => setItems(() => [])}
           ref={inputRef}
-          onKeyUp={handleKeyPress}
           clearable
           {...getInputProps()}
         />
-      </div>
+      </form>
       <ul
         className="absolute z-[300] m-0 max-h-[300px] w-full overflow-y-auto overflow-x-hidden rounded-xl"
         {...getMenuProps()}
