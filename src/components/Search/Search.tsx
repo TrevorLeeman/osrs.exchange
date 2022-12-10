@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
@@ -23,6 +23,7 @@ type AutocompleteItemProps = {
 export const Search = () => {
   const router = useRouter();
   const [items, setItems] = useState<SearchItem[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const {
     inputValue,
@@ -46,12 +47,17 @@ export const Search = () => {
   });
 
   const debouncedSearch = useDebounce(inputValue, 50);
-
   const {
     data: autocompleteList,
     isLoading: autocompleteListIsLoading,
     isFetching: autocompleteListIsFetching,
   } = useAutocompleteList({ inputValue: debouncedSearch, setItems });
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      inputRef.current?.blur();
+    }
+  };
 
   return (
     <div className="relative w-full">
@@ -63,6 +69,8 @@ export const Search = () => {
           autoComplete="false"
           css={{ width: '100%', borderI: 0 }}
           onClearClick={() => setItems(() => [])}
+          ref={inputRef}
+          onKeyUp={handleKeyPress}
           clearable
           {...getInputProps()}
         />
