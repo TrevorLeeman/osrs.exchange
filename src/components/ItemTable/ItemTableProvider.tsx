@@ -136,7 +136,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
     pageIndex => encodeURIComponent(pageIndex + 1),
     pageIndex => (Number(pageIndex) !== NaN ? Number(pageIndex) - 1 : 10),
   );
-  const [pageSize, setPageSize] = useLocalStorage('pageSize', 10);
+  const [pageSize, setPageSize] = useLocalStorage('pageSize', 25);
   const [sortOptions, setSortOptions] = useSessionStorage('sortOptions', [{ id: 'instaSellPrice', desc: true }]);
   // Store sort options in URL
   // const [sortOptions, setSortOptions] = useNextQueryParams(
