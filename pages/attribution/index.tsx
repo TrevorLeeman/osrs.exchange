@@ -42,6 +42,12 @@ const Attribution: NextPage = () => (
             Crescent Moon Phase SVG Vector
           </LinkBlue>
         </li>
+        <li>
+          <LinkBlue href="https://www.svgrepo.com/svg/64844/sort">Sort SVG Vector</LinkBlue>
+        </li>
+        <li>
+          <LinkBlue href="https://www.svgrepo.com/svg/352041/filter">Filter SVG Vector</LinkBlue>
+        </li>
       </ul>
     </div>
   </>
