@@ -22,7 +22,7 @@ export const ItemTable = () => {
       <table
         role="table"
         aria-label="Price information for all items tradeable on the OSRS grand exchange"
-        className=" w-full border-separate border-spacing-0  rounded-xl  font-plex-sans text-sm font-medium  sm:text-base"
+        className=" w-full border-separate border-spacing-0  rounded-xl font-plex-sans text-sm  sm:text-base"
       >
         <TableHead />
         <TableBody />
@@ -55,7 +55,7 @@ const TableHeader = ({ header }: TableHeaderProps) => {
   return (
     <th
       onClick={e => sortHandler({ header })}
-      className={`sticky top-0 z-10 h-16 border-b-2 border-indigo-600 bg-slate-300 px-3 first:rounded-tl-xl last:rounded-tr-xl  dark:border-yellow-400 dark:bg-slate-500 ${sortableClasses} ${activelySortedClasses}
+      className={`sticky top-0 z-10 h-16 border-b-2 border-indigo-600 bg-slate-300 px-3 first:rounded-tl-xl last:rounded-tr-xl dark:border-yellow-400 dark:bg-slate-500 ${sortableClasses} ${activelySortedClasses}
     `}
     >
       <div className="flex items-center gap-2">
