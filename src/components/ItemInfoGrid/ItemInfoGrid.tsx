@@ -88,12 +88,12 @@ const ItemInfoGrid = ({ item }: ItemInfoGridProps) => {
     <div className="flex w-full flex-col rounded-lg bg-slate-100 py-4 px-6 font-plex-sans dark:bg-gray-800 sm:w-fit sm:flex-row sm:gap-5">
       <GridSection>
         <LabelValueWrapper label="Buy Price">
-          <div className="flex flex-col justify-center sm:flex-row sm:items-center sm:justify-start sm:gap-2">
+          <BuySellValueWrapper>
             <span>{latestTransaction?.high?.toLocaleString()}</span>
             <BuySellTime unixTime={latestTransaction?.highTime}>
               <DownArrowIcon className=" shrink-0 fill-[#38c744]" />
             </BuySellTime>
-          </div>
+          </BuySellValueWrapper>
         </LabelValueWrapper>
         <LabelValueWrapper label="Sell Price">
           <BuySellValueWrapper>
@@ -128,26 +128,25 @@ const ItemInfoGrid = ({ item }: ItemInfoGridProps) => {
           ) : null}
         </LabelValueWrapper>
 
-        <LabelValueWrapper label="Buy Limit">
-          {item?.limit ? (
-            <>
+        {item?.limit ? (
+          <>
+            <LabelValueWrapper label="Buy Limit">
               <div>{item?.limit?.toLocaleString()}</div>
               <GridSmallText>/ 4 hours</GridSmallText>
-            </>
-          ) : null}
-        </LabelValueWrapper>
-
-        <LabelValueWrapper label="Potential Profit">
-          {calculatePotentialProfit(latestTransaction?.high, latestTransaction?.low, item?.limit)?.toLocaleString()}
-          <GridSmallText>/ 4 hours</GridSmallText>
-        </LabelValueWrapper>
+            </LabelValueWrapper>
+            <LabelValueWrapper label="Potential Profit">
+              {calculatePotentialProfit(latestTransaction?.high, latestTransaction?.low, item?.limit)?.toLocaleString()}
+              <GridSmallText>/ 4 hours</GridSmallText>
+            </LabelValueWrapper>
+          </>
+        ) : null}
       </GridSection>
     </div>
   );
 };
 
 const GridSection = ({ children }: GridSectionProps) => (
-  <div className="mt-4 grid grid-cols-1 gap-x-3 sm:mt-0 sm:grid-cols-[min-content_auto]">{children}</div>
+  <div className="mt-4 grid h-min grid-cols-1 gap-x-3 sm:mt-0 sm:grid-cols-[min-content_auto]">{children}</div>
 );
 
 const LabelValueWrapper = ({ label, children }: LabelValueWrapperProps) => (
@@ -159,7 +158,7 @@ const LabelValueWrapper = ({ label, children }: LabelValueWrapperProps) => (
 
 const GridLabel = ({ children }: GridLabelProps) => {
   return (
-    <div className="mt-4 w-full min-w-[130px] self-center whitespace-nowrap text-lg font-bold leading-none first-of-type:mt-0 sm:mt-0 sm:min-w-fit sm:leading-7">
+    <div className="mt-4 w-full min-w-[130px] self-center whitespace-nowrap text-lg font-bold leading-none text-indigo-600 first-of-type:mt-0 dark:text-yellow-400 sm:mt-0 sm:min-w-fit sm:leading-7">
       {children}
     </div>
   );
@@ -170,14 +169,16 @@ const GridValue = ({ children }: GridValueProps) => <div className="flex items-c
 const GridSmallText = ({ children }: GridSmallTextProps) => <span className="text-center text-xs">{children}</span>;
 
 const BuySellTime = ({ unixTime, children }: GridBuySellTimeProps) => (
-  <div className="flex flex-nowrap items-center gap-1">
+  <div className="flex w-full flex-nowrap items-center gap-1 sm:justify-around">
     <GridSmallText>{distanceToNowStrictFromUnixTime({ unixTime: unixTime, addSuffix: true })}</GridSmallText>
     {children}
   </div>
 );
 
 const BuySellValueWrapper = ({ children }: BuySellValueWrapperProps) => (
-  <div className="flex flex-col justify-center sm:flex-row sm:items-center sm:justify-start sm:gap-2">{children}</div>
+  <div className="flex w-full flex-col justify-center sm:flex-row sm:items-center sm:justify-start sm:gap-2">
+    {children}
+  </div>
 );
 
 const fetchLatestTransactions: QueryFunction<LatestTransactions> = async ({ queryKey }) => {

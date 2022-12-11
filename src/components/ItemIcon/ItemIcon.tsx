@@ -4,7 +4,7 @@ type ItemIconProps = { name: string; icon: string; id?: number; className?: stri
 
 const ItemIcon = ({ name, icon, id, className, shadow = false, title }: ItemIconProps) => (
   <img
-    src={itemIconSrc(icon)}
+    src={itemIconUrl(icon)}
     alt={name}
     title={title ?? name}
     key={id}
@@ -17,7 +17,7 @@ const ItemIcon = ({ name, icon, id, className, shadow = false, title }: ItemIcon
   />
 );
 
-export const itemIconSrc = (icon: ItemIconProps['icon']) => {
+export const itemIconUrl = (icon: ItemIconProps['icon']) => {
   return `https://oldschool.runescape.wiki/images/${encodeURIComponent(icon.replaceAll(' ', '_'))}`;
 };
 

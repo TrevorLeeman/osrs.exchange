@@ -249,10 +249,6 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
         cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
         enableSorting: true,
       }),
-      // columnHelper.accessor('value', { header: 'Value', cell: info => info.getValue().toLocaleString() }),
-      // columnHelper.accessor('lowalch', { header: 'Low Alch', cell: info => info.getValue().toLocaleString() }),
-      // columnHelper.accessor('highalch', { header: 'High Alch', cell: info => info.getValue().toLocaleString() }),
-      // columnHelper.accessor('members', { header: 'Members', cell: info => info.getValue() }),
       columnHelper.accessor('instaBuyTime', {
         header: 'Latest Buy',
         cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
@@ -263,6 +259,10 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
         cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
         enableSorting: true,
       }),
+      // columnHelper.accessor('value', { header: 'Value', cell: info => info.getValue().toLocaleString() }),
+      // columnHelper.accessor('lowalch', { header: 'Low Alch', cell: info => info.getValue().toLocaleString() }),
+      // columnHelper.accessor('highalch', { header: 'High Alch', cell: info => info.getValue().toLocaleString() }),
+      // columnHelper.accessor('members', { header: 'Members', cell: info => info.getValue() }),
       // columnHelper.accessor('tax', {
       //   header: 'Tax',
       //   cell: context => (

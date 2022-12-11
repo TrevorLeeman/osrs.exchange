@@ -4,7 +4,7 @@ import Document, { DocumentContext, Head, Html, Main, NextScript } from 'next/do
 import Script from 'next/script';
 
 const DESCRIPTION =
-  'Profit off the the GE using live prices, kept up to date every 30 seconds via the OSRS Wiki Real-time Prices API.';
+  'Profit on the OSRS  GE using live price charts, updated every 30 seconds! An item flipping web app for the game Old School Runescape.';
 
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {

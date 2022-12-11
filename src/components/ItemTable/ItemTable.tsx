@@ -48,7 +48,7 @@ const TableHead = () => {
 const TableHeader = ({ header }: TableHeaderProps) => {
   const { sortHandler } = useItemTableContext();
   const sortableClasses = header.column.columnDef.enableSorting
-    ? 'cursor-pointer transition-all duration-75 hover:bg-slate-400/80 hover:text-indigo-600 dark:hover:bg-slate-600 dark:hover:text-yellow-400'
+    ? 'cursor-pointer transition-all duration-75 hover:bg-slate-400/80 dark:hover:bg-slate-600'
     : '';
   const activelySortedClasses = header.column.getIsSorted() ? 'text-indigo-600 dark:text-yellow-400' : '';
 
