@@ -2,14 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/*Hacky way of targeting NextUI global overlay*/
 html,
 body,
 #__next,
-/*Hacky way of targeting NextUI global overlay*/
 div[data-overlay-container='true']:first-of-type {
   height: 100%;
-  font-smooth: always;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* clears the ‘X’ from Internet Explorer */
