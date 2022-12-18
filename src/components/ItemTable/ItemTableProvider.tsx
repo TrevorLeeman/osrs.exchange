@@ -60,9 +60,11 @@ export type TableItem = {
   potentialProfit: number | null | undefined;
 };
 
-export type ColumnVisibility = {
-  [key in StringKeyOf<TableItem>]: boolean;
-};
+export type ColumnVisibility =
+  | {
+      [key in StringKeyOf<TableItem>]: boolean;
+    }
+  | {};
 
 type ItemTableProviderProps = {
   children?: React.ReactNode;
