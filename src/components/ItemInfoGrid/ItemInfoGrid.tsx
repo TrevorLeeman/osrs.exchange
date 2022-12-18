@@ -1,26 +1,28 @@
 import React from 'react';
 
 import { Collapse } from '@nextui-org/react';
-import { QueryFunction, useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 
 import { ItemPageItem } from '../../../pages/item/[slug]';
 import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
-import DownArrowIcon from '../Icons/ArrowIcon';
 import {
-  DailyVolumes,
-  HOMEPAGE_QUERIES,
-  LatestTransactions,
   calculateMargin,
   calculatePotentialProfit,
   calculateProfit,
   calculateTax,
   distanceToNowStrictFromUnixTime,
-  fetchDailyVolumes,
   roiOutput,
-} from '../ItemTable/ItemTableProvider';
+} from '../../util/calculations';
+import {
+  DailyVolumes,
+  ITEM_TABLE_QUERIES,
+  LatestTransactions,
+  fetchDailyVolumes,
+  fetchLatestTransactions,
+} from '../../util/queries';
+import DownArrowIcon from '../Icons/Arrow';
 
-type ItemInfoGridProps = { item: ItemPageItem | null };
+export type ItemInfoGridProps = { item: ItemPageItem | null; uid?: string };
 
 type LabelValueWrapperProps = {
   label: string;
@@ -56,7 +58,11 @@ export const ItemInfoGridDisplay = ({ item }: ItemInfoGridProps) => {
   const isMaxLargeMobile = !useTailwindMinBreakpoint('sm');
 
   return isMaxLargeMobile ? (
-    <Collapse title={<span className="text-lg font-semibold">Pricing Info</span>}>
+    <Collapse
+      title={<span className="text-lg font-semibold">Pricing Info</span>}
+      divider={false}
+      className="rounded-lg bg-slate-100 px-6 dark:bg-slate-800"
+    >
       <ItemInfoGrid item={item} />
     </Collapse>
   ) : (
@@ -64,7 +70,7 @@ export const ItemInfoGridDisplay = ({ item }: ItemInfoGridProps) => {
   );
 };
 
-const ItemInfoGrid = ({ item }: ItemInfoGridProps) => {
+const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
   const id = item?.id;
   const {
     data: latestTransactionData,
@@ -77,15 +83,14 @@ const ItemInfoGrid = ({ item }: ItemInfoGridProps) => {
     data: dailyVolumes,
     isLoading: dailyVolumeLoading,
     isFetching: dailyVolumeFetching,
-  } = useQuery<DailyVolumes>([HOMEPAGE_QUERIES.dailyVolumes], fetchDailyVolumes, {
+  } = useQuery<DailyVolumes>([ITEM_TABLE_QUERIES.dailyVolumes], fetchDailyVolumes, {
     refetchInterval: 24 * 60 * 60 * 1000, // 24 hrs
   });
   const latestTransaction = id ? latestTransactionData?.data[id] : null;
   const dailyVolume = item?.id ? dailyVolumes?.data[item.id.toString()] : null;
 
   return (
-    // <div className="grid w-fit grid-cols-[min-content_auto] gap-y-0.5 gap-x-5 rounded-lg bg-slate-100 py-4 px-6 font-plex-sans dark:bg-gray-800 xl:grid-cols-[min-content_auto_min-content_auto]">
-    <div className="flex w-full flex-col rounded-lg bg-slate-100 py-4 px-6 font-plex-sans dark:bg-gray-800 sm:w-fit sm:flex-row sm:gap-5">
+    <div className="flex w-full flex-col rounded-lg bg-slate-100 font-plex-sans dark:bg-slate-800 sm:w-fit sm:flex-row sm:gap-5 sm:py-4 sm:px-6">
       <GridSection>
         <LabelValueWrapper label="Buy Price">
           <BuySellValueWrapper>
@@ -180,10 +185,3 @@ const BuySellValueWrapper = ({ children }: BuySellValueWrapperProps) => (
     {children}
   </div>
 );
-
-const fetchLatestTransactions: QueryFunction<LatestTransactions> = async ({ queryKey }) => {
-  const [_key, { id }] = queryKey as [string, { id: ItemInfoGridProps['item'] }];
-  return axios
-    .get<LatestTransactions>(`https://prices.runescape.wiki/api/v1/osrs/latest/?id=${id}`)
-    .then(res => res.data);
-};

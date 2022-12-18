@@ -17,7 +17,7 @@ import Zoom from 'chartjs-plugin-zoom';
 import enUS from 'date-fns/locale/en-US';
 import { Line } from 'react-chartjs-2';
 
-import { usePriceChartContext } from './PriceChartProvider';
+import { usePriceChartContext } from '../../hooks/usePriceChartContext';
 
 ChartJS.register(
   CategoryScale,

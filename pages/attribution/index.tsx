@@ -26,16 +26,16 @@ const Attribution: NextPage = () => (
           <LinkBlue href="https://www.svgrepo.com/svg/332413/home">Home SVG Vector</LinkBlue>
         </li>
         <li>
-          <LinkBlue href="https://www.svgrepo.com/svg/389434/sort-asc">Sort Asc SVG Vector</LinkBlue>
+          <LinkBlue href="https://www.svgrepo.com/svg/348484/sort-up">Sort Up SVG Vector</LinkBlue>
         </li>
         <li>
-          <LinkBlue href="https://www.svgrepo.com/svg/348484/sort-up">Sort Desc SVG Vector</LinkBlue>
+          <LinkBlue href="https://www.svgrepo.com/svg/348481/sort-down">Sort Down SVG Vector</LinkBlue>
         </li>
         <li>
           <LinkBlue href="https://www.svgrepo.com/svg/80323/down-arrow">Down Arrow SVG Vector</LinkBlue>
         </li>
         <li>
-          <LinkBlue href="https://www.svgrepo.com/svg/167895/sun-shape">Sun Shape SVG Vector</LinkBlue>
+          <LinkBlue href="https://www.svgrepo.com/svg/71693/sun-bright">Sun Bright SVG Vector</LinkBlue>
         </li>
         <li>
           <LinkBlue href="https://www.svgrepo.com/svg/19740/crescent-moon-phase">
@@ -47,6 +47,9 @@ const Attribution: NextPage = () => (
         </li>
         <li>
           <LinkBlue href="https://www.svgrepo.com/svg/352041/filter">Filter SVG Vector</LinkBlue>
+        </li>
+        <li>
+          <LinkBlue href="https://www.svgrepo.com/svg/33237/settings">Settings SVG Vector</LinkBlue>
         </li>
       </ul>
     </div>

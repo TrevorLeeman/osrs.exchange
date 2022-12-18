@@ -2,7 +2,7 @@ import { useTheme as useNextUiTheme } from '@nextui-org/react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-import { useItemTableContext } from '../ItemTableProvider';
+import { useItemTableContext } from '../../../hooks/useItemTableContext';
 
 type SkeletonCellProps = {
   children: React.ReactNode;

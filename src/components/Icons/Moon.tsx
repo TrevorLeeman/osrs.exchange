@@ -1,7 +1,12 @@
-const MoonIcon = () => (
+import { twMerge } from 'tailwind-merge';
+
+type MoonIconProps = {
+  className?: string;
+};
+
+const MoonIcon = ({ className }: MoonIconProps) => (
   <svg
     version="1.1"
-    id="Capa_1"
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     x="0px"
@@ -10,7 +15,7 @@ const MoonIcon = () => (
     height="30.457px"
     viewBox="0 0 30.457 30.457"
     xmlSpace="preserve"
-    className="fill-white"
+    className={twMerge('h-6 w-6 fill-white', className)}
   >
     <g>
       <path

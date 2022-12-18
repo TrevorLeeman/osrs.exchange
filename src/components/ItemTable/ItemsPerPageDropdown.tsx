@@ -3,7 +3,7 @@ import { Key, useCallback } from 'react';
 import { Dropdown } from '@nextui-org/react';
 import { useIsClient } from 'usehooks-ts';
 
-import { useItemTableContext } from './ItemTableProvider';
+import { useItemTableContext } from '../../hooks/useItemTableContext';
 
 const ItemsPerPageDropdown = ({ sizes = [10, 15, 20, 25, 50] }: { sizes?: number[] }) => {
   const isClient = useIsClient();

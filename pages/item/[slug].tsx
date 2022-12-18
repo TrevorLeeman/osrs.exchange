@@ -9,6 +9,7 @@ import { ParsedUrlQuery } from 'querystring';
 
 import NotFound from '../../src/components/404/404';
 import H1 from '../../src/components/Common/H1';
+import HorizontalPadding from '../../src/components/Common/HorizontalPadding';
 import LinkBlue from '../../src/components/Common/LinkBlue';
 import PageDescription from '../../src/components/Common/PageDescription';
 import LinkExternalIcon from '../../src/components/Icons/LinkExternal';
@@ -18,6 +19,7 @@ import { PriceChartProvider } from '../../src/components/PriceChart/PriceChartPr
 import knex from '../../src/db/db';
 import type { BasicItem } from '../../src/db/items';
 import { WikiApiMappingItem } from '../../src/db/seeds/osrs_wiki_api_mapping';
+import { ITEM_PAGE_QUERIES } from '../../src/util/queries';
 
 interface Params extends ParsedUrlQuery {
   slug: [string];
@@ -28,20 +30,6 @@ export interface ItemPageItem extends WikiApiMappingItem {
   release_date: BasicItem['release_date'];
   wiki_url: BasicItem['wiki_url'];
 }
-
-export interface Price {
-  avgHighPrice: number;
-  avgLowPrice: number;
-  highPriceVolume: number;
-  lowPriceVolumne: number;
-  timestamp: number;
-}
-
-export const ITEM_PAGE_QUERIES = {
-  realTimePrices: 'real_time_prices',
-  longTermPrices: 'long_term_prices',
-  itemById: 'item_by_id',
-};
 
 const DynamicPriceChart = dynamic(() => import('../../src/components/PriceChart/PriceChart'), {
   ssr: false,
@@ -96,7 +84,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
           </>
         ) : null}
       </Head>
-      <div className="mb-3">
+      <HorizontalPadding>
         <PriceChartProvider id={item.id}>
           <motion.div
             variants={containerVariants}
@@ -132,7 +120,7 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
             <DynamicPriceChart />
           </motion.div>
         </PriceChartProvider>
-      </div>
+      </HorizontalPadding>
     </>
   ) : (
     <NotFound />

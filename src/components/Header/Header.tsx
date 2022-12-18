@@ -1,32 +1,36 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
+import { twMerge } from 'tailwind-merge';
+
+import useLogoSrc from '../../hooks/useLogoSrc';
 import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
+import HorizontalPadding from '../Common/HorizontalPadding';
 import HomeIcon from '../Icons/Home';
 import { Search } from '../Search/Search';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
 
+export const headerFooterClasses = 'bg-zinc-100 dark:bg-zinc-900 py-3 sm:py-6 border-indigo-600 dark:border-yellow-400';
+
 const Header = () => {
   const isMinTablet = useTailwindMinBreakpoint('sm');
+  const logoSrc = useLogoSrc();
 
   return (
-    <header className="mb-4 flex items-center gap-3 px-2 sm:mb-6 sm:grid sm:grid-cols-[auto_1fr_auto] md:grid-cols-3 lg:mb-12">
-      <div>
-        <Link href="/" title="OSRS Exchange Homepage">
-          {isMinTablet ? (
-            <span className="bg-gradient-to-b from-indigo-500 to-indigo-600 bg-clip-text text-2xl font-bold text-transparent dark:from-yellow-400 dark:to-yellow-500">
-              OSRS Exchange
-            </span>
-          ) : (
-            <HomeIcon />
-          )}
-        </Link>
-      </div>
-      <div className="flex grow justify-center">
-        <Search />
-      </div>
-      <div className=" flex items-center justify-end">
-        <ThemeToggle />
-      </div>
+    <header className={twMerge(['mb-6 shadow-sm sm:shadow-md'], headerFooterClasses)}>
+      <HorizontalPadding>
+        <div className="flex items-center gap-3 sm:grid sm:grid-cols-[auto_1fr_auto] md:grid-cols-3">
+          <Link href="/" title="Go to Homepage" className="w-fit">
+            {isMinTablet ? <Image src={logoSrc} alt="OSRS Exchange" width="160" height="40" priority /> : <HomeIcon />}
+          </Link>
+          <div className="flex grow justify-center">
+            <Search />
+          </div>
+          <div className=" flex items-center justify-end">
+            <ThemeToggle />
+          </div>
+        </div>
+      </HorizontalPadding>
     </header>
   );
 };

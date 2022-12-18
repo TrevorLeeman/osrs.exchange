@@ -4,9 +4,9 @@ import { Button, Dropdown } from '@nextui-org/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Entries, StringKeyOf } from 'type-fest';
 
-import { ITEM_PAGE_QUERIES } from '../../../pages/item/[slug]';
+import { usePriceChartContext } from '../../hooks/usePriceChartContext';
 import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
-import { usePriceChartContext } from './PriceChartProvider';
+import { ITEM_PAGE_QUERIES } from '../../util/queries';
 
 type TimeIntervalButtonProps = {
   title: string;

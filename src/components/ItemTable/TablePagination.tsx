@@ -1,7 +1,7 @@
 import { Pagination } from '@nextui-org/react';
 
+import { useItemTableContext } from '../../hooks/useItemTableContext';
 import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
-import { useItemTableContext } from './ItemTableProvider';
 
 const TablePagination = () => {
   const { items, table, setPageIndex } = useItemTableContext();

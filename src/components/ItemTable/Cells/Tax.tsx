@@ -1,9 +1,9 @@
 import { CellContext } from '@tanstack/react-table';
 
-import { TableCompleteItem } from '../ItemTableProvider';
+import { TableItem } from '../ItemTableProvider';
 
 type TaxCellProps = {
-  context: CellContext<TableCompleteItem, number | null | undefined>;
+  context: CellContext<TableItem, number | null | undefined>;
 };
 
 const TaxCell = ({ context }: TaxCellProps) => {

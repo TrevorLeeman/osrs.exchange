@@ -1,17 +1,18 @@
 import { Header, flexRender } from '@tanstack/react-table';
 import { useIsClient } from 'usehooks-ts';
 
+import { useItemTableContext } from '../../hooks/useItemTableContext';
 import SortIcon from '../Icons/Sort';
 import SortAscIcon from '../Icons/SortAsc';
 import SortDescIcon from '../Icons/SortDesc';
-import { TableCompleteItem, useItemTableContext } from './ItemTableProvider';
+import { TableItem } from './ItemTableProvider';
 
 type SortIconProps = {
-  header: Header<TableCompleteItem, unknown>;
+  header: Header<TableItem, unknown>;
 };
 
 type TableHeaderProps = {
-  header: Header<TableCompleteItem, unknown>;
+  header: Header<TableItem, unknown>;
 };
 
 export const ItemTable = () => {
@@ -22,7 +23,7 @@ export const ItemTable = () => {
       <table
         role="table"
         aria-label="Price information for all items tradeable on the OSRS grand exchange"
-        className=" w-full border-separate border-spacing-0  rounded-xl font-plex-sans text-sm  sm:text-base"
+        className="w-full border-separate border-spacing-0 rounded-xl font-plex-sans text-sm sm:text-base"
       >
         <TableHead />
         <TableBody />

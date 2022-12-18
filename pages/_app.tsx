@@ -38,7 +38,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           >
             <NextUIProvider disableBaseline={true}>
               <AriaSSRProvider>
-                <div className="flex h-full flex-col px-1 pt-3 xs:px-2 md:px-7 lg:px-9 lg:pt-6 xl:px-12">
+                <div className="flex min-h-full grow flex-col">
                   <Header />
                   <main className="grow">
                     <Component {...pageProps} />

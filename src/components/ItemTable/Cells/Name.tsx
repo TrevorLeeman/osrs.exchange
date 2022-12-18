@@ -1,12 +1,10 @@
-import Link from 'next/link';
-
 import { CellContext } from '@tanstack/react-table';
 
 import LinkBlue from '../../Common/LinkBlue';
-import { TableCompleteItem } from '../ItemTableProvider';
+import { TableItem } from '../ItemTableProvider';
 
 type NameCellProps = {
-  context: CellContext<TableCompleteItem, string>;
+  context: CellContext<TableItem, string>;
 };
 
 const NameCell = ({ context }: NameCellProps) => (

@@ -1,17 +1,17 @@
-import { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { useRouter } from 'next/router';
 
-import { Input } from '@nextui-org/react';
-import { QueryFunction, useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { FormElement, Input, useTheme as useNextUiTheme } from '@nextui-org/react';
 import { UseComboboxGetItemPropsOptions, useCombobox } from 'downshift';
 import { useDebounce } from 'usehooks-ts';
 
 import type { BasicItem } from '../../db/items';
+import useAutocompleteList from '../../hooks/useAutocompleteList';
+import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
 import ItemIcon from '../ItemIcon/ItemIcon';
 
-type SearchItem = Pick<BasicItem, 'id' | 'name' | 'icon'>;
+export type SearchItem = Pick<BasicItem, 'id' | 'name' | 'icon'>;
 
 type AutocompleteItemProps = {
   item: SearchItem;
@@ -22,6 +22,8 @@ type AutocompleteItemProps = {
 
 export const Search = () => {
   const router = useRouter();
+  const { isDark } = useNextUiTheme();
+  const isMinTablet = useTailwindMinBreakpoint('sm');
   const [items, setItems] = useState<SearchItem[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -44,6 +46,7 @@ export const Search = () => {
       return item ? item.name : '';
     },
     defaultHighlightedIndex: 0,
+    id: 'item-search',
   });
 
   const debouncedSearch = useDebounce(inputValue, 50);
@@ -53,28 +56,34 @@ export const Search = () => {
     isFetching: autocompleteListIsFetching,
   } = useAutocompleteList({ inputValue: debouncedSearch, setItems });
 
-  const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    inputRef.current?.blur();
+  const handleKeyUp = (event: React.KeyboardEvent<FormElement>) => {
+    if (event.key === 'Enter') {
+      inputRef.current?.blur();
+    }
   };
 
   return (
     <div className="relative w-full">
-      <form onSubmit={handleSubmit} {...getComboboxProps()}>
+      <div {...getComboboxProps()}>
         <Input
           placeholder="Search for an item"
-          aria-label="Item search"
+          aria-label=""
           type="search"
           autoComplete="false"
-          css={{ width: '100%', borderI: 0 }}
+          css={{ width: '100%', $$inputColor: isDark ? 'rgb(31 41 55)' : 'rgb(228,228,231)' }}
+          size={isMinTablet ? 'lg' : 'md'}
           onClearClick={() => setItems(() => [])}
-          ref={inputRef}
           clearable
-          {...getInputProps()}
+          // rounded
+          {...getInputProps({
+            ref: inputRef,
+            'aria-label': 'Item search',
+            onKeyUp: e => handleKeyUp(e),
+          })}
         />
-      </form>
+      </div>
       <ul
-        className="absolute z-[300] m-0 max-h-[300px] w-full overflow-y-auto overflow-x-hidden rounded-xl"
+        className="absolute z-[300] m-0 max-h-[300px] w-full overflow-y-auto overflow-x-hidden rounded-xl bg-gray-800 shadow-xl"
         {...getMenuProps()}
       >
         {isOpen &&
@@ -92,15 +101,6 @@ export const Search = () => {
   );
 };
 
-const fetchAutocompleteList: QueryFunction<SearchItem[]> = async ({ queryKey }) => {
-  const [_key, { inputValue }] = queryKey as [string, { inputValue: string }];
-  if (!inputValue) return [];
-
-  return axios
-    .get<{ items: SearchItem[] }>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/item_search/${inputValue}`)
-    .then(res => res.data.items);
-};
-
 const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: AutocompleteItemProps) => (
   <li
     className={`m-0 flex min-h-[60px] cursor-pointer items-center border-2 p-3 first:rounded-t-xl last:rounded-b-xl odd:bg-slate-200 even:bg-slate-100 dark:odd:bg-slate-800 dark:even:bg-slate-700 ${
@@ -115,18 +115,3 @@ const AutocompleteItem = ({ item, index, highlightedIndex, getItemProps }: Autoc
     <span className="ml-4">{item.name}</span>
   </li>
 );
-
-const useAutocompleteList = ({
-  inputValue,
-  setItems,
-}: {
-  inputValue: string;
-  setItems: Dispatch<SetStateAction<SearchItem[]>>;
-}) => {
-  return useQuery<SearchItem[]>(['autocomplete', { inputValue }], fetchAutocompleteList, {
-    initialData: [],
-    onSuccess(data) {
-      setItems(() => data);
-    },
-  });
-};

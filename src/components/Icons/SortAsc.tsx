@@ -1,19 +1,17 @@
 const SortAscIcon = () => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
+    width="24px"
+    height="24px"
     viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-labelledby="sortUpIconTitle"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
     className="stroke-current"
   >
-    <path d="M11 5h4" />
-    <path d="M11 9h7" />
-    <path d="M11 13h10" />
-    <path d="M3 17l3 3 3-3" />
-    <path d="M6 18V4" />
+    <path d="M11 16H17" /> <path d="M11 20H19" /> <path d="M11 12H15" /> <path d="M4 8L7 5L10 8" />
+    <path d="M7 20L7 6" />
   </svg>
 );
 
