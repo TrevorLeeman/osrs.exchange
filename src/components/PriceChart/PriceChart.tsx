@@ -47,7 +47,8 @@ const PriceChart = () => {
 
   return (
     <Line
-      className="max-h-[50vh]"
+      // Resolve error when loading at tablet viewport widths
+      className="max-h-[50vh] sm:max-h-[40vh] xl:max-h-[50vh]"
       data={{
         labels: xAxisLabels,
         datasets: [
