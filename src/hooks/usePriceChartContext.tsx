@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 
+import { columnHeaders } from '../components/ItemTable/ItemTableProvider';
 import { Timestep } from '../components/PriceChart/TimeIntervalOptions';
 
 type PriceChartContextType = {
@@ -16,8 +17,8 @@ type PriceChartContextType = {
 };
 
 export const LINE_LABELS = {
-  instabuy: 'Buy Price',
-  instasell: 'Sell price',
+  instabuy: columnHeaders.instaBuyPrice,
+  instasell: columnHeaders.instaSellPrice,
   average: 'Average price',
 };
 
