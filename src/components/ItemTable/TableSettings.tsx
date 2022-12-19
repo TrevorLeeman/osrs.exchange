@@ -4,6 +4,7 @@ import { Checkbox, Collapse } from '@nextui-org/react';
 import { Column } from '@tanstack/react-table';
 
 import { useItemTableContext } from '../../hooks/useItemTableContext';
+import AddColumnIcon from '../Icons/AddColumn';
 import { SettingsButton, SettingsModal } from '../Settings/Settings';
 import { TableItem, columnHeaders } from './ItemTableProvider';
 
@@ -34,20 +35,25 @@ export const TableSettings = () => {
       <SettingsButton title="Table Settings" onClick={() => setModalOpen(true)} />
       <SettingsModal modalOpen={modalOpen} setModalOpen={setModalOpen} className="p-8">
         <span className="mb-4 text-lg font-bold">Table Settings</span>
-        <Collapse title={<span className="font-semibold">Columns</span>} expanded bordered>
-          <Checkbox.Group
-            value={[...visibleColumnIds, allSelected ? 'selectAll' : '']}
-            aria-label="Columns"
-            color="secondary"
-          >
-            <Checkbox value="selectAll" onChange={selectAll} aria-label="Select All" color="default">
-              Select All
-            </Checkbox>
-            {allColumns.map(column => (
-              <HeaderCheckbox key={column.id} column={column} />
-            ))}
-          </Checkbox.Group>
-        </Collapse>
+        <Collapse.Group bordered className="text-left">
+          {/* <Collapse title={<span className="font-semibold">Presets</span>}>
+            <Checkbox>High Alch Profit</Checkbox>
+          </Collapse> */}
+          <Collapse title={<span className="font-semibold">Columns</span>} contentLeft={<AddColumnIcon />}>
+            <Checkbox.Group
+              value={[...visibleColumnIds, allSelected ? 'selectAll' : '']}
+              aria-label="Columns"
+              color="secondary"
+            >
+              <Checkbox value="selectAll" onChange={selectAll} aria-label="Select All" color="default">
+                Select All
+              </Checkbox>
+              {allColumns.map(column => (
+                <HeaderCheckbox key={column.id} column={column} />
+              ))}
+            </Checkbox.Group>
+          </Collapse>
+        </Collapse.Group>
       </SettingsModal>
     </>
   );

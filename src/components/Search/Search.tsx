@@ -9,6 +9,7 @@ import { useDebounce } from 'usehooks-ts';
 import type { BasicItem } from '../../db/items';
 import useAutocompleteList from '../../hooks/useAutocompleteList';
 import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
+import SearchIcon from '../Icons/Search';
 import ItemIcon from '../ItemIcon/ItemIcon';
 
 export type SearchItem = Pick<BasicItem, 'id' | 'name' | 'icon'>;
@@ -74,6 +75,7 @@ export const Search = () => {
           size={isMinTablet ? 'lg' : 'md'}
           onClearClick={() => setItems(() => [])}
           clearable
+          contentLeft={<SearchIcon />}
           // rounded
           {...getInputProps({
             ref: inputRef,
