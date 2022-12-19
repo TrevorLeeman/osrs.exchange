@@ -49,7 +49,6 @@ export type TableItem = {
   limit: WikiApiMappingItem['limit'];
   icon: WikiApiMappingItem['icon'];
   value: WikiApiMappingItem['value'] | null | undefined;
-  shopProfit: number | null;
   lowAlch: WikiApiMappingItem['lowalch'];
   lowAlchProfit: number | null;
   highAlch: WikiApiMappingItem['highalch'];
