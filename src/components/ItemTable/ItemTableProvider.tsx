@@ -1,15 +1,13 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import {
-  Header,
   createColumnHelper,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { StringKeyOf } from 'type-fest/source/string-key-of';
 import { useLocalStorage, useSessionStorage, useUpdateEffect } from 'usehooks-ts';
 
 import { WikiApiMappingItem } from '../../db/seeds/osrs_wiki_api_mapping';
@@ -24,8 +22,8 @@ import {
   calculateTax,
   distanceToNowStrictFromUnixTime,
   roiOutput,
-  sortDescNext,
 } from '../../util/calculations';
+import { COLUMN_HEADERS, itemTablePresets } from '../../util/item-table-presets';
 import {
   DailyVolumes,
   ITEM_PAGE_QUERIES,
@@ -66,46 +64,15 @@ export type TableItem = {
   potentialProfit: number | null | undefined;
 };
 
-export type ColumnVisibility =
-  | {
-      [key in StringKeyOf<TableItem>]: boolean;
-    }
-  | {};
-
 type ItemTableProviderProps = {
   children?: React.ReactNode;
-};
-
-export type SortHandler = (params: { header: Header<TableItem, unknown> }) => void;
-
-export const columnHeaders = {
-  id: 'ID',
-  name: 'Name',
-  limit: 'Limit',
-  icon: 'Icon',
-  value: 'Value',
-  lowAlch: 'Low Alch',
-  lowAlchProfit: 'Low Alch Profit',
-  highAlch: 'High Alch',
-  highAlchProfit: 'High Alch Profit',
-  members: 'Members',
-  instaBuyPrice: 'Sell Price',
-  instaBuyTime: 'Latest Sell',
-  instaSellPrice: 'Buy Price',
-  instaSellTime: 'Latest Buy',
-  dailyVolume: 'Daily Volume',
-  margin: 'Margin',
-  tax: 'Tax',
-  roi: 'ROI',
-  profit: 'Profit',
-  potentialProfit: 'Potential Profit',
 };
 
 const columnHelper = createColumnHelper<TableItem>();
 
 const defaultColumns = [
   columnHelper.accessor('icon', {
-    header: () => <div className="grow text-center">{columnHeaders.icon}</div>,
+    header: () => <div className="grow text-center">{COLUMN_HEADERS.icon}</div>,
     cell: info => (
       <SkeletonCell>
         <div className="flex justify-center">
@@ -116,7 +83,7 @@ const defaultColumns = [
     enableSorting: false,
   }),
   columnHelper.accessor('name', {
-    header: columnHeaders.name,
+    header: COLUMN_HEADERS.name,
     cell: context => (
       <SkeletonCell>
         <NameCell context={context} />
@@ -127,22 +94,22 @@ const defaultColumns = [
     sortingFn: 'text',
   }),
   columnHelper.accessor('instaSellPrice', {
-    header: columnHeaders.instaSellPrice,
+    header: COLUMN_HEADERS.instaSellPrice,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('instaBuyPrice', {
-    header: columnHeaders.instaBuyPrice,
+    header: COLUMN_HEADERS.instaBuyPrice,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('margin', {
-    header: columnHeaders.margin,
+    header: COLUMN_HEADERS.margin,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('tax', {
-    header: columnHeaders.tax,
+    header: COLUMN_HEADERS.tax,
     cell: context => (
       <SkeletonCell>
         <TaxCell context={context} />
@@ -151,62 +118,62 @@ const defaultColumns = [
     enableSorting: true,
   }),
   columnHelper.accessor('profit', {
-    header: columnHeaders.profit,
+    header: COLUMN_HEADERS.profit,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('limit', {
-    header: columnHeaders.limit,
+    header: COLUMN_HEADERS.limit,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('potentialProfit', {
-    header: columnHeaders.potentialProfit,
+    header: COLUMN_HEADERS.potentialProfit,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('roi', {
-    header: columnHeaders.roi,
+    header: COLUMN_HEADERS.roi,
     cell: info => <SkeletonCell>{roiOutput({ roi: info.getValue() })}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('dailyVolume', {
-    header: columnHeaders.dailyVolume,
+    header: COLUMN_HEADERS.dailyVolume,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('instaSellTime', {
-    header: columnHeaders.instaSellTime,
+    header: COLUMN_HEADERS.instaSellTime,
     cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('instaBuyTime', {
-    header: columnHeaders.instaBuyTime,
+    header: COLUMN_HEADERS.instaBuyTime,
     cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('highAlch', {
-    header: columnHeaders.highAlch,
+    header: COLUMN_HEADERS.highAlch,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('highAlchProfit', {
-    header: columnHeaders.highAlchProfit,
+    header: COLUMN_HEADERS.highAlchProfit,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('lowAlch', {
-    header: columnHeaders.lowAlch,
+    header: COLUMN_HEADERS.lowAlch,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('lowAlchProfit', {
-    header: columnHeaders.lowAlchProfit,
+    header: COLUMN_HEADERS.lowAlchProfit,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('members', {
-    header: columnHeaders.members,
+    header: COLUMN_HEADERS.members,
     cell: context => (
       <SkeletonCell>
         <MembersCell context={context} />
@@ -215,39 +182,16 @@ const defaultColumns = [
     enableSorting: true,
   }),
   columnHelper.accessor('value', {
-    header: columnHeaders.value,
+    header: COLUMN_HEADERS.value,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('id', {
-    header: columnHeaders.id,
+    header: COLUMN_HEADERS.id,
     cell: info => <SkeletonCell>{info.getValue()}</SkeletonCell>,
     enableSorting: true,
   }),
 ];
-
-const defaultColumnVisilibity: ColumnVisibility = {
-  id: false,
-  name: true,
-  limit: true,
-  icon: true,
-  value: false,
-  lowAlch: false,
-  lowAlchProfit: false,
-  highAlch: true,
-  highAlchProfit: true,
-  members: false,
-  instaBuyPrice: true,
-  instaBuyTime: true,
-  instaSellPrice: true,
-  instaSellTime: true,
-  dailyVolume: true,
-  margin: false,
-  tax: false,
-  roi: true,
-  profit: true,
-  potentialProfit: true,
-};
 
 export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }) => {
   const NATURE_RUNE_ID = 561;
@@ -282,7 +226,10 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
     },
   );
 
-  const [columnVisibility, setColumnVisibility] = useLocalStorage('columnVisibility', defaultColumnVisilibity);
+  const [columnVisibility, setColumnVisibility] = useLocalStorage(
+    'columnVisibility',
+    itemTablePresets.default.columnVisibility,
+  );
   const [pageIndex, setPageIndex] = useNextQueryParams(
     'page',
     0,
@@ -290,7 +237,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
     pageIndex => (Number(pageIndex) !== NaN ? Number(pageIndex) - 1 : 10),
   );
   const [pageSize, setPageSize] = useLocalStorage('pageSize', 25);
-  const [sortOptions, setSortOptions] = useSessionStorage('sortOptions', [{ id: 'instaBuyPrice', desc: true }]);
+  const [sortOptions, setSortOptions] = useLocalStorage('sortOptions', itemTablePresets.default.sortOptions);
 
   // Store sort options in URL
   // const [sortOptions, setSortOptions] = useNextQueryParams(
@@ -300,13 +247,6 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
   //   options =>
   //     typeof options === 'string' ? JSON.parse(decodeURIComponent(options)) : [{ id: 'instaSellPrice', desc: true }],
   // );
-
-  const sortHandler: SortHandler = useCallback(({ header }) => {
-    if (!header.column.columnDef.enableSorting) return;
-    setSortOptions([
-      { id: header.column.id, desc: sortDescNext({ currentSortDirection: header.column.getIsSorted() }) },
-    ]);
-  }, []);
 
   const tableDataReady = latestPricesReady && dailyVolumesReady && itemMappingsReady;
 
@@ -378,7 +318,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
         tableDataReady,
         setPageIndex,
         setPageSize,
-        sortHandler,
+        setSortOptions,
         setColumnVisibility,
       }}
     >

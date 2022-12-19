@@ -54,10 +54,13 @@ const Attribution: NextPage = () => (
             <LinkBlue href="https://www.svgrepo.com/svg/33237/settings">Settings SVG Vector</LinkBlue>
           </li>
           <li>
-            <LinkBlue href="https://www.svgrepo.com/svg/25245/search">Search SVG Vector</LinkBlue>
+            <LinkBlue href="https://www.svgrepo.com/svg/74282/search">Search SVG Vector</LinkBlue>
           </li>
           <li>
             <LinkBlue href="https://www.svgrepo.com/svg/378892/table-add-column">Table Add Column SVG Vector</LinkBlue>
+          </li>
+          <li>
+            <LinkBlue href="https://www.svgrepo.com/svg/378932/arrow-revert">Arrow Revert SVG Vector</LinkBlue>
           </li>
         </ul>
       </div>

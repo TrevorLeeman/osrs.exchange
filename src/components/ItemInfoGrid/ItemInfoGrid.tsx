@@ -13,6 +13,7 @@ import {
   distanceToNowStrictFromUnixTime,
   roiOutput,
 } from '../../util/calculations';
+import { COLUMN_HEADERS } from '../../util/item-table-presets';
 import {
   DailyVolumes,
   ITEM_TABLE_QUERIES,
@@ -21,7 +22,6 @@ import {
   fetchLatestTransactions,
 } from '../../util/queries';
 import DownArrowIcon from '../Icons/Arrow';
-import { columnHeaders } from '../ItemTable/ItemTableProvider';
 
 export type ItemInfoGridProps = { item: ItemPageItem | null; uid?: string };
 
@@ -93,7 +93,7 @@ const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
   return (
     <div className="flex w-full flex-col rounded-lg bg-slate-100 font-plex-sans dark:bg-slate-800 sm:w-fit sm:flex-row sm:gap-5 sm:py-4 sm:px-6">
       <GridSection>
-        <LabelValueWrapper label={columnHeaders.instaBuyPrice}>
+        <LabelValueWrapper label={COLUMN_HEADERS.instaBuyPrice}>
           <BuySellValueWrapper>
             <span>{latestTransaction?.high?.toLocaleString()}</span>
             <BuySellTime unixTime={latestTransaction?.highTime}>
@@ -101,7 +101,7 @@ const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
             </BuySellTime>
           </BuySellValueWrapper>
         </LabelValueWrapper>
-        <LabelValueWrapper label={columnHeaders.instaSellPrice}>
+        <LabelValueWrapper label={COLUMN_HEADERS.instaSellPrice}>
           <BuySellValueWrapper>
             <span>{latestTransaction?.low?.toLocaleString()}</span>
             <BuySellTime unixTime={latestTransaction?.lowTime}>
@@ -109,25 +109,25 @@ const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
             </BuySellTime>
           </BuySellValueWrapper>
         </LabelValueWrapper>
-        <LabelValueWrapper label={columnHeaders.margin}>
+        <LabelValueWrapper label={COLUMN_HEADERS.margin}>
           {calculateMargin(latestTransaction?.high, latestTransaction?.low)?.toLocaleString()}
         </LabelValueWrapper>
-        <LabelValueWrapper label={columnHeaders.tax}>
+        <LabelValueWrapper label={COLUMN_HEADERS.tax}>
           {calculateTax(latestTransaction?.high).toLocaleString()}
         </LabelValueWrapper>
-        <LabelValueWrapper label={columnHeaders.profit}>
+        <LabelValueWrapper label={COLUMN_HEADERS.profit}>
           {calculateProfit(latestTransaction?.high, latestTransaction?.low)?.toLocaleString()}
         </LabelValueWrapper>
-        <LabelValueWrapper label={columnHeaders.roi}>
+        <LabelValueWrapper label={COLUMN_HEADERS.roi}>
           {roiOutput({ instaBuyPrice: latestTransaction?.high, instaSellPrice: latestTransaction?.low })}
         </LabelValueWrapper>
       </GridSection>
       <GridSection>
-        <LabelValueWrapper label={columnHeaders.highAlch}>{item?.highalch?.toLocaleString()}</LabelValueWrapper>
+        <LabelValueWrapper label={COLUMN_HEADERS.highAlch}>{item?.highalch?.toLocaleString()}</LabelValueWrapper>
 
-        <LabelValueWrapper label={columnHeaders.lowAlch}>{item?.lowalch?.toLocaleString()}</LabelValueWrapper>
+        <LabelValueWrapper label={COLUMN_HEADERS.lowAlch}>{item?.lowalch?.toLocaleString()}</LabelValueWrapper>
 
-        <LabelValueWrapper label={columnHeaders.dailyVolume}>
+        <LabelValueWrapper label={COLUMN_HEADERS.dailyVolume}>
           {dailyVolume ? (
             <>
               <div>{dailyVolume.toLocaleString()}</div>
@@ -138,11 +138,11 @@ const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
 
         {item?.limit ? (
           <>
-            <LabelValueWrapper label={columnHeaders.limit}>
+            <LabelValueWrapper label={COLUMN_HEADERS.limit}>
               <div>{item?.limit?.toLocaleString()}</div>
               <GridSmallText>/ 4 hours</GridSmallText>
             </LabelValueWrapper>
-            <LabelValueWrapper label={columnHeaders.potentialProfit}>
+            <LabelValueWrapper label={COLUMN_HEADERS.potentialProfit}>
               {calculatePotentialProfit(latestTransaction?.high, latestTransaction?.low, item?.limit)?.toLocaleString()}
               <GridSmallText>/ 4 hours</GridSmallText>
             </LabelValueWrapper>

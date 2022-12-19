@@ -12,7 +12,7 @@ const AddColumnIcon = ({ className }: AddColumnIconProps) => (
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
-    className={twMerge(['h-5 w-5 fill-gray-800 dark:fill-gray-300', className])}
+    className={twMerge(['h-5 w-5 fill-gray-700 dark:fill-gray-400', className])}
   >
     <rect width="16" height="16" id="icon-bound" fill="none" />
     <path

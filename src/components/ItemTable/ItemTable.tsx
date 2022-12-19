@@ -1,7 +1,8 @@
 import { Header, flexRender } from '@tanstack/react-table';
 import { useIsClient } from 'usehooks-ts';
 
-import { useItemTableContext } from '../../hooks/useItemTableContext';
+import { SortHandler, useItemTableContext } from '../../hooks/useItemTableContext';
+import { sortDescNext } from '../../util/calculations';
 import SortIcon from '../Icons/Sort';
 import SortAscIcon from '../Icons/SortAsc';
 import SortDescIcon from '../Icons/SortDesc';
@@ -47,11 +48,18 @@ const TableHead = () => {
 };
 
 const TableHeader = ({ header }: TableHeaderProps) => {
-  const { sortHandler } = useItemTableContext();
+  const { setSortOptions } = useItemTableContext();
   const sortableClasses = header.column.columnDef.enableSorting
     ? 'cursor-pointer transition-all duration-75 hover:bg-slate-400/80 dark:hover:bg-slate-600'
     : '';
   const activelySortedClasses = header.column.getIsSorted() ? 'text-indigo-600 dark:text-yellow-400' : '';
+
+  const sortHandler: SortHandler = ({ header }) => {
+    if (!header.column.columnDef.enableSorting) return;
+    setSortOptions([
+      { id: header.column.id, desc: sortDescNext({ currentSortDirection: header.column.getIsSorted() }) },
+    ]);
+  };
 
   return (
     <th
