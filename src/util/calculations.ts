@@ -69,11 +69,18 @@ export const roiOutput: RoiOutput = ({ instaBuyPrice, instaSellPrice, roi }) => 
   return !isEmpty(output) ? `${parseFloat(output!.toFixed(2)).toLocaleString()}%` : null;
 };
 
-// const calculateHighAlchProfit = ()
+export const calculateAlchProfit = (
+  instaSellPrice: TableItem['instaSellPrice'],
+  alchValue: TableItem['highAlch'],
+  natureRunePrice: number | undefined,
+) => {
+  if (isEmpty(alchValue) || isEmpty(instaSellPrice) || isEmpty(natureRunePrice)) return null;
+  return alchValue! - instaSellPrice! - natureRunePrice!;
+};
 
 export const distanceToNowStrictFromUnixTime: DistanceToNowStrictFromUnixTime = ({ unixTime, addSuffix = false }) => {
-  if (!unixTime) return null;
-  return formatDistanceToNowStrict(fromUnixTime(unixTime), { addSuffix });
+  if (isEmpty(unixTime)) return null;
+  return formatDistanceToNowStrict(fromUnixTime(unixTime!), { addSuffix });
 };
 
 export const sortDescNext: SortDescNext = ({ currentSortDirection }) => {

@@ -16,6 +16,7 @@ import { WikiApiMappingItem } from '../../db/seeds/osrs_wiki_api_mapping';
 import { ItemTableContext } from '../../hooks/useItemTableContext';
 import useNextQueryParams from '../../hooks/useNextQueryParams';
 import {
+  calculateAlchProfit,
   calculateMargin,
   calculatePotentialProfit,
   calculateProfit,
@@ -27,11 +28,14 @@ import {
 } from '../../util/calculations';
 import {
   DailyVolumes,
+  ITEM_PAGE_QUERIES,
   ITEM_TABLE_QUERIES,
   LatestTransactions,
+  RealTimePrices,
   fetchDailyVolumes,
   fetchHomepageMappingItems,
   fetchLatestPrices,
+  fetchRealTimePrices,
 } from '../../util/queries';
 import ItemIcon from '../ItemIcon/ItemIcon';
 import MembersCell from './Cells/Members';
@@ -45,8 +49,11 @@ export type TableItem = {
   limit: WikiApiMappingItem['limit'];
   icon: WikiApiMappingItem['icon'];
   value: WikiApiMappingItem['value'] | null | undefined;
+  shopProfit: number | null;
   lowAlch: WikiApiMappingItem['lowalch'];
+  lowAlchProfit: number | null;
   highAlch: WikiApiMappingItem['highalch'];
+  highAlchProfit: number | null;
   members: WikiApiMappingItem['members'];
   instaBuyPrice: number | null | undefined;
   instaBuyTime: number | null | undefined;
@@ -77,14 +84,16 @@ export const columnHeaders = {
   name: 'Name',
   limit: 'Limit',
   icon: 'Icon',
-  value: 'Shop Value',
+  value: 'Value',
   lowAlch: 'Low Alch',
+  lowAlchProfit: 'Low Alch Profit',
   highAlch: 'High Alch',
+  highAlchProfit: 'High Alch Profit',
   members: 'Members',
-  instaBuyPrice: 'Buy Price',
-  instaBuyTime: 'Buy Time',
-  instaSellPrice: 'Sell Price',
-  instaSellTime: 'Sell Time',
+  instaBuyPrice: 'Sell Price',
+  instaBuyTime: 'Latest Sell',
+  instaSellPrice: 'Buy Price',
+  instaSellTime: 'Latest Buy',
   dailyVolume: 'Daily Volume',
   margin: 'Margin',
   tax: 'Tax',
@@ -118,13 +127,13 @@ const defaultColumns = [
     enableHiding: true,
     sortingFn: 'text',
   }),
-  columnHelper.accessor('instaBuyPrice', {
-    header: columnHeaders.instaBuyPrice,
+  columnHelper.accessor('instaSellPrice', {
+    header: columnHeaders.instaSellPrice,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
-  columnHelper.accessor('instaSellPrice', {
-    header: columnHeaders.instaSellPrice,
+  columnHelper.accessor('instaBuyPrice', {
+    header: columnHeaders.instaBuyPrice,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
@@ -167,13 +176,13 @@ const defaultColumns = [
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
-  columnHelper.accessor('instaBuyTime', {
-    header: columnHeaders.instaBuyTime,
+  columnHelper.accessor('instaSellTime', {
+    header: columnHeaders.instaSellTime,
     cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
     enableSorting: true,
   }),
-  columnHelper.accessor('instaSellTime', {
-    header: columnHeaders.instaSellTime,
+  columnHelper.accessor('instaBuyTime', {
+    header: columnHeaders.instaBuyTime,
     cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
     enableSorting: true,
   }),
@@ -182,11 +191,20 @@ const defaultColumns = [
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
+  columnHelper.accessor('highAlchProfit', {
+    header: columnHeaders.highAlchProfit,
+    cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
+    enableSorting: true,
+  }),
   columnHelper.accessor('lowAlch', {
     header: columnHeaders.lowAlch,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
-    enableHiding: true,
+  }),
+  columnHelper.accessor('lowAlchProfit', {
+    header: columnHeaders.lowAlchProfit,
+    cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
+    enableSorting: true,
   }),
   columnHelper.accessor('members', {
     header: columnHeaders.members,
@@ -216,7 +234,9 @@ const defaultColumnVisilibity: ColumnVisibility = {
   icon: true,
   value: false,
   lowAlch: false,
+  lowAlchProfit: false,
   highAlch: true,
+  highAlchProfit: true,
   members: false,
   instaBuyPrice: true,
   instaBuyTime: true,
@@ -231,6 +251,15 @@ const defaultColumnVisilibity: ColumnVisibility = {
 };
 
 export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }) => {
+  const NATURE_RUNE_ID = 561;
+  const { data: natureRuneData, isLoading: natureRuneDataLoading } = useQuery<RealTimePrices>(
+    [ITEM_PAGE_QUERIES.realTimePrices, { id: NATURE_RUNE_ID, timestep: '5m' }],
+    fetchRealTimePrices,
+    {
+      refetchInterval: 60 * 1000, // 1 min,
+    },
+  );
+  const natureRunePrice = natureRuneData?.data[0].avgLowPrice;
   const { data: latestPrices, isSuccess: latestPricesReady } = useQuery<LatestTransactions>(
     [ITEM_TABLE_QUERIES.latestPrices],
     fetchLatestPrices,
@@ -297,7 +326,9 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
                 icon: item.icon,
                 value: item.value,
                 lowAlch: item.lowalch,
+                lowAlchProfit: calculateAlchProfit(instaSellPrice, item.lowalch, natureRunePrice),
                 highAlch: item.highalch,
+                highAlchProfit: calculateAlchProfit(instaSellPrice, item.highalch, natureRunePrice),
                 members: item.members,
                 instaBuyPrice: instaBuyPrice ?? 0,
                 instaBuyTime: latestPrices?.data[item.id]?.highTime,
