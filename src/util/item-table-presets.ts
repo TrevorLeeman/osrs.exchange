@@ -56,7 +56,7 @@ export const itemTablePresets: Presets = {
       instaSellTime: true,
       instaBuyTime: true,
     },
-    sortOptions: [{ id: 'instaBuyPrice', desc: true }],
+    sortOptions: [{ id: 'profit', desc: true }],
     filterOptions: [],
   },
   highAlchProfit: {

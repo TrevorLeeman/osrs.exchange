@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 
 import { Checkbox, Collapse, Radio } from '@nextui-org/react';
 import { Column } from '@tanstack/react-table';
-import isEqual from 'lodash/isEqual';
 
 import { useItemTableContext } from '../../hooks/useItemTableContext';
+import useSelectedItemTablePreset from '../../hooks/useSelectedItemTablePreset';
 import { COLUMN_HEADERS, itemTablePresets } from '../../util/item-table-presets';
 import AddColumnIcon from '../Icons/AddColumn';
 import PresetsIcon from '../Icons/Presets';
@@ -38,6 +38,7 @@ export const TableSettings = () => {
 
 const Presets = () => {
   const { setSortOptions, setColumnVisibility } = useItemTableContext();
+  const selectedPreset = useSelectedItemTablePreset();
 
   const changeHandler = (value: string) => {
     switch (value) {
@@ -53,7 +54,13 @@ const Presets = () => {
   };
 
   return (
-    <Radio.Group aria-label="Presets" size="sm" css={{ marginInline: '6px' }} onChange={changeHandler}>
+    <Radio.Group
+      aria-label="Presets"
+      size="sm"
+      css={{ marginInline: '6px' }}
+      onChange={changeHandler}
+      value={selectedPreset ?? ''}
+    >
       <Radio value="default">Default</Radio>
       <Radio value="highAlchProfit">High Alch Profit</Radio>
     </Radio.Group>
@@ -115,16 +122,4 @@ const ColumnCheckbox = ({ column }: HeaderCheckboxProps) => {
       {header}
     </Checkbox>
   );
-};
-
-const usePresetSelected = () => {
-  const { table } = useItemTableContext();
-
-  // const all
-  const visibilityState = table.getState().columnVisibility;
-  console.log(isEqual(visibilityState, itemTablePresets.default.columnVisibility));
-
-  // Perform deep equality checks for all presets
-  // If preset is matched, return preset value
-  // If not, return undefined ?
 };

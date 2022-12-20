@@ -8,7 +8,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useLocalStorage, useSessionStorage, useUpdateEffect } from 'usehooks-ts';
+import { useLocalStorage, useUpdateEffect } from 'usehooks-ts';
 
 import { WikiApiMappingItem } from '../../db/seeds/osrs_wiki_api_mapping';
 import { ItemTableContext } from '../../hooks/useItemTableContext';
