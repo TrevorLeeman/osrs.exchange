@@ -1,14 +1,29 @@
-import { ColumnFiltersState, SortingState, VisibilityState } from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+import { StringKeyOf } from 'type-fest';
 
-type Preset = {
-  columnVisibility: VisibilityState;
+import { TableItem } from '../components/ItemTable/ItemTableProvider';
+
+export type TableItemKeys<T> = { [key in StringKeyOf<TableItem>]: T };
+export type ColumnOrder = Array<keyof TableItem>;
+
+export type Preset = {
+  columnVisibility: TableItemKeys<boolean>;
+  columnOrder: ColumnOrder;
   sortOptions: SortingState;
   filterOptions: ColumnFiltersState;
 };
-
+type PresetIds = 'default' | 'highAlchProfit';
 type Presets = {
-  [key: string]: Preset;
+  [key in PresetIds]: Preset;
 };
+
+type ColumnReducer = (args: { arr: Preset['columnOrder']; visible: boolean }) => TableItemKeys<boolean>;
+
+type CreatePreset = (args: {
+  orderedColumns: Preset['columnOrder'];
+  sortOptions?: Preset['sortOptions'];
+  filterOptions?: Preset['filterOptions'];
+}) => Preset;
 
 export const COLUMN_HEADERS = {
   id: 'ID',
@@ -21,57 +36,69 @@ export const COLUMN_HEADERS = {
   highAlch: 'High Alch',
   highAlchProfit: 'High Alch Profit',
   members: 'Members',
-  instaBuyPrice: 'Sell Price',
-  instaBuyTime: 'Latest Sell',
-  instaSellPrice: 'Buy Price',
-  instaSellTime: 'Latest Buy',
+  instaBuyPrice: 'Buy Price',
+  instaBuyTime: 'Latest Purchase',
+  instaSellPrice: 'Sell Price',
+  instaSellTime: 'Latest Sale',
   dailyVolume: 'Daily Volume',
   margin: 'Margin',
   tax: 'Tax',
   roi: 'ROI',
   profit: 'Profit',
   potentialProfit: 'Potential Profit',
+} as TableItemKeys<string>;
+
+const columnReducer: ColumnReducer = ({ arr, visible }) => {
+  return arr.reduce((acc, key) => {
+    acc[key as StringKeyOf<TableItem>] = visible;
+    return acc;
+  }, {} as TableItemKeys<boolean>);
 };
 
-const allColumnsHidden = Object.keys(COLUMN_HEADERS).reduce((acc, key) => {
-  acc[key] = false;
-  return acc;
-}, {} as VisibilityState);
+const createPreset: CreatePreset = ({ orderedColumns, sortOptions, filterOptions }) => {
+  const hideAllColumns = columnReducer({ arr: Object.keys(COLUMN_HEADERS) as ColumnOrder, visible: false });
+  const visibleColumns = columnReducer({ arr: orderedColumns, visible: true });
+
+  return {
+    columnVisibility: {
+      ...hideAllColumns,
+      ...visibleColumns,
+    },
+    columnOrder: orderedColumns,
+    sortOptions: sortOptions ?? [],
+    filterOptions: filterOptions ?? [],
+  };
+};
 
 export const itemTablePresets: Presets = {
-  default: {
-    columnVisibility: {
-      ...allColumnsHidden,
-      icon: true,
-      name: true,
-      instaSellPrice: true,
-      instaBuyPrice: true,
-      profit: true,
-      limit: true,
-      potentialProfit: true,
-      roi: true,
-      dailyVolume: true,
-      highAlch: true,
-      highAlchProfit: true,
-      instaSellTime: true,
-      instaBuyTime: true,
-    },
+  default: createPreset({
+    orderedColumns: [
+      'icon',
+      'name',
+      'instaBuyPrice',
+      'instaSellPrice',
+      'profit',
+      'dailyVolume',
+      'limit',
+      'roi',
+      'potentialProfit',
+      'instaSellTime',
+      'instaBuyTime',
+    ],
     sortOptions: [{ id: 'profit', desc: true }],
-    filterOptions: [],
-  },
-  highAlchProfit: {
-    columnVisibility: {
-      ...allColumnsHidden,
-      icon: true,
-      name: true,
-      instaSellPrice: true,
-      limit: true,
-      dailyVolume: true,
-      highAlch: true,
-      highAlchProfit: true,
-      instaSellTime: true,
-    },
+  }),
+
+  highAlchProfit: createPreset({
+    orderedColumns: [
+      'icon',
+      'name',
+      'highAlchProfit',
+      'instaSellPrice',
+      'highAlch',
+      'dailyVolume',
+      'limit',
+      'instaSellTime',
+    ],
     sortOptions: [{ id: 'highAlchProfit', desc: true }],
-    filterOptions: [],
-  },
+  }),
 };

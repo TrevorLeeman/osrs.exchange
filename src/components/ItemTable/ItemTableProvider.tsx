@@ -230,14 +230,15 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
     'columnVisibility',
     itemTablePresets.default.columnVisibility,
   );
+  const [columnOrder, setColumnOrder] = useLocalStorage('columnOrder', itemTablePresets.default.columnOrder);
+  const [sortOptions, setSortOptions] = useLocalStorage('sortOptions', itemTablePresets.default.sortOptions);
+  const [pageSize, setPageSize] = useLocalStorage('pageSize', 25);
   const [pageIndex, setPageIndex] = useNextQueryParams(
     'page',
     0,
     pageIndex => encodeURIComponent(pageIndex + 1),
     pageIndex => (Number(pageIndex) !== NaN ? Number(pageIndex) - 1 : 10),
   );
-  const [pageSize, setPageSize] = useLocalStorage('pageSize', 25);
-  const [sortOptions, setSortOptions] = useLocalStorage('sortOptions', itemTablePresets.default.sortOptions);
 
   // Store sort options in URL
   // const [sortOptions, setSortOptions] = useNextQueryParams(
@@ -298,6 +299,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
         pageSize,
       },
       columnVisibility,
+      columnOrder,
     },
     sortDescFirst: true,
     autoResetPageIndex: false,
@@ -320,6 +322,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
         setPageSize,
         setSortOptions,
         setColumnVisibility,
+        setColumnOrder,
       }}
     >
       {children}

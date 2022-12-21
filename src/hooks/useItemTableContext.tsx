@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 
-import { Header, SortingState, Table, VisibilityState } from '@tanstack/react-table';
+import { Header, SortingState, Table } from '@tanstack/react-table';
 
 import { TableItem } from '../components/ItemTable/ItemTableProvider';
+import { ColumnOrder, TableItemKeys } from '../util/item-table-presets';
 
 export type SortHandler = (params: { header: Header<TableItem, unknown> }) => void;
 
@@ -13,7 +14,8 @@ export type ItemTableContextType = {
   setPageIndex: (state: number) => void;
   setPageSize: Dispatch<SetStateAction<number>>;
   setSortOptions: Dispatch<SetStateAction<SortingState>>;
-  setColumnVisibility: Dispatch<SetStateAction<VisibilityState>>;
+  setColumnVisibility: Dispatch<SetStateAction<TableItemKeys<boolean>>>;
+  setColumnOrder: Dispatch<SetStateAction<ColumnOrder>>;
 };
 
 export const ItemTableContext = createContext<ItemTableContextType>(undefined!);

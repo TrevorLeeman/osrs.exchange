@@ -5,7 +5,7 @@ import { Column } from '@tanstack/react-table';
 
 import { useItemTableContext } from '../../hooks/useItemTableContext';
 import useSelectedItemTablePreset from '../../hooks/useSelectedItemTablePreset';
-import { COLUMN_HEADERS, itemTablePresets } from '../../util/item-table-presets';
+import { COLUMN_HEADERS, Preset, TableItemKeys, itemTablePresets } from '../../util/item-table-presets';
 import AddColumnIcon from '../Icons/AddColumn';
 import PresetsIcon from '../Icons/Presets';
 import { SettingsButton, SettingsModal } from '../Settings/Settings';
@@ -37,18 +37,24 @@ export const TableSettings = () => {
 };
 
 const Presets = () => {
-  const { setSortOptions, setColumnVisibility } = useItemTableContext();
+  const { setSortOptions, setColumnVisibility, setColumnOrder } = useItemTableContext();
   const selectedPreset = useSelectedItemTablePreset();
 
+  const setPreset = (preset: Preset) => {
+    setSortOptions(preset.sortOptions);
+    setColumnVisibility(preset.columnVisibility);
+    setColumnOrder(preset.columnOrder);
+  };
+
   const changeHandler = (value: string) => {
+    const { default: defaultPreset, highAlchProfit } = itemTablePresets;
+
     switch (value) {
       case 'default':
-        setSortOptions(itemTablePresets.default.sortOptions);
-        setColumnVisibility(itemTablePresets.default.columnVisibility);
+        setPreset(defaultPreset);
         break;
       case 'highAlchProfit':
-        setSortOptions(itemTablePresets.highAlchProfit.sortOptions);
-        setColumnVisibility(itemTablePresets.highAlchProfit.columnVisibility);
+        setPreset(highAlchProfit);
         break;
     }
   };
@@ -79,7 +85,7 @@ const Columns = () => {
       .map(column => column.id)
       .reduce((acc, columnId) => {
         return { ...acc, [columnId]: checked };
-      }, {});
+      }, {} as TableItemKeys<boolean>);
 
     setColumnVisibility(visibilityObj);
   };
