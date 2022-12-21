@@ -28,7 +28,11 @@ const Header = () => {
       <HorizontalPadding>
         <div className="flex items-center gap-3 sm:grid sm:grid-cols-[auto_1fr_auto] md:grid-cols-3">
           <Link href="/" title="Go to Homepage" className="w-fit">
-            {isMinTablet ? <Image src={logoSrc} alt="OSRS Exchange" width="160" height="40" priority /> : <HomeIcon />}
+            {isMinTablet ? (
+              <Image src={logoSrc} alt="OSRS Exchange" width="160" height="40" priority />
+            ) : (
+              <HomeIcon className="ml-1.5" />
+            )}
           </Link>
           <div className="flex grow justify-center">
             <Search />
