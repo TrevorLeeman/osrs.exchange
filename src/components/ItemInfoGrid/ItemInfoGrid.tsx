@@ -13,7 +13,7 @@ import {
   distanceToNowStrictFromUnixTime,
   roiOutput,
 } from '../../util/calculations';
-import { COLUMN_HEADERS } from '../../util/item-table-presets';
+import { COLUMN_PROPERTIES } from '../../util/item-table-presets';
 import {
   DailyVolumes,
   ITEM_TABLE_QUERIES,
@@ -93,7 +93,7 @@ const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
   return (
     <div className="flex w-full flex-col rounded-lg bg-slate-100 font-plex-sans dark:bg-slate-800 sm:w-fit sm:flex-row sm:gap-5 sm:py-4 sm:px-6">
       <GridSection>
-        <LabelValueWrapper label={COLUMN_HEADERS.instaBuyPrice}>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.instaBuyPrice.header}>
           <BuySellValueWrapper>
             <span>{latestTransaction?.high?.toLocaleString()}</span>
             <BuySellTime unixTime={latestTransaction?.highTime}>
@@ -101,7 +101,7 @@ const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
             </BuySellTime>
           </BuySellValueWrapper>
         </LabelValueWrapper>
-        <LabelValueWrapper label={COLUMN_HEADERS.instaSellPrice}>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.instaSellPrice.header}>
           <BuySellValueWrapper>
             <span>{latestTransaction?.low?.toLocaleString()}</span>
             <BuySellTime unixTime={latestTransaction?.lowTime}>
@@ -109,25 +109,29 @@ const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
             </BuySellTime>
           </BuySellValueWrapper>
         </LabelValueWrapper>
-        <LabelValueWrapper label={COLUMN_HEADERS.margin}>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.margin.header}>
           {calculateMargin(latestTransaction?.high, latestTransaction?.low)?.toLocaleString()}
         </LabelValueWrapper>
-        <LabelValueWrapper label={COLUMN_HEADERS.tax}>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.tax.header}>
           {calculateTax(latestTransaction?.high).toLocaleString()}
         </LabelValueWrapper>
-        <LabelValueWrapper label={COLUMN_HEADERS.profit}>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.profit.header}>
           {calculateProfit(latestTransaction?.high, latestTransaction?.low)?.toLocaleString()}
         </LabelValueWrapper>
-        <LabelValueWrapper label={COLUMN_HEADERS.roi}>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.roi.header}>
           {roiOutput({ instaBuyPrice: latestTransaction?.high, instaSellPrice: latestTransaction?.low })}
         </LabelValueWrapper>
       </GridSection>
       <GridSection>
-        <LabelValueWrapper label={COLUMN_HEADERS.highAlch}>{item?.highalch?.toLocaleString()}</LabelValueWrapper>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.highAlch.header}>
+          {item?.highalch?.toLocaleString()}
+        </LabelValueWrapper>
 
-        <LabelValueWrapper label={COLUMN_HEADERS.lowAlch}>{item?.lowalch?.toLocaleString()}</LabelValueWrapper>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.lowAlch.header}>
+          {item?.lowalch?.toLocaleString()}
+        </LabelValueWrapper>
 
-        <LabelValueWrapper label={COLUMN_HEADERS.dailyVolume}>
+        <LabelValueWrapper label={COLUMN_PROPERTIES.dailyVolume.header}>
           {dailyVolume ? (
             <>
               <div>{dailyVolume.toLocaleString()}</div>
@@ -138,11 +142,11 @@ const ItemInfoGrid = ({ item, uid }: ItemInfoGridProps) => {
 
         {item?.limit ? (
           <>
-            <LabelValueWrapper label={COLUMN_HEADERS.limit}>
+            <LabelValueWrapper label={COLUMN_PROPERTIES.limit.header}>
               <div>{item?.limit?.toLocaleString()}</div>
               <GridSmallText>/ 4 hours</GridSmallText>
             </LabelValueWrapper>
-            <LabelValueWrapper label={COLUMN_HEADERS.potentialProfit}>
+            <LabelValueWrapper label={COLUMN_PROPERTIES.potentialProfit.header}>
               {calculatePotentialProfit(latestTransaction?.high, latestTransaction?.low, item?.limit)?.toLocaleString()}
               <GridSmallText>/ 4 hours</GridSmallText>
             </LabelValueWrapper>
