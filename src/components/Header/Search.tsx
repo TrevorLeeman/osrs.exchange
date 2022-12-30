@@ -68,7 +68,6 @@ export const Search = () => {
       <div {...getComboboxProps()}>
         <Input
           placeholder="Search for an item"
-          aria-label=""
           type="search"
           autoComplete="false"
           css={{ width: '100%', $$inputColor: isDark ? 'rgb(31 41 55)' : 'rgb(228,228,231)' }}
