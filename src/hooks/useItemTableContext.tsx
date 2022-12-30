@@ -7,6 +7,12 @@ import { ColumnOrder, TableItemKeys } from '../util/item-table-presets';
 
 export type SortHandler = (params: { header: Header<TableItem, unknown> }) => void;
 
+type ItemTableColumnFilter = {
+  id: keyof TableItem;
+  value: unknown;
+};
+export type ItemTableColumnFiltersState = ItemTableColumnFilter[];
+
 export type ItemTableContextType = {
   items: TableItem[];
   table: Table<TableItem>;
@@ -16,6 +22,7 @@ export type ItemTableContextType = {
   setSortOptions: Dispatch<SetStateAction<SortingState>>;
   setColumnVisibility: Dispatch<SetStateAction<TableItemKeys<boolean>>>;
   setColumnOrder: Dispatch<SetStateAction<ColumnOrder>>;
+  setColumnFilters: Dispatch<SetStateAction<ItemTableColumnFiltersState>>;
 };
 
 export const ItemTableContext = createContext<ItemTableContextType>(undefined!);
