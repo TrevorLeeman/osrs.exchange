@@ -1,5 +1,3 @@
-import { twMerge } from 'tailwind-merge';
-
 const DiscordIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36" className="h-6 w-6 fill-[#5865f2]">
     <g>
