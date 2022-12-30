@@ -4,7 +4,7 @@ import axios from 'axios';
 import { HomepageMappingItems } from '../../pages/api/homepage_items';
 import { ItemInfoGridProps } from '../components/ItemInfoGrid/ItemInfoGrid';
 import { Timestep } from '../components/PriceChart/TimeIntervalOptions';
-import { SearchItem } from '../components/Search/Search';
+import { SearchItem } from '../components/Header/Search';
 import { WikiApiMappingItem } from '../db/seeds/osrs_wiki_api_mapping';
 
 export type RealTimePrices = {
