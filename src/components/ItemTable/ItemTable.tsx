@@ -1,3 +1,4 @@
+import { SortableContext } from '@dnd-kit/sortable';
 import { Header, flexRender } from '@tanstack/react-table';
 import { useIsClient } from 'usehooks-ts';
 
@@ -24,7 +25,7 @@ export const ItemTable = () => {
       <table
         role="table"
         aria-label="Price information for all items tradeable on the OSRS grand exchange"
-        className="w-full border-separate border-spacing-0 rounded-xl font-plex-sans text-sm leading-4 sm:text-base"
+        className="w-full border-separate border-spacing-0 font-plex-sans text-sm leading-4 sm:text-base"
       >
         <TableHead />
         <TableBody />
@@ -50,8 +51,8 @@ const TableHead = () => {
 const TableHeader = ({ header }: TableHeaderProps) => {
   const { setSortOptions } = useItemTableContext();
   const sortableClasses = header.column.columnDef.enableSorting
-    ? 'cursor-pointer transition-all duration-75 hover:bg-slate-400/80 dark:hover:bg-slate-600'
-    : '';
+    ? 'transition-all duration-75 hover:bg-slate-400/70 dark:hover:bg-slate-600'
+    : 'cursor-default';
   const activelySortedClasses = header.column.getIsSorted() ? 'text-indigo-600 dark:text-yellow-400' : '';
 
   const sortHandler: SortHandler = ({ header }) => {
@@ -62,17 +63,17 @@ const TableHeader = ({ header }: TableHeaderProps) => {
   };
 
   return (
-    <th
-      onClick={e => sortHandler({ header })}
-      className={`sticky top-0 z-10 h-14 border-b-2 border-indigo-600 bg-slate-300 px-3 first:rounded-tl-xl last:rounded-tr-xl dark:border-yellow-400 dark:bg-slate-500 ${sortableClasses} ${activelySortedClasses}
-    `}
-    >
-      <div className="flex items-center gap-2">
+    <th className="border-b-2 border-indigo-600 bg-slate-300 first:rounded-tl-xl last:rounded-tr-xl dark:border-yellow-400 dark:bg-slate-700">
+      <button
+        onClick={e => sortHandler({ header })}
+        className={`flex h-14 w-full items-center gap-2 whitespace-nowrap px-3 ${sortableClasses} ${activelySortedClasses}`}
+        tabIndex={header.column.columnDef.enableSorting ? 0 : -1}
+      >
         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
         <div className="shrink-0">
           <SortIconDisplay header={header} />
         </div>
-      </div>
+      </button>
     </th>
   );
 };
@@ -85,7 +86,7 @@ const TableBody = () => {
       {table.getRowModel().rows.map(row => (
         <tr
           key={row.id}
-          className="h-12 transition-all duration-75 odd:bg-slate-200 even:bg-slate-100 hover:bg-slate-300 dark:odd:bg-cyan-800 dark:even:bg-cyan-900 dark:hover:bg-cyan-700 [&:last-child_td:first-of-type]:rounded-bl-xl [&:last-child_td:last-of-type]:rounded-br-xl"
+          className="h-12 transition-all duration-75 odd:bg-slate-200 even:bg-slate-100 hover:bg-slate-300 dark:odd:bg-slate-700/60 dark:even:bg-slate-700 dark:hover:bg-slate-600 [&:last-child_td:first-of-type]:rounded-bl-xl [&:last-child_td:last-of-type]:rounded-br-xl"
         >
           {row.getVisibleCells().map(cell => (
             <td key={cell.id} className="px-3">
