@@ -8,8 +8,6 @@ body,
 #__next,
 div[data-overlay-container='true']:first-of-type {
   height: 100%;
-  font-smooth: always;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* clears the ‘X’ from Internet Explorer */

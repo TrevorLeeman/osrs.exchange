@@ -53,7 +53,7 @@ class MyDocument extends Document {
             }}
           />
         </Head>
-        <body>
+        <body className="dark:bg-black/5 dark:antialiased">
           <Main />
           <NextScript />
         </body>
