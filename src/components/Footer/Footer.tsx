@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import useLogoSrc from '../../hooks/useLogoSrc';
 import HorizontalPadding from '../Common/HorizontalPadding';
-import LinkBlue from '../Common/LinkBlue';
+import LinkThemed from '../Common/LinkThemed';
 import { headerFooterClasses } from '../Header/Header';
 
 const Footer = () => {
@@ -20,7 +20,7 @@ const Footer = () => {
               <Image src={logoSrc} alt="OSRS Exchange" width="100" height="25" />
             </Link>
             <p>Made with ❤ in Gielinor</p>
-            <LinkBlue href="/attribution">Attribution</LinkBlue>
+            <LinkThemed href="/attribution">Attribution</LinkThemed>
           </li>
         </ul>
       </HorizontalPadding>
