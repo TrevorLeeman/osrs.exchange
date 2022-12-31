@@ -20,6 +20,7 @@ export const TableSearch = () => {
   // }, [inputVisible]);
 
   useUpdateEffect(() => {
+    // Clear input when any other column filter is changed
     if (!inputRef.current?.value) return;
     inputRef.current.value = '';
   }, [JSON.stringify(table.getState().columnFilters.filter(filter => filter.id !== 'name'))]);
