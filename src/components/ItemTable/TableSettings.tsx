@@ -1,9 +1,11 @@
-import React, { ComponentProps, useState } from 'react';
+import React, { ComponentProps, forwardRef, useEffect, useRef, useState } from 'react';
 
-import { Checkbox, Collapse, Input, Radio, useTheme as useNextUiTheme } from '@nextui-org/react';
+import { Checkbox, Collapse, FormElement, Input, Radio, useTheme as useNextUiTheme } from '@nextui-org/react';
 import { Column } from '@tanstack/react-table';
+import { KeysOfUnion } from 'type-fest/source/internal';
+import { useUpdateEffect } from 'usehooks-ts';
 
-import { useItemTableContext } from '../../hooks/useItemTableContext';
+import { ItemTableColumnFiltersState, useItemTableContext } from '../../hooks/useItemTableContext';
 import useSelectedItemTablePreset from '../../hooks/useSelectedItemTablePreset';
 import { COLUMN_PROPERTIES, Preset, PresetIds, TableItemKeys, itemTablePresets } from '../../util/item-table-presets';
 import AddColumnIcon from '../Icons/AddColumn';
@@ -19,6 +21,12 @@ type HeaderCheckboxProps = {
 type FilterLabelProps = {
   children: React.ReactNode;
 };
+
+type MinMaxInputProps = {
+  columnId: KeysOfUnion<TableItem>;
+};
+
+type MinOrMax = 'min' | 'max';
 
 export const TableSettings = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -140,52 +148,72 @@ const ColumnCheckbox = ({ column }: HeaderCheckboxProps) => {
   );
 };
 
-const Filters = () => {
-  const { table, setColumnFilters } = useItemTableContext();
-
-  return (
-    <div className="mx-2 flex flex-col gap-2">
-      {/* F2P Checkbox */}
-      <div>
-        <FilterLabel>{COLUMN_PROPERTIES.instaSellPrice.header}</FilterLabel>
-        <MinMaxInputs />
-      </div>
-      <div>
-        <FilterLabel>{COLUMN_PROPERTIES.instaBuyPrice.header}</FilterLabel>
-        <MinMaxInputs />
-      </div>
-      <div>
-        <FilterLabel>{COLUMN_PROPERTIES.dailyVolume.header}</FilterLabel>
-        <MinMaxInputs />
-      </div>
-      <div>
-        <FilterLabel>{COLUMN_PROPERTIES.limit.header}</FilterLabel>
-        <MinMaxInputs />
-      </div>
+const Filters = () => (
+  <div className="mx-2 flex flex-col gap-2">
+    {/* F2P Checkbox */}
+    <div>
+      <FilterLabel>{COLUMN_PROPERTIES.instaSellPrice.header}</FilterLabel>
+      <MinMaxInputs columnId="instaSellPrice" />
     </div>
-  );
-};
+    <div>
+      <FilterLabel>{COLUMN_PROPERTIES.instaBuyPrice.header}</FilterLabel>
+      <MinMaxInputs columnId="instaBuyPrice" />
+    </div>
+    <div>
+      <FilterLabel>{COLUMN_PROPERTIES.dailyVolume.header}</FilterLabel>
+      <MinMaxInputs columnId="dailyVolume" />
+    </div>
+    <div>
+      <FilterLabel>{COLUMN_PROPERTIES.limit.header}</FilterLabel>
+      <MinMaxInputs columnId="limit" />
+    </div>
+  </div>
+);
 
 const FilterLabel = ({ children }: FilterLabelProps) => (
   <span className="font-semibold text-gray-600 dark:text-gray-400">{children}</span>
 );
 
-const MinMaxInputs = () => {
-  const { isDark } = useNextUiTheme();
+const MinMaxInputs = ({ columnId }: MinMaxInputProps) => {
+  const { table, setColumnFilters } = useItemTableContext();
+  const minMaxValues = table.getState().columnFilters.find(filter => filter.id === columnId)?.value as
+    | number[]
+    | undefined;
+  console.log(minMaxValues);
+
+  const filterValue = (value: number | null, previousFilterState: ItemTableColumnFiltersState, minOrMax: MinOrMax) => {
+    const previousValue = previousFilterState.find(filter => filter.id === columnId)?.value as number[] | undefined;
+    const previousMin = previousValue?.length ? previousValue[0] : null;
+    const previousMax = previousValue?.length ? previousValue[1] : null;
+
+    switch (minOrMax) {
+      case 'min':
+        return [value, previousMax];
+      case 'max':
+        return [previousMin, value];
+    }
+  };
+
+  const changeHandler = (value: number | null, minOrMax: MinOrMax) => {
+    setColumnFilters(prev => [
+      ...prev.filter(filter => filter.id !== columnId),
+      { id: columnId, value: filterValue(value, prev, minOrMax) },
+    ]);
+  };
 
   return (
     <div className="flex gap-2">
       <ModalInput
         aria-label="Min"
         placeholder="Min"
-        // onChange={changeHandler}
-        // initialValue={previousInputValue}
+        onChange={(e: React.ChangeEvent<FormElement>) => changeHandler(Number(e.target.value) || null, 'min')}
+        value={minMaxValues?.length ? minMaxValues[0] : undefined}
       />
       <ModalInput
         aria-label="Max"
         placeholder="Max"
-        // onChange={changeHandler}
-        // initialValue={previousInputValue}
+        onChange={(e: React.ChangeEvent<FormElement>) => changeHandler(Number(e.target.value) || null, 'max')}
+        value={minMaxValues?.length ? minMaxValues[1] : undefined}
       />
     </div>
   );
@@ -194,5 +222,7 @@ const MinMaxInputs = () => {
 const ModalInput = (props: any) => {
   const { isDark } = useNextUiTheme();
 
-  return <Input animated={false} clearable css={{ $$inputColor: isDark ? 'rgb(31 41 55)' : '#F1F3F5' }} {...props} />;
+  return (
+    <Input animated={false} type="number" css={{ $$inputColor: isDark ? 'rgb(31 41 55)' : '#F1F3F5' }} {...props} />
+  );
 };
