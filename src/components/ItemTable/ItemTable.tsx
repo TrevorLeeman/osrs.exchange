@@ -1,4 +1,3 @@
-import { SortableContext } from '@dnd-kit/sortable';
 import { Header, flexRender } from '@tanstack/react-table';
 import { useIsClient } from 'usehooks-ts';
 
