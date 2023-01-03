@@ -1,35 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
-
 import { FormElement, Input } from '@nextui-org/react';
-import { useIsClient, useUpdateEffect } from 'usehooks-ts';
+import { useIsClient } from 'usehooks-ts';
 
 import { useItemTableContext } from '../../hooks/useItemTableContext';
 import SearchIcon from '../Icons/Search';
 
 export const TableSearch = () => {
   const isClient = useIsClient();
-  const inputRef = useRef<FormElement>(null);
   const { table, setColumnFilters } = useItemTableContext();
-  const previousInputValue = table.getState().columnFilters.find(filter => filter.id === 'name')?.value as string;
-  // const [inputVisible, setInputVisible] = useState(previousInputValue && true);
+  const inputValue = table.getState().columnFilters.find(filter => filter.id === 'name')?.value as string | undefined;
 
-  // useUpdateEffect(() => {
-  //   if (inputVisible) {
-  //     inputRef.current?.focus();
-  //   }
-  // }, [inputVisible]);
-
-  useUpdateEffect(() => {
-    // Clear input when any other column filter is changed
-    if (!inputRef.current?.value) return;
-    inputRef.current.value = '';
-  }, [JSON.stringify(table.getState().columnFilters.filter(filter => filter.id !== 'name'))]);
-
-  const changeHandler = () => {
-    setColumnFilters(prev => [
-      ...prev.filter(filter => filter.id !== 'name'),
-      { id: 'name', value: inputRef.current?.value },
-    ]);
+  const changeHandler = (e: React.ChangeEvent<FormElement>) => {
+    setColumnFilters(prev => {
+      const filters = prev.filter(filter => filter.id !== 'name');
+      if (e.target?.value) {
+        filters.push({ id: 'name', value: e.target.value });
+      }
+      return filters;
+    });
   };
 
   return isClient ? (
@@ -38,19 +25,9 @@ export const TableSearch = () => {
       placeholder="Filter items"
       contentLeft={<SearchIcon />}
       animated={false}
-      ref={inputRef}
       onChange={changeHandler}
-      initialValue={previousInputValue}
+      value={inputValue}
       clearable
     />
   ) : null;
-  // : (
-  //   <button
-  //     onClick={() => {
-  //       setInputVisible(true);
-  //     }}
-  //   >
-  //     <SearchIcon />
-  //   </button>
-  // );
 };
