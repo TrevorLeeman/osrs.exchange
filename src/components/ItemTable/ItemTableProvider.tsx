@@ -24,7 +24,7 @@ import {
   distanceToNowStrictFromUnixTime,
   roiOutput,
 } from '../../util/calculations';
-import { COLUMN_PROPERTIES, itemTablePresets } from '../../util/item-table-presets';
+import { COLUMN_PROPERTIES, ColumnOrder, itemTablePresets } from '../../util/item-table-presets';
 import {
   DailyVolumes,
   ITEM_PAGE_QUERIES,
@@ -94,13 +94,13 @@ const defaultColumns = [
     enableHiding: true,
     sortingFn: 'text',
   }),
-  columnHelper.accessor('instaSellPrice', {
-    header: COLUMN_PROPERTIES.instaSellPrice.header,
+  columnHelper.accessor('instaBuyPrice', {
+    header: COLUMN_PROPERTIES.instaBuyPrice.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
-  columnHelper.accessor('instaBuyPrice', {
-    header: COLUMN_PROPERTIES.instaBuyPrice.header,
+  columnHelper.accessor('instaSellPrice', {
+    header: COLUMN_PROPERTIES.instaSellPrice.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
@@ -231,7 +231,10 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
     'columnVisibility',
     itemTablePresets.profit.columnVisibility,
   );
-  const [columnOrder, setColumnOrder] = useLocalStorage('columnOrder', itemTablePresets.profit.columnOrder);
+  const [columnOrder, setColumnOrder] = useLocalStorage<ColumnOrder | undefined>(
+    'columnOrder',
+    itemTablePresets.profit.columnOrder,
+  );
   const [sortOptions, setSortOptions] = useLocalStorage('sortOptions', itemTablePresets.profit.sortOptions);
   const [columnFilters, setColumnFilters] = useLocalStorage('columnFilters', itemTablePresets.profit.columnFilters);
   const [pageSize, setPageSize] = useLocalStorage('pageSize', 25);
