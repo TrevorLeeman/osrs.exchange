@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, createContext, useContext } from 'react';
 
 import { Timestep } from '../components/PriceChart/TimeIntervalOptions';
-import { COLUMN_HEADERS } from '../util/item-table-presets';
+import { COLUMN_PROPERTIES } from '../util/item-table-presets';
 
 type PriceChartContextType = {
   realTimeInstaBuyPrices: number[] | undefined;
@@ -17,8 +17,8 @@ type PriceChartContextType = {
 };
 
 export const LINE_LABELS = {
-  instabuy: COLUMN_HEADERS.instaBuyPrice,
-  instasell: COLUMN_HEADERS.instaSellPrice,
+  instabuy: COLUMN_PROPERTIES.instaBuyPrice.header,
+  instasell: COLUMN_PROPERTIES.instaSellPrice.header,
   average: 'Average Price',
 };
 

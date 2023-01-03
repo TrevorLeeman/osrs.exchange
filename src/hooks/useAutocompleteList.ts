@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { SearchItem } from '../components/Search/Search';
+import { SearchItem } from '../components/Header/Search';
 import { fetchAutocompleteList } from '../util/queries';
 
 const useAutocompleteList = ({

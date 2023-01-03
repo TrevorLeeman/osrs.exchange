@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 import H1 from '../Common/H1';
 import HorizontalPadding from '../Common/HorizontalPadding';
-import LinkBlue from '../Common/LinkBlue';
+import LinkThemed from '../Common/LinkThemed';
 import PageDescription from '../Common/PageDescription';
 
 const NotFound = () => (
@@ -17,7 +17,7 @@ const NotFound = () => (
         <div className="flex flex-col gap-2">
           <H1>Item Not Found</H1>
           <PageDescription>
-            Search for another item, or <LinkBlue href="/">return to the homepage</LinkBlue>.
+            Search for another item, or <LinkThemed href="/">return to the homepage</LinkThemed>.
           </PageDescription>
         </div>
         <Image src={'/item-not-found.gif'} width={384} height={384} alt="Nieve starring into the distant sun" />

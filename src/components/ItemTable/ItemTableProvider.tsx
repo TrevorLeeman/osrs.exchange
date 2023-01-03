@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   createColumnHelper,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -23,7 +24,7 @@ import {
   distanceToNowStrictFromUnixTime,
   roiOutput,
 } from '../../util/calculations';
-import { COLUMN_HEADERS, itemTablePresets } from '../../util/item-table-presets';
+import { COLUMN_PROPERTIES, ColumnOrder, itemTablePresets } from '../../util/item-table-presets';
 import {
   DailyVolumes,
   ITEM_PAGE_QUERIES,
@@ -72,7 +73,7 @@ const columnHelper = createColumnHelper<TableItem>();
 
 const defaultColumns = [
   columnHelper.accessor('icon', {
-    header: () => <div className="grow text-center">{COLUMN_HEADERS.icon}</div>,
+    header: () => <div className="grow text-center">{COLUMN_PROPERTIES.icon.header}</div>,
     cell: info => (
       <SkeletonCell>
         <div className="flex justify-center">
@@ -83,7 +84,7 @@ const defaultColumns = [
     enableSorting: false,
   }),
   columnHelper.accessor('name', {
-    header: COLUMN_HEADERS.name,
+    header: COLUMN_PROPERTIES.name.header,
     cell: context => (
       <SkeletonCell>
         <NameCell context={context} />
@@ -93,23 +94,23 @@ const defaultColumns = [
     enableHiding: true,
     sortingFn: 'text',
   }),
-  columnHelper.accessor('instaSellPrice', {
-    header: COLUMN_HEADERS.instaSellPrice,
+  columnHelper.accessor('instaBuyPrice', {
+    header: COLUMN_PROPERTIES.instaBuyPrice.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
-  columnHelper.accessor('instaBuyPrice', {
-    header: COLUMN_HEADERS.instaBuyPrice,
+  columnHelper.accessor('instaSellPrice', {
+    header: COLUMN_PROPERTIES.instaSellPrice.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('margin', {
-    header: COLUMN_HEADERS.margin,
+    header: COLUMN_PROPERTIES.margin.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('tax', {
-    header: COLUMN_HEADERS.tax,
+    header: COLUMN_PROPERTIES.tax.header,
     cell: context => (
       <SkeletonCell>
         <TaxCell context={context} />
@@ -118,62 +119,62 @@ const defaultColumns = [
     enableSorting: true,
   }),
   columnHelper.accessor('profit', {
-    header: COLUMN_HEADERS.profit,
-    cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
-    enableSorting: true,
-  }),
-  columnHelper.accessor('limit', {
-    header: COLUMN_HEADERS.limit,
-    cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
-    enableSorting: true,
-  }),
-  columnHelper.accessor('potentialProfit', {
-    header: COLUMN_HEADERS.potentialProfit,
+    header: COLUMN_PROPERTIES.profit.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('roi', {
-    header: COLUMN_HEADERS.roi,
+    header: COLUMN_PROPERTIES.roi.header,
     cell: info => <SkeletonCell>{roiOutput({ roi: info.getValue() })}</SkeletonCell>,
     enableSorting: true,
   }),
+  columnHelper.accessor('limit', {
+    header: COLUMN_PROPERTIES.limit.header,
+    cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
+    enableSorting: true,
+  }),
+  columnHelper.accessor('potentialProfit', {
+    header: COLUMN_PROPERTIES.potentialProfit.header,
+    cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
+    enableSorting: true,
+  }),
   columnHelper.accessor('dailyVolume', {
-    header: COLUMN_HEADERS.dailyVolume,
+    header: COLUMN_PROPERTIES.dailyVolume.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('instaSellTime', {
-    header: COLUMN_HEADERS.instaSellTime,
+    header: COLUMN_PROPERTIES.instaSellTime.header,
     cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('instaBuyTime', {
-    header: COLUMN_HEADERS.instaBuyTime,
+    header: COLUMN_PROPERTIES.instaBuyTime.header,
     cell: info => <SkeletonCell>{distanceToNowStrictFromUnixTime({ unixTime: info.getValue() })}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('highAlch', {
-    header: COLUMN_HEADERS.highAlch,
+    header: COLUMN_PROPERTIES.highAlch.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('highAlchProfit', {
-    header: COLUMN_HEADERS.highAlchProfit,
+    header: COLUMN_PROPERTIES.highAlchProfit.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('lowAlch', {
-    header: COLUMN_HEADERS.lowAlch,
+    header: COLUMN_PROPERTIES.lowAlch.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('lowAlchProfit', {
-    header: COLUMN_HEADERS.lowAlchProfit,
+    header: COLUMN_PROPERTIES.lowAlchProfit.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('members', {
-    header: COLUMN_HEADERS.members,
+    header: COLUMN_PROPERTIES.members.header,
     cell: context => (
       <SkeletonCell>
         <MembersCell context={context} />
@@ -182,12 +183,12 @@ const defaultColumns = [
     enableSorting: true,
   }),
   columnHelper.accessor('value', {
-    header: COLUMN_HEADERS.value,
+    header: COLUMN_PROPERTIES.value.header,
     cell: info => <SkeletonCell>{info.getValue()?.toLocaleString()}</SkeletonCell>,
     enableSorting: true,
   }),
   columnHelper.accessor('id', {
-    header: COLUMN_HEADERS.id,
+    header: COLUMN_PROPERTIES.id.header,
     cell: info => <SkeletonCell>{info.getValue()}</SkeletonCell>,
     enableSorting: true,
   }),
@@ -228,11 +229,16 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
 
   const [columnVisibility, setColumnVisibility] = useLocalStorage(
     'columnVisibility',
-    itemTablePresets.default.columnVisibility,
+    itemTablePresets.profit.columnVisibility,
   );
-  const [columnOrder, setColumnOrder] = useLocalStorage('columnOrder', itemTablePresets.default.columnOrder);
-  const [sortOptions, setSortOptions] = useLocalStorage('sortOptions', itemTablePresets.default.sortOptions);
+  const [columnOrder, setColumnOrder] = useLocalStorage<ColumnOrder | undefined>(
+    'columnOrder',
+    itemTablePresets.profit.columnOrder,
+  );
+  const [sortOptions, setSortOptions] = useLocalStorage('sortOptions', itemTablePresets.profit.sortOptions);
+  const [columnFilters, setColumnFilters] = useLocalStorage('columnFilters', itemTablePresets.profit.columnFilters);
   const [pageSize, setPageSize] = useLocalStorage('pageSize', 25);
+
   const [pageIndex, setPageIndex] = useNextQueryParams(
     'page',
     0,
@@ -284,7 +290,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
             })
             // If an item does not have a recent buy or sell record, that indicates it is either a Deadman mode item, or an item that has been removed from the game. All of which we want to filter out.
             .filter(item => item.instaBuyTime || item.instaSellTime)
-        : // Fill with empty rows equivalent to the current pageSize
+        : // Fill with empty rows equivalent to the current pageSize for skeleton loading
           Array(pageSize).fill({}),
     [tableDataReady, itemMappings, dailyVolumes, latestPrices],
   );
@@ -300,17 +306,19 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
       },
       columnVisibility,
       columnOrder,
+      columnFilters,
     },
     sortDescFirst: true,
     autoResetPageIndex: false,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
   useUpdateEffect(() => {
     setPageIndex(0);
-  }, [pageSize, JSON.stringify(sortOptions)]);
+  }, [pageSize, JSON.stringify(sortOptions), JSON.stringify(columnFilters)]);
 
   return (
     <ItemTableContext.Provider
@@ -323,6 +331,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
         setSortOptions,
         setColumnVisibility,
         setColumnOrder,
+        setColumnFilters,
       }}
     >
       {children}

@@ -7,17 +7,21 @@ import { ItemTable } from '../src/components/ItemTable/ItemTable';
 import { ItemTableProvider } from '../src/components/ItemTable/ItemTableProvider';
 import ItemsPerPageDropdown from '../src/components/ItemTable/ItemsPerPageDropdown';
 import TablePagination from '../src/components/ItemTable/TablePagination';
+import { TableSearch } from '../src/components/ItemTable/TableSearch';
 import { TableSettings } from '../src/components/ItemTable/TableSettings';
 
 const Home: NextPage = () => (
   <ItemTableProvider>
     <HorizontalPadding>
       <div className="flex flex-col justify-center">
-        <div className="mb-4 flex flex-col-reverse items-center gap-4 md:grid md:grid-cols-3">
+        <div className="mb-4 flex flex-col-reverse items-center gap-4 lg:grid lg:grid-cols-3">
+          <div>
+            <TableSearch />
+          </div>
           <div className="col-start-2 place-self-center">
             <TablePagination />
           </div>
-          <div className="flex items-center gap-4 md:col-start-3 md:place-self-end">
+          <div className="flex items-center gap-4 lg:col-start-3 lg:place-self-end">
             <TableSettings />
             <ItemsPerPageDropdown />
           </div>

@@ -9,8 +9,8 @@ import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
 import HorizontalPadding from '../Common/HorizontalPadding';
 import DiscordIcon from '../Icons/Discord';
 import HomeIcon from '../Icons/Home';
-import { Search } from '../Search/Search';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
+import { Search } from './Search';
 
 export const headerFooterClasses = 'bg-zinc-100 dark:bg-black py-3 sm:py-6 border-indigo-600 dark:border-yellow-400';
 

@@ -4,11 +4,15 @@ import Link, { LinkProps } from 'next/link';
 
 import { twMerge } from 'tailwind-merge';
 
-type LinkBlueProps = LinkProps & { target?: HTMLAttributeAnchorTarget; className?: string; children?: React.ReactNode };
+type LinkThemedProps = LinkProps & {
+  target?: HTMLAttributeAnchorTarget;
+  className?: string;
+  children?: React.ReactNode;
+};
 
-const LinkBlue = (props: LinkBlueProps) => {
+const LinkThemed = (props: LinkThemedProps) => {
   const { href, target, className, children } = props;
-  const styles = twMerge([`text-blue-600 hover:underline dark:text-blue-300`, className]);
+  const styles = twMerge([`text-indigo-600 hover:underline dark:text-yellow-400`, className]);
 
   return target ? (
     <a href={href as string} target={target} className={styles}>
@@ -21,4 +25,4 @@ const LinkBlue = (props: LinkBlueProps) => {
   );
 };
 
-export default LinkBlue;
+export default LinkThemed;

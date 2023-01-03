@@ -10,7 +10,7 @@ import { ParsedUrlQuery } from 'querystring';
 import NotFound from '../../src/components/404/404';
 import H1 from '../../src/components/Common/H1';
 import HorizontalPadding from '../../src/components/Common/HorizontalPadding';
-import LinkBlue from '../../src/components/Common/LinkBlue';
+import LinkThemed from '../../src/components/Common/LinkThemed';
 import PageDescription from '../../src/components/Common/PageDescription';
 import LinkExternalIcon from '../../src/components/Icons/LinkExternal';
 import ItemIcon, { itemIconUrl } from '../../src/components/ItemIcon/ItemIcon';
@@ -111,10 +111,10 @@ const ItemPage: NextPage = ({ dehydratedState }: any) => {
             <motion.div variants={itemVariants} className="mt-4 mb-1 flex gap-3 sm:mt-8 sm:mb-0">
               <DynamicTimeIntervalOptions />
               {item?.wiki_url ? (
-                <LinkBlue href={item.wiki_url} className="flex items-center gap-1">
+                <LinkThemed href={item.wiki_url} className="flex items-center gap-1">
                   <LinkExternalIcon />
                   <span>Wiki</span>
-                </LinkBlue>
+                </LinkThemed>
               ) : null}
             </motion.div>
             <DynamicPriceChart />
