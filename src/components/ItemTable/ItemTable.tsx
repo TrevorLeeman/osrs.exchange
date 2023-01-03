@@ -3,6 +3,7 @@ import { useIsClient } from 'usehooks-ts';
 
 import { SortHandler, useItemTableContext } from '../../hooks/useItemTableContext';
 import { sortDescNext } from '../../util/calculations';
+import FilterIcon from '../Icons/Filter';
 import SortIcon from '../Icons/Sort';
 import SortAscIcon from '../Icons/SortAsc';
 import SortDescIcon from '../Icons/SortDesc';
@@ -51,8 +52,9 @@ const TableHeader = ({ header }: TableHeaderProps) => {
   const { setSortOptions } = useItemTableContext();
   const sortableClasses = header.column.columnDef.enableSorting
     ? 'transition-all duration-75 hover:bg-slate-400/70 dark:hover:bg-slate-600'
-    : 'cursor-default';
+    : '';
   const activelySortedClasses = header.column.getIsSorted() ? 'text-indigo-600 dark:text-yellow-400' : '';
+  const buttonClasses = header.column.columnDef.enableSorting ? '' : 'cursor-default';
 
   const sortHandler: SortHandler = ({ header }) => {
     if (!header.column.columnDef.enableSorting) return;
@@ -62,15 +64,18 @@ const TableHeader = ({ header }: TableHeaderProps) => {
   };
 
   return (
-    <th className="border-b-2 border-indigo-600 bg-slate-300 first:rounded-tl-xl last:rounded-tr-xl dark:border-yellow-400 dark:bg-slate-700">
+    <th
+      className={`border-b-2 border-indigo-600 bg-slate-300 first:rounded-tl-xl last:rounded-tr-xl dark:border-yellow-400 dark:bg-slate-700 ${sortableClasses} ${activelySortedClasses}`}
+    >
       <button
         onClick={e => sortHandler({ header })}
-        className={`flex h-14 w-full items-center gap-2 whitespace-nowrap px-3 ${sortableClasses} ${activelySortedClasses}`}
+        className={`flex h-14 w-full items-center gap-2 whitespace-nowrap px-3 ${buttonClasses}`}
         tabIndex={header.column.columnDef.enableSorting ? 0 : -1}
       >
         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
         <div className="shrink-0">
           <SortIconDisplay header={header} />
+          {header.column.getIsFiltered() ? <FilterIcon className="h-4 w-4" /> : null}
         </div>
       </button>
     </th>
