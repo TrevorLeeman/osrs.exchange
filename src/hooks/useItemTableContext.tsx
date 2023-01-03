@@ -21,7 +21,7 @@ export type ItemTableContextType = {
   setPageSize: Dispatch<SetStateAction<number>>;
   setSortOptions: Dispatch<SetStateAction<SortingState>>;
   setColumnVisibility: Dispatch<SetStateAction<TableItemKeys<boolean>>>;
-  setColumnOrder: Dispatch<SetStateAction<ColumnOrder>>;
+  setColumnOrder: Dispatch<SetStateAction<ColumnOrder | undefined>>;
   setColumnFilters: Dispatch<SetStateAction<ItemTableColumnFiltersState>>;
 };
 
