@@ -7,9 +7,7 @@ const useSelectedItemTablePreset = () => {
   const { table } = useItemTableContext();
   const visibilityState = table.getState().columnVisibility;
   const sortingState = table.getState().sorting;
-  const columnFiltersState = table
-    .getState()
-    .columnFilters.filter(filter => Boolean(filter.value) && filter.id !== 'name');
+  const columnFiltersState = table.getState().columnFilters.filter(filter => filter.id !== 'name');
 
   const selectedPreset = Object.entries(itemTablePresets).find(
     ([key, preset]) =>

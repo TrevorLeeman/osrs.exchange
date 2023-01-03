@@ -14,7 +14,7 @@ export type Preset = {
   sortOptions: SortingState;
   columnFilters: ItemTableColumnFiltersState;
 };
-export type PresetIds = 'profit' | 'profitMinVolume' | 'highAlchProfit' | 'highVolume';
+export type PresetIds = 'profit' | 'profitFreeToPlay' | 'profitMinVolume' | 'highAlchProfit' | 'highVolume';
 type Presets = {
   [key in PresetIds]: Preset;
 };
@@ -60,13 +60,13 @@ export const COLUMN_PROPERTIES = {
     header: 'Members',
   },
   instaBuyPrice: {
-    header: 'Sell Price',
+    header: 'Buy Price',
   },
   instaBuyTime: {
     header: 'Latest Sell',
   },
   instaSellPrice: {
-    header: 'Buy Price',
+    header: 'Sell Price',
   },
   instaSellTime: {
     header: 'Latest Buy',
@@ -122,8 +122,8 @@ export const itemTablePresets: Presets = {
     orderedColumns: [
       'icon',
       'name',
-      'instaSellPrice',
       'instaBuyPrice',
+      'instaSellPrice',
       'profit',
       'roi',
       'dailyVolume',
@@ -135,13 +135,33 @@ export const itemTablePresets: Presets = {
     sortOptions: [{ id: 'profit', desc: true }],
   }),
 
-  profitMinVolume: createPreset({
-    label: 'Profit w/ Min Volume',
+  profitFreeToPlay: createPreset({
+    label: 'Profit - F2P Items',
     orderedColumns: [
       'icon',
       'name',
-      'instaSellPrice',
       'instaBuyPrice',
+      'instaSellPrice',
+      'profit',
+      'roi',
+      'dailyVolume',
+      'limit',
+      'potentialProfit',
+      'instaSellTime',
+      'instaBuyTime',
+      'members',
+    ],
+    sortOptions: [{ id: 'profit', desc: true }],
+    columnFilters: [{ id: 'members', value: false }],
+  }),
+
+  profitMinVolume: createPreset({
+    label: 'Profit - Min Volume (10)',
+    orderedColumns: [
+      'icon',
+      'name',
+      'instaBuyPrice',
+      'instaSellPrice',
       'profit',
       'roi',
       'dailyVolume',
@@ -174,8 +194,8 @@ export const itemTablePresets: Presets = {
     orderedColumns: [
       'icon',
       'name',
-      'instaSellPrice',
       'instaBuyPrice',
+      'instaSellPrice',
       'profit',
       'roi',
       'dailyVolume',

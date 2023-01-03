@@ -1,9 +1,19 @@
-import React, { ComponentProps, forwardRef, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 
-import { Checkbox, Collapse, FormElement, Input, Radio, useTheme as useNextUiTheme } from '@nextui-org/react';
+import {
+  Checkbox,
+  CheckboxProps,
+  Collapse,
+  FormElement,
+  Input,
+  InputProps,
+  Modal,
+  Radio,
+  useTheme as useNextUiTheme,
+} from '@nextui-org/react';
 import { Column } from '@tanstack/react-table';
+import isEqual from 'lodash/isEqual';
 import { KeysOfUnion } from 'type-fest/source/internal';
-import { useUpdateEffect } from 'usehooks-ts';
 
 import { ItemTableColumnFiltersState, useItemTableContext } from '../../hooks/useItemTableContext';
 import useSelectedItemTablePreset from '../../hooks/useSelectedItemTablePreset';
@@ -14,7 +24,11 @@ import PresetsIcon from '../Icons/Presets';
 import { SettingsButton, SettingsModal } from '../Settings/Settings';
 import { TableItem } from './ItemTableProvider';
 
-type HeaderCheckboxProps = {
+type ModalCheckboxProps = Partial<CheckboxProps> & {
+  label: string;
+};
+
+type ColumnVisibilityCheckboxProps = {
   column: Column<TableItem, unknown>;
 };
 
@@ -34,19 +48,21 @@ export const TableSettings = () => {
   return (
     <>
       <SettingsButton title="Table Settings" onClick={() => setModalOpen(true)} />
-      <SettingsModal modalOpen={modalOpen} setModalOpen={setModalOpen} className="p-8">
-        <span className="mb-4 text-lg font-bold">Table Settings</span>
-        <Collapse.Group bordered className="text-left">
-          <Collapse title={<span className="font-semibold">Presets</span>} contentLeft={<PresetsIcon />} expanded>
-            <Presets />
-          </Collapse>
-          <Collapse title={<span className="font-semibold">Columns</span>} contentLeft={<AddColumnIcon />}>
-            <Columns />
-          </Collapse>
-          <Collapse title={<span className="font-semibold">Filters</span>} contentLeft={<FilterIcon />}>
-            <Filters />
-          </Collapse>
-        </Collapse.Group>
+      <SettingsModal modalOpen={modalOpen} setModalOpen={setModalOpen} className="mx-2 !max-h-[95vh] sm:p-8">
+        <Modal.Header className="!text-lg font-bold">Table Settings</Modal.Header>
+        <Modal.Body className="!px-4">
+          <Collapse.Group bordered className="text-left">
+            <Collapse title={<span className="font-semibold">Presets</span>} contentLeft={<PresetsIcon />} expanded>
+              <Presets />
+            </Collapse>
+            <Collapse title={<span className="font-semibold">Columns</span>} contentLeft={<AddColumnIcon />}>
+              <Columns />
+            </Collapse>
+            <Collapse title={<span className="font-semibold">Filters</span>} contentLeft={<FilterIcon />}>
+              <Filters />
+            </Collapse>
+          </Collapse.Group>
+        </Modal.Body>
       </SettingsModal>
     </>
   );
@@ -56,25 +72,16 @@ const Presets = () => {
   const { setSortOptions, setColumnVisibility, setColumnOrder, setColumnFilters } = useItemTableContext();
   const selectedPreset = useSelectedItemTablePreset();
 
-  const setPreset = (preset: Preset) => {
+  const changeHandler = (value: string) => {
+    const preset = itemTablePresets[value as PresetIds];
     setSortOptions(preset.sortOptions);
     setColumnVisibility(preset.columnVisibility);
     setColumnOrder(preset.columnOrder);
     setColumnFilters(preset.columnFilters);
   };
 
-  const changeHandler = (value: string) => {
-    setPreset(itemTablePresets[value as PresetIds]);
-  };
-
   return (
-    <Radio.Group
-      aria-label="Presets"
-      size="sm"
-      css={{ marginInline: '8px' }}
-      onChange={changeHandler}
-      value={selectedPreset ?? ''}
-    >
+    <Radio.Group aria-label="Presets" size="sm" onChange={changeHandler} value={selectedPreset ?? ''} className="!mx-2">
       {Object.entries(itemTablePresets).map(([key, preset]) => (
         <Radio key={key} value={key} className="!mt-1">
           {preset.label}
@@ -85,7 +92,7 @@ const Presets = () => {
 };
 
 const Columns = () => {
-  const { table, setColumnVisibility } = useItemTableContext();
+  const { table, setColumnVisibility, setColumnOrder } = useItemTableContext();
 
   const allColumns = table.getAllColumns();
   const visibleColumnIds = table.getVisibleFlatColumns().map(column => column.id);
@@ -99,6 +106,7 @@ const Columns = () => {
       }, {} as TableItemKeys<boolean>);
 
     setColumnVisibility(visibilityObj);
+    setColumnOrder(undefined);
   };
 
   return (
@@ -107,57 +115,70 @@ const Columns = () => {
       aria-label="Columns"
       color="secondary"
       size="md"
-      css={{ marginInline: '8px' }}
+      className="mx-2"
     >
-      <Checkbox
-        value="selectAll"
-        onChange={selectAll}
-        aria-label="Select All"
-        color="default"
-        size="sm"
-        className="!mt-0"
-      >
-        Select All
-      </Checkbox>
+      <ModalCheckbox value="selectAll" onChange={selectAll} label="Select All" />
       {allColumns.map(column => (
-        <ColumnCheckbox key={column.id} column={column} />
+        <ColumnVisibilityCheckbox key={column.id} column={column} />
       ))}
     </Checkbox.Group>
   );
 };
 
-const ColumnCheckbox = ({ column }: HeaderCheckboxProps) => {
-  const { setColumnVisibility } = useItemTableContext();
-  const header = COLUMN_PROPERTIES[column.id as keyof TableItem].header;
+const ModalCheckbox = (props: ModalCheckboxProps) => {
+  const { label } = props;
 
   return (
-    <Checkbox
-      value={column.id}
-      aria-label={header}
-      onChange={checked =>
-        setColumnVisibility(prev => {
-          return { ...prev, [column.id]: checked };
-        })
-      }
-      color="default"
-      size="sm"
-      className="!mt-0"
-    >
-      {header}
+    <Checkbox aria-label={label} color="default" size="sm" className="!mt-0" {...props}>
+      {label}
     </Checkbox>
   );
 };
 
+const ColumnVisibilityCheckbox = ({ column }: ColumnVisibilityCheckboxProps) => {
+  const { setColumnVisibility, setColumnOrder } = useItemTableContext();
+  const header = COLUMN_PROPERTIES[column.id as keyof TableItem].header;
+
+  const changeHandler = (checked: boolean) => {
+    setColumnVisibility(prev => {
+      return { ...prev, [column.id]: checked };
+    });
+    setColumnOrder(undefined);
+  };
+
+  return <ModalCheckbox value={column.id} label={header} onChange={changeHandler} />;
+};
+
+const FreeToPlayCheckbox = () => {
+  const { table, setColumnFilters } = useItemTableContext();
+  const membersItemsOnly = table.getState().columnFilters.find(filter => filter.id === 'members')?.value as
+    | boolean
+    | undefined;
+  const isSelected = membersItemsOnly === undefined ? false : !membersItemsOnly;
+
+  const changeHandler = (checked: boolean) => {
+    setColumnFilters(prev => {
+      const filters = prev.filter(filter => filter.id !== 'members');
+      if (checked) {
+        filters.push({ id: 'members', value: !checked });
+      }
+      return filters;
+    });
+  };
+
+  return <ModalCheckbox isSelected={isSelected} value={'f2p'} label="F2P Items Only" onChange={changeHandler} />;
+};
+
 const Filters = () => (
   <div className="mx-2 flex flex-col gap-2">
-    {/* F2P Checkbox */}
-    <div>
-      <FilterLabel>{COLUMN_PROPERTIES.instaSellPrice.header}</FilterLabel>
-      <MinMaxInputs columnId="instaSellPrice" />
-    </div>
+    <FreeToPlayCheckbox />
     <div>
       <FilterLabel>{COLUMN_PROPERTIES.instaBuyPrice.header}</FilterLabel>
       <MinMaxInputs columnId="instaBuyPrice" />
+    </div>
+    <div>
+      <FilterLabel>{COLUMN_PROPERTIES.instaSellPrice.header}</FilterLabel>
+      <MinMaxInputs columnId="instaSellPrice" />
     </div>
     <div>
       <FilterLabel>{COLUMN_PROPERTIES.dailyVolume.header}</FilterLabel>
@@ -179,9 +200,12 @@ const MinMaxInputs = ({ columnId }: MinMaxInputProps) => {
   const minMaxValues = table.getState().columnFilters.find(filter => filter.id === columnId)?.value as
     | number[]
     | undefined;
-  console.log(minMaxValues);
 
-  const filterValue = (value: number | null, previousFilterState: ItemTableColumnFiltersState, minOrMax: MinOrMax) => {
+  const withPreviousFilterValue = (
+    value: number | null,
+    previousFilterState: ItemTableColumnFiltersState,
+    minOrMax: MinOrMax,
+  ) => {
     const previousValue = previousFilterState.find(filter => filter.id === columnId)?.value as number[] | undefined;
     const previousMin = previousValue?.length ? previousValue[0] : null;
     const previousMax = previousValue?.length ? previousValue[1] : null;
@@ -195,10 +219,14 @@ const MinMaxInputs = ({ columnId }: MinMaxInputProps) => {
   };
 
   const changeHandler = (value: number | null, minOrMax: MinOrMax) => {
-    setColumnFilters(prev => [
-      ...prev.filter(filter => filter.id !== columnId),
-      { id: columnId, value: filterValue(value, prev, minOrMax) },
-    ]);
+    setColumnFilters(prev => {
+      const filters = prev.filter(filter => filter.id !== columnId);
+      const filterValue = withPreviousFilterValue(value, prev, minOrMax);
+      if (!isEqual(filterValue, [null, null])) {
+        filters.push({ id: columnId, value: filterValue });
+      }
+      return filters;
+    });
   };
 
   return (
@@ -207,22 +235,22 @@ const MinMaxInputs = ({ columnId }: MinMaxInputProps) => {
         aria-label="Min"
         placeholder="Min"
         onChange={(e: React.ChangeEvent<FormElement>) => changeHandler(Number(e.target.value) || null, 'min')}
-        value={minMaxValues?.length ? minMaxValues[0] : undefined}
+        value={minMaxValues?.length ? minMaxValues[0] : ''}
       />
       <ModalInput
         aria-label="Max"
         placeholder="Max"
         onChange={(e: React.ChangeEvent<FormElement>) => changeHandler(Number(e.target.value) || null, 'max')}
-        value={minMaxValues?.length ? minMaxValues[1] : undefined}
+        value={minMaxValues?.length ? minMaxValues[1] : ''}
       />
     </div>
   );
 };
 
-const ModalInput = (props: any) => {
+const ModalInput = (props: Partial<InputProps>) => {
   const { isDark } = useNextUiTheme();
 
   return (
-    <Input animated={false} type="number" css={{ $$inputColor: isDark ? 'rgb(31 41 55)' : '#F1F3F5' }} {...props} />
+    <Input animated={false} type="number" css={{ $$inputColor: isDark ? 'rgb(31, 41, 55)' : '#F1F3F5' }} {...props} />
   );
 };
