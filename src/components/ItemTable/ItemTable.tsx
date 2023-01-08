@@ -1,21 +1,48 @@
+import { PropsWithChildren } from 'react';
+
+import { Tooltip } from '@nextui-org/react';
 import { Header, flexRender } from '@tanstack/react-table';
+import { StringKeyOf } from 'type-fest';
 import { useIsClient } from 'usehooks-ts';
 
 import { SortHandler, useItemTableContext } from '../../hooks/useItemTableContext';
+import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
 import { sortDescNext } from '../../util/calculations';
+import { COLUMN_PROPERTIES } from '../../util/item-table-presets';
 import FilterIcon from '../Icons/Filter';
 import SortIcon from '../Icons/Sort';
 import SortAscIcon from '../Icons/SortAsc';
 import SortDescIcon from '../Icons/SortDesc';
 import { TableItem } from './ItemTableProvider';
 
-type SortIconProps = {
-  header: Header<TableItem, unknown>;
-};
-
 type TableHeaderProps = {
   header: Header<TableItem, unknown>;
 };
+
+type SortIconDisplayProps = {
+  header: Header<TableItem, unknown>;
+};
+
+type FilterIconDisplayProps = {
+  header: Header<TableItem, unknown>;
+};
+
+type HeaderTooltipProps = {
+  content: React.ReactNode;
+  children: React.ReactNode;
+};
+
+type TooltipContents = (args: { filterValue: any; header: FilterIconDisplayProps['header'] }) => React.ReactNode;
+
+type ArrayOfNumbersFilterTooltipContents = (args: {
+  filterValue: [number, number];
+  header: FilterIconDisplayProps['header'];
+}) => React.ReactNode;
+
+type BooleanFilterTooltipContents = (args: {
+  filterValue: boolean;
+  header: FilterIconDisplayProps['header'];
+}) => React.ReactNode;
 
 export const ItemTable = () => {
   const isClient = useIsClient();
@@ -73,9 +100,9 @@ const TableHeader = ({ header }: TableHeaderProps) => {
         tabIndex={header.column.columnDef.enableSorting ? 0 : -1}
       >
         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-        <div className="shrink-0">
+        <div className="flex shrink-0 items-center gap-0.5">
           <SortIconDisplay header={header} />
-          {header.column.getIsFiltered() ? <FilterIcon className="h-4 w-4" /> : null}
+          <FilterIconDisplay header={header} />
         </div>
       </button>
     </th>
@@ -103,7 +130,7 @@ const TableBody = () => {
   );
 };
 
-const SortIconDisplay = ({ header }: SortIconProps) => {
+const SortIconDisplay = ({ header }: SortIconDisplayProps) => {
   const sortDirection = header.column.getIsSorted();
 
   if (!sortDirection && header.column.columnDef.enableSorting) return <SortIcon />;
@@ -116,4 +143,64 @@ const SortIconDisplay = ({ header }: SortIconProps) => {
     }
   }
   return null;
+};
+
+const FilterIconDisplay = ({ header }: FilterIconDisplayProps) => {
+  const filterValue = header.column.getFilterValue() as any;
+
+  return header.column.getIsFiltered() ? (
+    <HeaderTooltip content={tooltipContents({ filterValue, header })}>
+      <FilterIcon className="h-4 w-4" />
+    </HeaderTooltip>
+  ) : null;
+};
+
+const HeaderTooltip = ({ content, children }: HeaderTooltipProps) => {
+  const isMaxMobileLarge = !useTailwindMinBreakpoint('sm');
+
+  return (
+    <Tooltip content={content} placement="bottom" isDisabled={isMaxMobileLarge}>
+      {children}
+    </Tooltip>
+  );
+};
+
+const tooltipContents: TooltipContents = ({ filterValue, header }) => {
+  // Array of numbers
+  if (filterValue?.length && (typeof filterValue[0] === 'number' || typeof filterValue[1] === 'number')) {
+    return arrayOfNumbersFilterTooltipContents({ filterValue, header });
+  }
+  // Boolean
+  if (typeof filterValue === 'boolean') {
+    return booleanFilterTooltipContents({ filterValue, header });
+  }
+  return 'Column filtered';
+};
+
+const arrayOfNumbersFilterTooltipContents: ArrayOfNumbersFilterTooltipContents = ({ filterValue, header }) => {
+  const MIN_GP_VALUE = 0;
+
+  // Min and Max
+  if (filterValue[0] && filterValue[1]) {
+    return `${filterValue[0].toLocaleString()} - ${filterValue[1].toLocaleString()}`;
+  }
+  // Min only
+  if (filterValue[0] && !filterValue[1]) {
+    return `${filterValue[0].toLocaleString()} - ∞`;
+  }
+  // Max only
+  if (!filterValue[0] && filterValue[1]) {
+    return `${MIN_GP_VALUE} - ${filterValue[1].toLocaleString()}`;
+  }
+  return 'Column filtered';
+};
+
+const booleanFilterTooltipContents: BooleanFilterTooltipContents = ({ filterValue, header }) => {
+  if (header.column.id === 'members') {
+    return filterValue ? 'Members Items Only' : 'F2P Items Only';
+  }
+
+  return `${
+    COLUMN_PROPERTIES[header.column.id as StringKeyOf<typeof COLUMN_PROPERTIES>].header
+  } must be ${filterValue.toString()}`;
 };
