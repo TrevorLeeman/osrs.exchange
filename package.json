@@ -15,10 +15,11 @@
     "format-react-components": "prettier --write \"**/*.+(jsx|tsx)\""
   },
   "dependencies": {
-    "@nextui-org/react": "^1.0.0-beta.10",
+    "@nextui-org/react": "^1.0.0-beta.12",
     "@tanstack/react-query": "^4.2.1",
     "@tanstack/react-query-devtools": "^4.2.1",
     "@tanstack/react-table": "^8.5.13",
+    "@types/react-countdown-circle-timer": "^2.0.1",
     "axios": "^0.27.2",
     "chart.js": "^3.9.1",
     "chartjs-adapter-date-fns": "^2.0.0",
@@ -36,6 +37,7 @@
     "react": "18.2.0",
     "react-aria": "3.21.0",
     "react-chartjs-2": "^4.3.1",
+    "react-countdown-circle-timer": "^3.1.0",
     "react-dom": "18.2.0",
     "react-loading-skeleton": "^3.1.0",
     "tailwind-merge": "^1.8.0",
