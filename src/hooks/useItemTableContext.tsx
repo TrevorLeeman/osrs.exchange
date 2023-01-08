@@ -17,6 +17,7 @@ export type ItemTableContextType = {
   items: TableItem[];
   table: Table<TableItem>;
   tableDataReady: boolean;
+  refetchTableData: () => void;
   setPageIndex: (state: number) => void;
   setPageSize: Dispatch<SetStateAction<number>>;
   setSortOptions: Dispatch<SetStateAction<SortingState>>;
