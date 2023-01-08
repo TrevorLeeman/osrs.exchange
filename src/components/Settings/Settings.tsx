@@ -28,6 +28,7 @@ export const SettingsButton = ({ onPress, title }: SettingsButtonProps) => {
 export const SettingsModal = ({ modalOpen, setModalOpen, className, children }: SettingsModalProps) => {
   return (
     <Modal
+      scroll
       blur
       open={modalOpen}
       onClose={() => setModalOpen(false)}

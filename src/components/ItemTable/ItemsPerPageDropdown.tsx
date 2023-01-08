@@ -15,7 +15,9 @@ const ItemsPerPageDropdown = ({ sizes = [10, 15, 20, 25, 50] }: { sizes?: number
 
   return isClient ? (
     <Dropdown isBordered={'true'}>
-      <Dropdown.Button className="bg-blue-600">Show {table.getState().pagination.pageSize} Items</Dropdown.Button>
+      <Dropdown.Button className="min-h-[40px] bg-blue-600">
+        Show {table.getState().pagination.pageSize} Items
+      </Dropdown.Button>
       <Dropdown.Menu onAction={changeHandler} selectedKeys={[table.getState().pagination.pageSize.toString()]}>
         {sizes.map(pageSize => (
           <Dropdown.Item key={pageSize.toString()}>{pageSize.toString()}</Dropdown.Item>

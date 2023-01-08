@@ -17,7 +17,7 @@ import { KeysOfUnion } from 'type-fest/source/internal';
 
 import { ItemTableColumnFiltersState, useItemTableContext } from '../../hooks/useItemTableContext';
 import useSelectedItemTablePreset from '../../hooks/useSelectedItemTablePreset';
-import { COLUMN_PROPERTIES, Preset, PresetIds, TableItemKeys, itemTablePresets } from '../../util/item-table-presets';
+import { COLUMN_PROPERTIES, PresetIds, TableItemKeys, itemTablePresets } from '../../util/item-table-presets';
 import AddColumnIcon from '../Icons/AddColumn';
 import FilterIcon from '../Icons/Filter';
 import PresetsIcon from '../Icons/Presets';
