@@ -23,6 +23,7 @@ import FilterIcon from '../Icons/Filter';
 import PresetsIcon from '../Icons/Presets';
 import { SettingsButton, SettingsModal } from '../Settings/Settings';
 import { TableItem } from './ItemTableProvider';
+import ItemsPerPageDropdown from './ItemsPerPageDropdown';
 
 type ModalCheckboxProps = Partial<CheckboxProps> & {
   label: string;
@@ -47,10 +48,11 @@ export const TableSettings = () => {
 
   return (
     <>
-      <SettingsButton title="Table Settings" onClick={() => setModalOpen(true)} />
-      <SettingsModal modalOpen={modalOpen} setModalOpen={setModalOpen} className="mx-2 !max-h-[95vh] sm:p-8">
+      <SettingsButton title="Table Settings" onPress={() => setModalOpen(true)} />
+      <SettingsModal modalOpen={modalOpen} setModalOpen={setModalOpen} className="mx-2 sm:p-8">
         <Modal.Header className="!text-lg font-bold">Table Settings</Modal.Header>
         <Modal.Body className="!px-4">
+          <ItemsPerPageDropdown />
           <Collapse.Group bordered className="text-left">
             <Collapse title={<span className="font-semibold">Presets</span>} contentLeft={<PresetsIcon />} expanded>
               <Presets />
