@@ -63,13 +63,13 @@ export const COLUMN_PROPERTIES = {
     header: 'Buy Price',
   },
   instaBuyTime: {
-    header: 'Latest Sell',
+    header: 'Latest Buy',
   },
   instaSellPrice: {
     header: 'Sell Price',
   },
   instaSellTime: {
-    header: 'Latest Buy',
+    header: 'Latest Sell',
   },
   dailyVolume: {
     header: 'Daily Volume',

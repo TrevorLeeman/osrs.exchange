@@ -13,7 +13,7 @@ const SettingsIcon = ({ className }: SettingsIconProps) => (
     y="0px"
     viewBox="0 0 294 294"
     xmlSpace="preserve"
-    className={twMerge(['h-8 w-8 fill-gray-600 dark:fill-gray-400', className])}
+    className={twMerge(['h-5 w-5 fill-current', className])}
   >
     <path
       d="M279.333,117h-18.178C258.423,107,254.3,96.814,249,87.747l13.383-13.361c5.857-5.857,5.858-15.344,0-21.202l-20.737-20.733

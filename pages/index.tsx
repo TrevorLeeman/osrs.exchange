@@ -3,9 +3,9 @@ import type { NextPage } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 
 import HorizontalPadding from '../src/components/Common/HorizontalPadding';
+import CountdownToRefetch from '../src/components/ItemTable/CountdownToRefetch';
 import { ItemTable } from '../src/components/ItemTable/ItemTable';
 import { ItemTableProvider } from '../src/components/ItemTable/ItemTableProvider';
-import ItemsPerPageDropdown from '../src/components/ItemTable/ItemsPerPageDropdown';
 import TablePagination from '../src/components/ItemTable/TablePagination';
 import { TableSearch } from '../src/components/ItemTable/TableSearch';
 import { TableSettings } from '../src/components/ItemTable/TableSettings';
@@ -21,9 +21,9 @@ const Home: NextPage = () => (
           <div className="col-start-2 place-self-center">
             <TablePagination />
           </div>
-          <div className="flex items-center gap-4 lg:col-start-3 lg:place-self-end">
+          <div className="flex flex-col items-center justify-center gap-4 lg:col-start-3 lg:flex-row lg:place-self-end">
+            <CountdownToRefetch />
             <TableSettings />
-            <ItemsPerPageDropdown />
           </div>
         </div>
         <div className="mb-4">

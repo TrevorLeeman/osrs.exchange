@@ -1,13 +1,12 @@
 import { Dispatch, SetStateAction } from 'react';
 
-import { Modal } from '@nextui-org/react';
-import { Variants, motion } from 'framer-motion';
+import { Button, Modal, PressEvent } from '@nextui-org/react';
 import { twMerge } from 'tailwind-merge';
 
 import SettingsIcon from '../Icons/Settings';
 
 type SettingsButtonProps = {
-  onClick: React.MouseEventHandler;
+  onPress: (e: PressEvent) => void;
   title: string;
 };
 
@@ -18,28 +17,18 @@ type SettingsModalProps = {
   children?: React.ReactNode;
 };
 
-const settingsButtonVariants: Variants = {
-  initial: { rotate: 0 },
-  hover: { rotate: -40 },
-};
-
-export const SettingsButton = ({ onClick, title }: SettingsButtonProps) => {
+export const SettingsButton = ({ onPress, title }: SettingsButtonProps) => {
   return (
-    <motion.button
-      variants={settingsButtonVariants}
-      initial="initial"
-      whileHover="hover"
-      onClick={onClick}
-      title={title}
-    >
-      <SettingsIcon className="hover:drop-shadow-md dark:drop-shadow-item-icon-dark" />
-    </motion.button>
+    <Button onPress={onPress} title={title} icon={<SettingsIcon />} className="dark:bg-slate-600">
+      {title}
+    </Button>
   );
 };
 
 export const SettingsModal = ({ modalOpen, setModalOpen, className, children }: SettingsModalProps) => {
   return (
     <Modal
+      blur
       open={modalOpen}
       onClose={() => setModalOpen(false)}
       closeButton={true}

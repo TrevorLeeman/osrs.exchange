@@ -196,21 +196,20 @@ const defaultColumns = [
 
 export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }) => {
   const NATURE_RUNE_ID = 561;
-  const { data: natureRuneData, isLoading: natureRuneDataLoading } = useQuery<RealTimePrices>(
+
+  // Nature rune query
+  const { data: natureRuneData, refetch: refetchNatureRuneData } = useQuery<RealTimePrices>(
     [ITEM_PAGE_QUERIES.realTimePrices, { id: NATURE_RUNE_ID, timestep: '5m' }],
     fetchRealTimePrices,
-    {
-      refetchInterval: 60 * 1000, // 1 min,
-    },
   );
   const natureRunePrice = natureRuneData?.data[0].avgLowPrice;
-  const { data: latestPrices, isSuccess: latestPricesReady } = useQuery<LatestTransactions>(
-    [ITEM_TABLE_QUERIES.latestPrices],
-    fetchLatestPrices,
-    {
-      refetchInterval: 60 * 1000, // 1 min
-    },
-  );
+
+  // Item table data queries
+  const {
+    data: latestPrices,
+    isSuccess: latestPricesReady,
+    refetch: refetchLatestPrices,
+  } = useQuery<LatestTransactions>([ITEM_TABLE_QUERIES.latestPrices], fetchLatestPrices);
   const { data: dailyVolumes, isSuccess: dailyVolumesReady } = useQuery<DailyVolumes>(
     [ITEM_TABLE_QUERIES.dailyVolumes],
     fetchDailyVolumes,
@@ -227,6 +226,12 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
     },
   );
 
+  const refetchTableData = () => {
+    refetchNatureRuneData();
+    refetchLatestPrices();
+  };
+
+  // Item table settings
   const [columnVisibility, setColumnVisibility] = useLocalStorage(
     'columnVisibility',
     itemTablePresets.profit.columnVisibility,
@@ -238,7 +243,6 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
   const [sortOptions, setSortOptions] = useLocalStorage('sortOptions', itemTablePresets.profit.sortOptions);
   const [columnFilters, setColumnFilters] = useLocalStorage('columnFilters', itemTablePresets.profit.columnFilters);
   const [pageSize, setPageSize] = useLocalStorage('pageSize', 25);
-
   const [pageIndex, setPageIndex] = useNextQueryParams(
     'page',
     0,
@@ -326,6 +330,7 @@ export const ItemTableProvider: React.FC<ItemTableProviderProps> = ({ children }
         items: completeItems ?? [],
         table,
         tableDataReady,
+        refetchTableData,
         setPageIndex,
         setPageSize,
         setSortOptions,

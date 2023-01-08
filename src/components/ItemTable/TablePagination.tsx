@@ -7,7 +7,7 @@ import useTailwindMinBreakpoint from '../../hooks/useTailwindBreakpoint';
 const TablePagination = () => {
   const isClient = useIsClient();
   const { table, setPageIndex } = useItemTableContext();
-  const isMaxTablet = !useTailwindMinBreakpoint('sm');
+  const isMaxTablet = !useTailwindMinBreakpoint('xl');
 
   return isClient ? (
     <Pagination
